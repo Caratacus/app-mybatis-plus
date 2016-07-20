@@ -28,6 +28,8 @@ import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.loader.ProxyFactory;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.io.VFS;
+import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.parsing.XNode;
@@ -149,7 +151,7 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
 			String[] clazzes = value.split(",");
 			for (String clazz : clazzes) {
 				if (!clazz.isEmpty()) {
-					configuration.setVfsImpl(Resources.classForName(clazz));
+					configuration.setVfsImpl((Class<? extends VFS>) Resources.classForName(clazz));
 				}
 			}
 		}
@@ -266,7 +268,7 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
 		configuration.setDefaultScriptingLanguage(resolveClass(props.getProperty("defaultScriptingLanguage")));
 		configuration.setCallSettersOnNulls(booleanValueOf(props.getProperty("callSettersOnNulls"), false));
 		configuration.setLogPrefix(props.getProperty("logPrefix"));
-		configuration.setLogImpl(resolveClass(props.getProperty("logImpl")));
+		configuration.setLogImpl((Class<? extends Log>) resolveClass(props.getProperty("logImpl")));
 		configuration.setConfigurationFactory(resolveClass(props.getProperty("configurationFactory")));
 	}
 
