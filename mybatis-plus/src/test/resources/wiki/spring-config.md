@@ -6,7 +6,7 @@
 
 ```
 <dependency>
-    <groupId>com.baomidou</groupId>
+    <groupId>com.app</groupId>
     <artifactId>mybatis-plus</artifactId>
     <version>最新版本 Maven 为准</version>
 </dependency>
@@ -16,7 +16,7 @@
 
 ```
 <!-- MyBatis SqlSessionFactoryBean 配置 -->
-<bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
+<bean id="sqlSessionFactory" class="com.app.mybatisplus.spring.MybatisSqlSessionFactoryBean">
 	<property name="dataSource" ref="dataSource" />
 	<property name="configLocation" value="classpath:xml/mybatis-config.xml" />
 	<property name="typeAliasesPackage" value="xxx.entity" />
@@ -24,7 +24,7 @@
     <property name="plugins">
         <array>
             <!-- 分页插件配置 -->
-            <bean id="paginationInterceptor" class="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
+            <bean id="paginationInterceptor" class="com.app.mybatisplus.plugins.PaginationInterceptor">
 		        <property name="dialectType" value="mysql" />
 		    </bean>
         </array>
@@ -84,17 +84,17 @@
 	     | dialectType 数据库方言  
 	     |             默认支持  mysql  oracle  hsql  sqlite  postgre  sqlserver
 	     | dialectClazz 方言实现类
-	     |              自定义需要实现 com.baomidou.mybatisplus.plugins.pagination.IDialect 接口
+	     |              自定义需要实现 com.app.mybatisplus.plugins.pagination.IDialect 接口
 	    1、 配置方式一、使用 MybatisPlus 提供方言实现类
-	    <plugin interceptor="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
+	    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
 	        <property name="dialectType" value="mysql" />
 	    </plugin>
 	    2、配置方式二、使用自定义方言实现类 
-	    <plugin interceptor="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
+	    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
 	        <property name="dialectClazz" value="xxx.dialect.XXDialect" />
 	    </plugin>
         <!-- SQL 执行性能分析，开发环境使用，线上不推荐。 maxTime 指的是 sql 最大执行时长 -->
-        <plugin interceptor="com.baomidou.mybatisplus.plugins.PerformanceInterceptor">
+        <plugin interceptor="com.app.mybatisplus.plugins.PerformanceInterceptor">
             <property name="maxTime" value="100" />
         </plugin>
 	</plugins>
@@ -123,7 +123,7 @@ jdbc.password_online_mode=#!Esd30210
 >spring 配置：
 
 ```
-<bean id="placeholder" class="com.baomidou.mybatisplus.spring.MutilPropertyPlaceholderConfigurer">
+<bean id="placeholder" class="com.app.mybatisplus.spring.MutilPropertyPlaceholderConfigurer">
 	<property name="locations">
 		<list>
 			<value>classpath:jdbc.properties</value>
