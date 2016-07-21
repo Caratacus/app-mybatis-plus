@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
@@ -55,7 +56,6 @@ public class AutoGenerator {
     }
 
     public AutoGenerator() {
-
     }
 
     public AutoGenerator(ConfigGenerator config) {
@@ -82,7 +82,6 @@ public class AutoGenerator {
         } else if (config.getIdType() == null) {
             throw new MybatisPlusException("ConfigGenerator IdType is null");
         }
-
         /**
          * 检查文件夹是否存在
          */
@@ -90,7 +89,6 @@ public class AutoGenerator {
         if (!gf.exists()) {
             gf.mkdirs();
         }
-
         /**
          * 修改设置最终目录的逻辑
          */
@@ -100,19 +98,14 @@ public class AutoGenerator {
         PATH_XML = getFilePath(saveDir, getPathFromPackageName(config.getXmlPackage()));
         PATH_SERVICE = getFilePath(saveDir, getPathFromPackageName(config.getServicePackage()));
         PATH_SERVICE_IMPL = getFilePath(saveDir, getPathFromPackageName(config.getServiceImplPackage()));
-
-
         /**
          * 新生成的文件是否覆盖现有文件
          */
         FILE_OVERRIDE = config.isFileOverride();
-
-
         /**
          * 开启生成映射关系
          */
         new AutoGenerator(config).generate();
-
         /**
          * 自动打开生成文件的目录
          * <p>
@@ -174,7 +167,6 @@ public class AutoGenerator {
              */
             Class.forName(config.getDbDriverName());
             conn = DriverManager.getConnection(config.getDbUrl(), config.getDbUser(), config.getDbPassword());
-
             /**
              * 获取数据库表相关信息
              */
@@ -182,7 +174,6 @@ public class AutoGenerator {
             if (config.getConfigDataSource() == ConfigDataSource.ORACLE) {
                 isOracle = true;
             }
-
             /**
              * 根据配置获取应该生成文件的表信息
              */
@@ -190,7 +181,6 @@ public class AutoGenerator {
             if (null == tables) {
                 return;
             }
-
             Map<String, String> tableComments = getTableComment(conn);
             for (String table : tables) {
                 List<String> columns = new ArrayList<String>();
@@ -227,9 +217,8 @@ public class AutoGenerator {
                 }
                 String beanName = getBeanName(table, config.isDbPrefix());
                 String mapperName = beanName + "Mapper";
-                String serviceName = "I" + beanName + "Service";
+                String serviceName = beanName + "Service";
                 String serviceImplName = beanName + "ServiceImpl";
-
                 /**
                  * 根据文件覆盖标志决定是否生成映射文件
                  */
@@ -294,12 +283,10 @@ public class AutoGenerator {
         while (results.next()) {
             tables.add(results.getString(1));
         }
-
         String[] tableNames = config.getTableNames();
-		if (null == tableNames || tableNames.length == 0) {
+        if (null == tableNames || tableNames.length == 0) {
             return tables;
         }
-
         // 循环判断是否配置的所有表都在当前库中存在
         List<String> custTables = Arrays.asList(tableNames);
         List<String> notExistTables = new ArrayList<String>();
@@ -444,7 +431,7 @@ public class AutoGenerator {
         }
 
 		/* 
-		 * 处理下划线分割命名字段
+         * 处理下划线分割命名字段
 		 */
         StringBuilder sb = new StringBuilder(field.length());
         String[] fields = field.split("_");
@@ -496,6 +483,8 @@ public class AutoGenerator {
         bw.newLine();
         bw.write("import java.io.Serializable;");
         bw.newLine();
+        bw.write("import com.fasterxml.jackson.annotation.JsonFilter;");
+        bw.newLine();
         if (isDate(types)) {
             bw.write("import java.util.Date;");
             bw.newLine();
@@ -517,6 +506,8 @@ public class AutoGenerator {
         bw.newLine();
         bw = buildClassComment(bw, tableComment);
         bw.newLine();
+        bw.write("@JsonFilter(\"ObjectFilter\")");
+        bw.newLine();
         bw.write("@TableName(value = \"" + table + "\")");
         bw.newLine();
         bw.write("public class " + beanName + " implements Serializable {");
@@ -524,7 +515,7 @@ public class AutoGenerator {
         bw.newLine();
         bw.write("\t@TableField(exist = false)");
         bw.newLine();
-        bw.write("\tprivate static final long serialVersionUID = 1L;");
+        bw.write("\tprivate static final long serialVersionUID = " + new Random().nextLong() + "L;");
         bw.newLine();
         int size = columns.size();
         for (int i = 0; i < size; i++) {
@@ -604,7 +595,6 @@ public class AutoGenerator {
             bw.write("\t}");
             bw.newLine();
         }
-
         bw.newLine();
         bw.write("}");
         bw.newLine();
@@ -644,7 +634,6 @@ public class AutoGenerator {
             bw.write("import com.app.mybatisplus.mapper.AutoMapper;");
         }
         bw.newLine();
-
         bw = buildClassComment(bw, beanName + " 表数据库控制层接口");
         bw.newLine();
         if (config.getConfigIdType() == ConfigIdType.STRING) {
@@ -654,7 +643,6 @@ public class AutoGenerator {
         }
         bw.newLine();
         bw.newLine();
-
         // ----------定义mapper中的方法End----------
         bw.newLine();
         bw.write("}");
@@ -686,7 +674,6 @@ public class AutoGenerator {
 		 * 下面开始写SqlMapper中的方法
 		 */
         buildSQL(bw, idMap, columns);
-
         bw.write("</mapper>");
         bw.flush();
         bw.close();
@@ -713,7 +700,6 @@ public class AutoGenerator {
             bw.write("import com.app.framework.service.ISuperService;");
         }
         bw.newLine();
-
         bw = buildClassComment(bw, beanName + " 表数据服务层接口");
         bw.newLine();
         if (config.getConfigIdType() == ConfigIdType.STRING) {
@@ -723,7 +709,6 @@ public class AutoGenerator {
         }
         bw.newLine();
         bw.newLine();
-
         // ----------定义service中的方法End----------
         bw.newLine();
         bw.write("}");
@@ -754,11 +739,9 @@ public class AutoGenerator {
         bw.newLine();
         bw.write("import " + config.getServicePackage() + "." + serviceName + ";");
         bw.newLine();
-
         String superServiceImpl = config.getSuperServiceImpl();
         bw.write("import " + superServiceImpl + ";");
         bw.newLine();
-
         bw = buildClassComment(bw, beanName + " 表数据服务层接口实现类");
         bw.newLine();
         bw.write("@Service");
@@ -768,7 +751,6 @@ public class AutoGenerator {
                 + "<" + mapperName + ", " + beanName + "> implements " + serviceName + " {");
         bw.newLine();
         bw.newLine();
-
         // ----------定义service中的方法End----------
         bw.newLine();
         bw.write("}");
@@ -790,7 +772,6 @@ public class AutoGenerator {
         bw.newLine();
         bw.write("\t<sql id=\"Base_Column_List\">");
         bw.newLine();
-
         for (int i = 0; i < size; i++) {
             String column = columns.get(i);
             IdInfo idInfo = idMap.get(column);
