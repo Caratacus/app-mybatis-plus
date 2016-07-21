@@ -506,7 +506,7 @@ public class AutoGenerator {
         bw.newLine();
         bw = buildClassComment(bw, tableComment);
         bw.newLine();
-        bw.write("@JsonFilter(\"ObjectFilter\")");
+        bw.write("@JsonFilter(\"objFilter\")");
         bw.newLine();
         bw.write("@TableName(value = \"" + table + "\")");
         bw.newLine();
