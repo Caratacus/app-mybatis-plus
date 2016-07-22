@@ -25,9 +25,9 @@
 	</developers>
 
 	<!--<scm>
-		<connection>scm:git:git@git.oschina.net:juapk/mybatis-plus.git</connection>
-		<developerConnection>scm:git:git@git.oschina.net:juapk/mybatis-plus.git</developerConnection>
-		<url>git@git.oschina.net:juapk/mybatis-plus.git</url>
+		<connection>scm:git:git@git.oschina.net:cancerGit/app_api.git</connection>
+		<developerConnection>scm:git:git@git.oschina.net:cancerGit/app_api.git</developerConnection>
+		<url>git@git.oschina.net:cancerGit/app_api.git</url>
 	</scm>-->
 
 	<properties>
