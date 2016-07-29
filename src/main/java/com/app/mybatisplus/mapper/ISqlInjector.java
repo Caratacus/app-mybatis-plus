@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, hubin (jobob@qq.com).
+ * Copyright (c) 2011-2016, hubin (jobob@qq.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,37 +13,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.app.mybatisplus.annotations;
+package com.app.mybatisplus.mapper;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.ibatis.builder.MapperBuilderAssistant;
+import org.apache.ibatis.session.Configuration;
 
 /**
  * <p>
- * 表主键标识
+ * SQL 自动注入器接口
  * </p>
  * 
  * @author hubin
- * @Date 2016-01-23
+ * @Date 2016-07-24
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface TableId {
+public interface ISqlInjector {
 
-	/*
+	/**
 	 * <p>
-	 * 字段值（驼峰命名方式，该值可无）
+	 * 注入 SQL
 	 * </p>
 	 */
-	String value() default "";
+	void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass);
 
-	/*
-	 * <p>
-	 * 主键ID，默认 ID 自增
-	 * </p>
-	 * {@link IdType}
-	 */
-	IdType type() default IdType.ID_WORKER;
 }

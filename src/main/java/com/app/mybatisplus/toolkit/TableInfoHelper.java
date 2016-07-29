@@ -23,9 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.annotations.TableField;
 import com.app.mybatisplus.annotations.TableId;
 import com.app.mybatisplus.annotations.TableName;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 /**
  * <p>
@@ -69,19 +71,29 @@ public class TableInfoHelper {
 
 		List<TableFieldInfo> fieldList = new ArrayList<TableFieldInfo>();
 		for (Field field : list) {
-			/* 主键ID */
+			/**
+			 * 主键ID
+			 */
 			TableId tableId = field.getAnnotation(TableId.class);
 			if (tableId != null) {
-				tableInfo.setIdType(tableId.type());
-				if(tableId.value() != null && !"".equals(tableId.value())) {
-					/* 自定义字段 */
-					tableInfo.setKeyColumn(tableId.value());
-					tableInfo.setKeyRelated(true);
+				if (tableInfo.getKeyColumn() == null) {
+					tableInfo.setIdType(tableId.type());
+					if(tableId.value() != null && !"".equals(tableId.value())) {
+						/* 自定义字段 */
+						tableInfo.setKeyColumn(tableId.value());
+						tableInfo.setKeyRelated(true);
+					} else if (MybatisConfiguration.DB_COLUMN_UNDERLINE) {
+						/* 开启字段下划线申明 */
+						tableInfo.setKeyColumn(camelToUnderline(field.getName()));
+					} else {
+						tableInfo.setKeyColumn(field.getName());
+					}
+					tableInfo.setKeyProperty(field.getName());
+					continue;
 				} else {
-					tableInfo.setKeyColumn(field.getName());
+					/* 发现设置多个主键注解抛出异常 */
+					throw new MybatisPlusException("There must be only one, Discover multiple @TableId annotation in " + clazz);
 				}
-				tableInfo.setKeyProperty(field.getName());
-				continue;
 			}
 
 			/* 获取注解属性，自定义字段 */
@@ -90,19 +102,32 @@ public class TableInfoHelper {
 				fieldList.add(new TableFieldInfo(true, tableField.value(), field.getName()));
 				continue;
 			}
-			
-			/* 字段 */
-			fieldList.add(new TableFieldInfo(field.getName()));
+
+			/**
+			 * 字段
+			 */
+			if (MybatisConfiguration.DB_COLUMN_UNDERLINE) {
+				/* 开启字段下划线申明 */
+				fieldList.add(new TableFieldInfo(true, camelToUnderline(field.getName()), field.getName()));
+			} else {
+				fieldList.add(new TableFieldInfo(field.getName()));
+			}
 		}
 
 		/* 字段列表 */
 		tableInfo.setFieldList(fieldList);
+
+		/* 未发现主键注解抛出异常 */
+		if (tableInfo.getKeyColumn() == null) {
+			throw new MybatisPlusException("Not found @TableId annotation in " + clazz);
+		}
+
 		tableInfoCache.put(clazz.getName(), tableInfo);
 		return tableInfo;
 	}
 
 	/**
-	 * 去掉下划线转换为大写
+	 * 驼峰转下划线
 	 */
 	private static String camelToUnderline(String param) {
 		if (param == null || "".equals(param.trim())) {
@@ -115,11 +140,11 @@ public class TableInfoHelper {
 			if (Character.isUpperCase(c) && i > 0) {
 				sb.append("_");
 			}
-			sb.append(Character.toUpperCase(c));
+			sb.append(Character.toLowerCase(c));
 		}
 		return sb.toString();
 	}
-
+	
 	/**
 	 * 获取该类的所有属性列表
 	 * 

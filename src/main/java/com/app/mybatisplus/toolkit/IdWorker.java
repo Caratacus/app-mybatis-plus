@@ -102,7 +102,7 @@ public class IdWorker {
 			// otherwise
 			final int processPiece;
 			{
-				int processId = new java.util.Random().nextInt();
+				int processId = new Random().nextInt();
 				try {
 					processId = java.lang.management.ManagementFactory.getRuntimeMXBean().getName().hashCode();
 				} catch ( Throwable t ) {}

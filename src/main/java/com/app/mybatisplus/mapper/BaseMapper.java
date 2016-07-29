@@ -42,7 +42,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象
 	 * @return int
 	 */
-	int insert( T entity );
+	int insert(T entity);
 	
 	/**
 	 * <p>
@@ -52,7 +52,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象
 	 * @return int
 	 */
-	int insertSelective( T entity );
+	int insertSelective(T entity);
 
 
 	/**
@@ -63,7 +63,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象列表
 	 * @return int
 	 */
-	int insertBatch( List<T> entityList );
+	int insertBatch(List<T> entityList);
 
 
 	/**
@@ -74,7 +74,7 @@ public interface BaseMapper<T, I> {
 	 * 			主键ID
 	 * @return int
 	 */
-	int deleteById( I id );
+	int deleteById(I id);
 
 
 	/**
@@ -85,7 +85,7 @@ public interface BaseMapper<T, I> {
 	 * 				表字段 map 对象
 	 * @return int
 	 */
-	int deleteByMap( @Param("cm" ) Map<String, Object> columnMap);
+	int deleteByMap(@Param("cm") Map<String, Object> columnMap);
 	
 	
 	/**
@@ -96,7 +96,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象
 	 * @return int
 	 */
-	int deleteSelective( @Param("ew" ) T entity);
+	int deleteSelective(@Param("ew") T entity);
 
 
 	/**
@@ -107,7 +107,7 @@ public interface BaseMapper<T, I> {
 	 * 				主键ID列表
 	 * @return int
 	 */
-	int deleteBatchIds( List<I> idList );
+	int deleteBatchIds(List<I> idList);
 
 
 	/**
@@ -118,7 +118,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象
 	 * @return int
 	 */
-	int updateById( @Param("et" ) T entity);
+	int updateById(@Param("et") T entity);
 
 
 	/**
@@ -128,7 +128,7 @@ public interface BaseMapper<T, I> {
 	 * @param entity
 	 * 				实体对象
 	 */
-	int updateSelectiveById( @Param("et" ) T entity);
+	int updateSelectiveById(@Param("et") T entity);
 
 
 	/**
@@ -140,7 +140,7 @@ public interface BaseMapper<T, I> {
 	 * @return whereEntity
 	 * 				实体查询条件（可以为 null）
 	 */
-	int update( @Param("et" ) T entity, @Param("ew") T whereEntity);
+	int update(@Param("et") T entity, @Param("ew") T whereEntity);
 
 
 	/**
@@ -152,7 +152,7 @@ public interface BaseMapper<T, I> {
 	 * @return whereEntity（可以为 null）
 	 * 				实体查询条件
 	 */
-	int updateSelective( @Param("et" ) T entity, @Param("ew") T whereEntity);
+	int updateSelective(@Param("et") T entity, @Param("ew") T whereEntity);
 
 
 	/**
@@ -163,7 +163,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象列表
 	 * @return int
 	 */
-	int updateBatchById( List<T> entityList );
+	int updateBatchById(List<T> entityList);
 
 
 	/**
@@ -174,7 +174,7 @@ public interface BaseMapper<T, I> {
 	 * 			主键ID
 	 * @return T
 	 */
-	T selectById( I id );
+	T selectById(I id);
 
 
 	/**
@@ -185,7 +185,7 @@ public interface BaseMapper<T, I> {
 	 * 				主键ID列表
 	 * @return List<T>
 	 */
-	List<T> selectBatchIds( List<I> idList );
+	List<T> selectBatchIds(List<I> idList);
 	
 	
 	/**
@@ -196,7 +196,7 @@ public interface BaseMapper<T, I> {
 	 * 				表字段 map 对象
 	 * @return List<T>
 	 */
-	List<T> selectByMap( @Param("cm" ) Map<String, Object> columnMap);
+	List<T> selectByMap(@Param("cm") Map<String, Object> columnMap);
 
 
 	/**
@@ -207,7 +207,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象
 	 * @return T
 	 */
-	T selectOne( @Param("ew" ) T entity);
+	T selectOne(@Param("ew") T entity);
 	
 	
 	/**
@@ -218,7 +218,7 @@ public interface BaseMapper<T, I> {
 	 * 				实体对象
 	 * @return int
 	 */
-	int selectCount( @Param("ew" ) T entity);
+	int selectCount(@Param("ew") T entity);
 
 
 	/**
@@ -229,7 +229,7 @@ public interface BaseMapper<T, I> {
 	 * 					实体对象封装操作类（可以为 null）
 	 * @return List<T>
 	 */
-	List<T> selectList( @Param("ew" ) EntityWrapper<T> entityWrapper);
+	List<T> selectList(@Param("ew") EntityWrapper<T> entityWrapper);
 	
 	/**
 	 * <p>
@@ -241,6 +241,6 @@ public interface BaseMapper<T, I> {
 	 * 					实体对象封装操作类（可以为 null）
 	 * @return List<T>
 	 */
-	List<T> selectPage( RowBounds rowBounds, @Param("ew" ) EntityWrapper<T> entityWrapper);
+	List<T> selectPage(RowBounds rowBounds, @Param("ew") EntityWrapper<T> entityWrapper);
 
 }

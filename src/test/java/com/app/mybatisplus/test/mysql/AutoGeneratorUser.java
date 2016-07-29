@@ -15,10 +15,10 @@
  */
 package com.app.mybatisplus.test.mysql;
 
+import com.app.mybatisplus.test.ConfigGeneratorTest;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.generator.AutoGenerator;
 import com.app.mybatisplus.generator.ConfigGenerator;
-import com.app.mybatisplus.test.ConfigGeneratorTest;
 
 /**
  * <p>

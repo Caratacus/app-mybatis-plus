@@ -26,6 +26,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.ISqlInjector;
 
 /**
  * <p>
@@ -73,10 +74,19 @@ public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
 		}
 	}
 
-
 	//TODO 注入数据库类型
 	public void setDbType( String dbType ) {
 		MybatisConfiguration.DB_TYPE = DBType.getDBType(dbType);
+	}
+
+	//TODO 注入表字段使用下划线命名
+	public void setDbColumnUnderline(boolean dbColumnUnderline) {
+		MybatisConfiguration.DB_COLUMN_UNDERLINE = dbColumnUnderline;
+	}
+
+	//TODO 注入 SQL注入器
+	public void setSqlInjector(ISqlInjector sqlInjector) {
+		MybatisConfiguration.SQL_INJECTOR = sqlInjector;
 	}
 
 }

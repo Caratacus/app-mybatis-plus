@@ -65,11 +65,26 @@ public class UserMapperTest {
 		 * 此处采用 MybatisSessionFactoryBuilder 构建
 		 * SqlSessionFactory，目的是引入AutoMapper功能
 		 */
-		SqlSessionFactory sessionFactory = new MybatisSessionFactoryBuilder().build(in);
+		MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
+		
+		/*
+		 * 1、数据库字段驼峰命名不需要任何设置
+		 * 2、当前演示是驼峰下划线混合命名
+		 * 3、如下开启，表示数据库字段使用下划线命名，该设置是全局的。
+		 *	 开启该设置实体可无 @TableId(value = "test_id") 字段映射
+		 */
+		//mf.setDbColumnUnderline(true);
+
+		/**
+		 * 设置，自定义 SQL 注入器
+		 */
+		mf.setSqlInjector(new MySqlInjector());
+
+		SqlSessionFactory sessionFactory = mf.build(in);
 		SqlSession session = sessionFactory.openSession();
 		UserMapper userMapper = session.getMapper(UserMapper.class);
 		System.err.println(" debug run 查询执行 user 表数据变化！ ");
-		session.delete("deleteAll");
+		userMapper.deleteAll();
 		
 		/**
 		 * 注解插件测试
@@ -238,8 +253,10 @@ public class UserMapperTest {
 			print(rowList.get(i));
 		}
 
-		/* 删除测试数据  */
-		rlt = session.delete("deleteAll");
+		/**
+		 * 自定义方法，删除测试数据
+		 */
+		rlt = userMapper.deleteAll();
 		System.err.println("清空测试数据！ rlt=" + rlt);
 
 		/**
@@ -252,12 +269,11 @@ public class UserMapperTest {
 	/*
 	 * 打印测试信息
 	 */
-	private static void print( User user ) {
+	private static void print(User user) {
 		sleep();
-		if ( user != null ) {
-			System.out.println("\n user: id="
-					+ user.getId() + ", name=" + user.getName() + ", age=" + user.getAge() + ", testType="
-					+ user.getTestType());
+		if (user != null) {
+			System.out.println("\n user: id=" + user.getId() + ", name=" + user.getName() + ", age=" + user.getAge()
+					+ ", testType=" + user.getTestType());
 		} else {
 			System.out.println("\n user is null.");
 		}

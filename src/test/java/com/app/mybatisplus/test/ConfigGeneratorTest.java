@@ -6,14 +6,14 @@ public class ConfigGeneratorTest {
 
     protected static ConfigGenerator getConfigGenerator() {
         ConfigGenerator cg = new ConfigGenerator();
-        cg.setEntityPackage("com.app.entity");//entity 实体包路径
-        cg.setMapperPackage("com.app.mapper");//mapper 映射文件路径
-        cg.setServicePackage("com.app.service");//service 层路径
-        cg.setXmlPackage("com.app.mapper.xml");//xml层路径（可以不写）
-        cg.setServiceImplPackage("com.app.service.impl");//serviceimpl层路径（可以不写）
+        cg.setEntityPackage("com.baomidou.entity");//entity 实体包路径
+        cg.setMapperPackage("com.baomidou.mapper");//mapper 映射文件路径
+        cg.setServicePackage("com.baomidou.service");//service 层路径
+        cg.setXmlPackage("com.baomidou.mapper.xml");//xml层路径（可以不写）
+        cg.setServiceImplPackage("com.baomidou.service.impl");//serviceimpl层路径（可以不写）
 
 		/* 此处可以配置 SuperServiceImpl 子类路径，默认如下 */
-        //cg.setSuperServiceImpl("com.app.framework.service.impl.SuperServiceImpl");
+        //cg.setSuperServiceImpl("com.baomidou.framework.service.impl.SuperServiceImpl");
 
 		/* 此处设置 String 类型数据库ID，默认Long类型 */
         //cg.setConfigIdType(ConfigIdType.STRING);
@@ -21,9 +21,13 @@ public class ConfigGeneratorTest {
         cg.setSaveDir("D:/mybatis-plus/");// 生成文件保存位置
 
 		/*
-         * 设置数据库字段是否为驼峰命名，驼峰 true 下划线分割 false
+		 * <p>
+		 * true 表示数据库设置全局下划线命名规则，默认 false
+		 * ------------------------------------------------------------------------------------<br>
+		 * 【 开启该设置实体可无 @TableId(value = "test_id") 字段映射，启动配置对应也要开启 true 设置 】
+		 * </p>
 		 */
-        cg.setColumnHump(false);
+        cg.setDbColumnUnderline(false);
         /*
          * 表是否包括前缀
 		 * <p>

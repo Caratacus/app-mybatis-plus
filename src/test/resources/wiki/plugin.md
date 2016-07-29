@@ -15,18 +15,18 @@
      | dialectType 数据库方言  
      |             默认支持  mysql  oracle  hsql  sqlite  postgre  sqlserver
      | dialectClazz 方言实现类
-     |              自定义需要实现 com.app.mybatisplus.plugins.pagination.IDialect 接口
+     |              自定义需要实现 com.baomidou.mybatisplus.plugins.pagination.IDialect 接口
      | -->
     <!-- 配置方式一、使用 MybatisPlus 提供方言实现类 -->
-    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
+    <plugin interceptor="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
         <property name="dialectType" value="mysql" />
     </plugin>
     <!-- 配置方式二、使用自定义方言实现类 -->
-    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
+    <plugin interceptor="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
         <property name="dialectClazz" value="xxx.dialect.XXDialect" />
     </plugin>
     <!-- SQL 执行性能分析，开发环境使用，线上不推荐。 maxTime 指的是 sql 最大执行时长 -->
-    <plugin interceptor="com.app.mybatisplus.plugins.PerformanceInterceptor">
+    <plugin interceptor="com.baomidou.mybatisplus.plugins.PerformanceInterceptor">
         <property name="maxTime" value="100" />
     </plugin>
 </plugins>

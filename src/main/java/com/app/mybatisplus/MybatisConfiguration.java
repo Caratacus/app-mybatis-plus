@@ -18,10 +18,11 @@ package com.app.mybatisplus;
 import java.util.logging.Logger;
 
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
+import com.app.mybatisplus.mapper.AutoSqlInjector;
 import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.ISqlInjector;
 
 /**
  * <p>
@@ -34,11 +35,21 @@ import com.app.mybatisplus.mapper.DBType;
 public class MybatisConfiguration extends Configuration {
 
 	protected final Logger logger = Logger.getLogger("MybatisConfiguration");
-	
-	/**
+
+	/*
 	 * 数据库类型（默认 MySql）
 	 */
 	public static DBType DB_TYPE = DBType.MYSQL;
+
+	/*
+	 * 数据库字段使用下划线命名（默认 false）
+	 */
+	public static boolean DB_COLUMN_UNDERLINE = false;
+
+	/*
+	 * SQL 注入器，实现 ISqlInjector 或继承 AutoSqlInjector 自定义方法
+	 */
+	public static ISqlInjector SQL_INJECTOR = new AutoSqlInjector();
 
 	/**
 	 * 初始化调用
@@ -77,12 +88,6 @@ public class MybatisConfiguration extends Configuration {
 			driver = MybatisXMLLanguageDriver.class;
 		}
 		super.setDefaultScriptingLanguage(driver);
-	}
-
-	@Override
-	public LanguageDriver getDefaultScriptingLanuageInstance() {
-		/* 设置自定义 driver */
-		return languageRegistry.getDriver(MybatisXMLLanguageDriver.class);
 	}
 
 }
