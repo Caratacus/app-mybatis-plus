@@ -502,6 +502,8 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.write("import java.io.Serializable;");
 		bw.newLine();
+		bw.write("import com.fasterxml.jackson.annotation.JsonFilter;");
+		bw.newLine();
 		if (isDate(types)) {
 			bw.write("import java.util.Date;");
 			bw.newLine();
