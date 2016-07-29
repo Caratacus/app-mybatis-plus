@@ -43,7 +43,7 @@ public class PackageHelper {
 	 * 别名通配符设置
 	 * </p>
 	 * <p>
-	 * <property name="typeAliasesPackage" value="com.baomidou.*.entity"/>
+	 * <property name="typeAliasesPackage" value="com.app.*.entity"/>
 	 * </p>
 	 * 
 	 * @param typeAliasesPackage

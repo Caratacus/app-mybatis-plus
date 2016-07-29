@@ -127,9 +127,9 @@ public class ConfigGenerator {
 	public String getSuperServiceImpl() {
 		if (superServiceImpl == null || "".equals(superServiceImpl)) {
 			if (this.getConfigIdType() == ConfigIdType.STRING) {
-				return "com.baomidou.framework.service.impl.CommonServiceImpl";
+				return "com.app.framework.service.impl.CommonServiceImpl";
 			} else {
-				return "com.baomidou.framework.service.impl.SuperServiceImpl";
+				return "com.app.framework.service.impl.SuperServiceImpl";
 			}
 		}
 		return superServiceImpl;

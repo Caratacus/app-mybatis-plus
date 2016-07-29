@@ -6,14 +6,14 @@ public class ConfigGeneratorTest {
 
     protected static ConfigGenerator getConfigGenerator() {
         ConfigGenerator cg = new ConfigGenerator();
-        cg.setEntityPackage("com.baomidou.entity");//entity 实体包路径
-        cg.setMapperPackage("com.baomidou.mapper");//mapper 映射文件路径
-        cg.setServicePackage("com.baomidou.service");//service 层路径
-        cg.setXmlPackage("com.baomidou.mapper.xml");//xml层路径（可以不写）
-        cg.setServiceImplPackage("com.baomidou.service.impl");//serviceimpl层路径（可以不写）
+        cg.setEntityPackage("com.app.entity");//entity 实体包路径
+        cg.setMapperPackage("com.app.mapper");//mapper 映射文件路径
+        cg.setServicePackage("com.app.service");//service 层路径
+        cg.setXmlPackage("com.app.mapper.xml");//xml层路径（可以不写）
+        cg.setServiceImplPackage("com.app.service.impl");//serviceimpl层路径（可以不写）
 
 		/* 此处可以配置 SuperServiceImpl 子类路径，默认如下 */
-        //cg.setSuperServiceImpl("com.baomidou.framework.service.impl.SuperServiceImpl");
+        //cg.setSuperServiceImpl("com.app.framework.service.impl.SuperServiceImpl");
 
 		/* 此处设置 String 类型数据库ID，默认Long类型 */
         //cg.setConfigIdType(ConfigIdType.STRING);
