@@ -500,10 +500,6 @@ public class AutoGenerator {
 		bw.write("package " + config.getEntityPackage() + ";");
 		bw.newLine();
 		bw.newLine();
-		bw.write("import java.io.Serializable;");
-		bw.newLine();
-		bw.write("import com.fasterxml.jackson.annotation.JsonFilter;");
-		bw.newLine();
 		if (isDate(types)) {
 			bw.write("import java.util.Date;");
 			bw.newLine();
@@ -530,7 +526,7 @@ public class AutoGenerator {
 			bw.write("@TableName(\"" + table + "\")");
 			bw.newLine();
 		}
-		bw.write("public class " + beanName + " implements Serializable {");
+		bw.write("public class " + beanName + " extends BaseModel {");
 		bw.newLine();
 		bw.newLine();
 		bw.write("\t@TableField(exist = false)");
