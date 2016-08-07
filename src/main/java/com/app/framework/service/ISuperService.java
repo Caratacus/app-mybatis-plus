@@ -15,8 +15,6 @@
  */
 package com.app.framework.service;
 
-import java.io.Serializable;
-
 /**
  * <p>
  * 主键 Long 类型基础 Service
@@ -25,6 +23,6 @@ import java.io.Serializable;
  * @author hubin
  * @Date 2016-04-20
  */
-public interface ISuperService<T> extends IService<T, Serializable> {
+public interface ISuperService<T> extends IService<T, Long> {
 
 }
