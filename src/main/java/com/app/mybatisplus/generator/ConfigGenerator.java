@@ -15,6 +15,8 @@
  */
 package com.app.mybatisplus.generator;
 
+import com.app.mybatisplus.generator.ConfigDataSource;
+import com.app.mybatisplus.generator.ConfigIdType;
 import com.app.mybatisplus.annotations.IdType;
 
 /**
@@ -40,7 +42,7 @@ import com.app.mybatisplus.annotations.IdType;
  * db_url 连接地址
  **************************************************************
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-01-23
  */
@@ -59,6 +61,15 @@ public class ConfigGenerator {
 	private String serviceImplPackage;
 
 	private String superServiceImpl;
+
+	/*
+	 * 自定义 mapperName serviceName serviceImplName
+	 */
+	private String mapperName = "%sMapper";
+
+	private String serviceName = "I%sService";
+
+	private String serviceImplName = "%sServiceImpl";
 
 	/*
 	 * 指定生成表名
@@ -137,6 +148,40 @@ public class ConfigGenerator {
 
 	public void setSuperServiceImpl(String superServiceImpl) {
 		this.superServiceImpl = superServiceImpl;
+	}
+
+	public boolean verifyDefinedName(String definedName) {
+		return (null != definedName && definedName.contains("%s"));
+	}
+
+	public String getMapperName() {
+		return mapperName;
+	}
+
+	public void setMapperName(String mapperName) {
+		if (verifyDefinedName(mapperName)) {
+			this.mapperName = mapperName;
+		}
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		if (verifyDefinedName(serviceName)) {
+			this.serviceName = serviceName;
+		}
+	}
+
+	public String getServiceImplName() {
+		return serviceImplName;
+	}
+
+	public void setServiceImplName(String serviceImplName) {
+		if (verifyDefinedName(serviceImplName)) {
+			this.serviceImplName = serviceImplName;
+		}
 	}
 
 	public boolean isDbPrefix() {

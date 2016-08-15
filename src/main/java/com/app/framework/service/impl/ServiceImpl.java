@@ -30,7 +30,7 @@ import com.app.mybatisplus.plugins.Page;
  * <p>
  * IService 实现类（ 泛型：M 是 mapper 对象， T 是实体 ， I 是主键泛型 ）
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-04-20
  */
@@ -41,7 +41,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 
 	/**
 	 * 判断数据库操作是否成功
-	 * 
+	 *
 	 * @param result
 	 *            数据库操作返回影响条数
 	 * @return boolean
@@ -118,49 +118,37 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		return baseMapper.selectCount(entity);
 	}
 
-	public List<T> selectList(T entity, String sqlSegment, String orderByField) {
-		return baseMapper.selectList(new EntityWrapper<T>(entity, sqlSegment, orderByField));
+	public List<T> selectList(T entity, String sqlSelect, String sqlSegment, String orderByField) {
+		StringBuffer segment = new StringBuffer();
+		if (null != sqlSegment) {
+			segment.append(sqlSegment);
+		}
+		if (null != orderByField) {
+			segment.append(" ORDER BY ").append(orderByField);
+		}
+		return baseMapper.selectList(new EntityWrapper<T>(entity, sqlSelect, segment.toString()));
 	}
 
-	public List<T> selectList(T entity, String orderByField) {
-		return baseMapper.selectList(new EntityWrapper<T>(entity, orderByField));
-	}
-
-	public List<T> selectList(T entity) {
-		return baseMapper.selectList(new EntityWrapper<T>(entity, null));
-	}
-
-	public List<T> selectListSqlSegment(String sqlSegment) {
-		return baseMapper.selectList(new EntityWrapper<T>(null, sqlSegment, null));
-	}
-
-	public List<T> selectListSqlSegment(String sqlSegment, String orderByField) {
-		return baseMapper.selectList(new EntityWrapper<T>(null, sqlSegment, orderByField));
-	}
-
-	public Page<T> selectPage(Page<T> page, T entity, String sqlSegment, String orderByField) {
-		page.setRecords(baseMapper.selectPage(page, new EntityWrapper<T>(entity, sqlSegment, orderByField)));
+	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity, String sqlSegment) {
+		page.setRecords(baseMapper.selectPage(page, new EntityWrapper<T>(entity, sqlSelect, this.convertSqlSegmet(page, sqlSegment))));
 		return page;
 	}
 
-	public Page<T> selectPage(Page<T> page, T entity, String orderByField) {
-		page.setRecords(baseMapper.selectPage(page, new EntityWrapper<T>(entity, orderByField)));
-		return page;
-	}
-
-	public Page<T> selectPage(Page<T> page, T entity) {
-		page.setRecords(baseMapper.selectPage(page, new EntityWrapper<T>(entity, null)));
-		return page;
-	}
-
-	public Page<T> selectPageSqlSegment(Page<T> page, String sqlSegment) {
-		page.setRecords(baseMapper.selectPage(page, new EntityWrapper<T>(null, sqlSegment, null)));
-		return page;
-	}
-
-	public Page<T> selectPageSqlSegment(Page<T> page, String sqlSegment, String orderByField) {
-		page.setRecords(baseMapper.selectPage(page, new EntityWrapper<T>(null, sqlSegment, orderByField)));
-		return page;
+	/**
+	 * 转换 SQL 片段 + 排序
+	 */
+	protected String convertSqlSegmet(Page<T> page, String sqlSegment) {
+		StringBuffer segment = new StringBuffer();
+		if (null != sqlSegment) {
+			segment.append(sqlSegment);
+		}
+		if (null != page.getOrderByField()) {
+			segment.append(" ORDER BY ").append(page.getOrderByField());
+			if (!page.isAsc()) {
+				segment.append(" DESC");
+			}
+		}
+		return segment.toString();
 	}
 
 }

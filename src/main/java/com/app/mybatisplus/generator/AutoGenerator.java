@@ -31,6 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.app.mybatisplus.generator.ConfigDataSource;
+import com.app.mybatisplus.generator.ConfigGenerator;
+import com.app.mybatisplus.generator.ConfigIdType;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 
@@ -220,9 +223,9 @@ public class AutoGenerator {
 				}
 				if (isOracle) {
 					/* ORACLE 主键ID 处理方式 */
-					String idSql = String
-							.format("SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
-									table);
+					String idSql = String.format(
+							"SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
+							table);
 					ResultSet rs = conn.prepareStatement(idSql).executeQuery();
 					while (rs.next() && !idExist) {
 						String field = rs.getString(config.getConfigDataSource().getFieldKey());
@@ -231,9 +234,9 @@ public class AutoGenerator {
 					}
 				}
 				String beanName = getBeanName(table, config.isDbPrefix());
-				String mapperName = beanName + "Mapper";
-				String serviceName = beanName + "Service";
-				String serviceImplName = beanName + "ServiceImpl";
+				String mapperName = String.format(config.getMapperName(), beanName);
+				String serviceName = String.format(config.getServiceName(), beanName);
+				String serviceImplName = String.format(config.getServiceImplName(), beanName);
 
 				/**
 				 * 根据文件覆盖标志决定是否生成映射文件
@@ -494,7 +497,7 @@ public class AutoGenerator {
 	 * @throws IOException
 	 */
 	private void buildEntityBean(List<String> columns, List<String> types, List<String> comments, String tableComment,
-			Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
+								 Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
 		File beanFile = new File(PATH_ENTITY, beanName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(beanFile)));
 		bw.write("package " + config.getEntityPackage() + ";");
@@ -668,13 +671,14 @@ public class AutoGenerator {
 	 * @param comments
 	 * @throws IOException
 	 */
-	private void buildMapperXml(List<String> columns, List<String> types, List<String> comments, Map<String, IdInfo> idMap,
-			String mapperName) throws IOException {
+	private void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
+								Map<String, IdInfo> idMap, String mapperName) throws IOException {
 		File mapperXmlFile = new File(PATH_XML, mapperName + ".xml");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		bw.newLine();
-		bw.write("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
+		bw.write(
+				"<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
 		bw.newLine();
 		bw.write("<mapper namespace=\"" + config.getMapperPackage() + "." + mapperName + "\">");
 		bw.newLine();

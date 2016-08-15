@@ -24,6 +24,8 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import com.app.mybatisplus.test.mysql.MySqlInjector;
+import com.app.mybatisplus.test.mysql.UserMapper;
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
@@ -35,7 +37,7 @@ import com.app.mybatisplus.toolkit.IdWorker;
  * <p>
  * MybatisPlus 测试类
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-01-23
  */
@@ -43,9 +45,9 @@ public class UserMapperTest {
 
 
 	/**
-	 * 
+	 *
 	 * RUN 测试
-	 * 
+	 *
 	 * <p>
 	 * MybatisPlus 加载 SQL 顺序：
 	 * </p>
@@ -66,7 +68,7 @@ public class UserMapperTest {
 		 * SqlSessionFactory，目的是引入AutoMapper功能
 		 */
 		MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
-		
+
 		/*
 		 * 1、数据库字段驼峰命名不需要任何设置
 		 * 2、当前演示是驼峰下划线混合命名
@@ -85,7 +87,7 @@ public class UserMapperTest {
 		UserMapper userMapper = session.getMapper(UserMapper.class);
 		System.err.println(" debug run 查询执行 user 表数据变化！ ");
 		userMapper.deleteAll();
-		
+
 		/**
 		 * 注解插件测试
 		 */
@@ -107,13 +109,13 @@ public class UserMapperTest {
 		rlt = userMapper.insert(new User(id, "abc", 18, 1));
 		System.err.println("\n--------------insert-------" + rlt);
 		sleep();
-		
+
 		rlt = userMapper.insertSelective(new User("abc", 18));
 		System.err.println("\n--------------insertSelective-------" + rlt);
 		sleep();
 
 		List<User> ul = new ArrayList<User>();
-		
+
 		/* 手动输入 ID */
 		ul.add(new User(11L, "1", 1, 0));
 		ul.add(new User(12L, "2", 2, 1));
@@ -123,7 +125,7 @@ public class UserMapperTest {
 		ul.add(new User(16L, "6", 6, 0));
 		ul.add(new User(17L, "7", 7, 0));
 		ul.add(new User(18L, "deleteByMap", 7, 0));
-		
+
 		/* 使用 ID_WORKER 自动生成 ID */
 		ul.add(new User("8", 8, 1));
 		ul.add(new User("9", 9, 1));
@@ -160,27 +162,27 @@ public class UserMapperTest {
 		 * <p>
 		 * 修改
 		 * </p>
-		 * 
+		 *
 		 * updateById 是从 AutoMapper 中继承而来的，UserMapper.xml中并没有申明改sql
-		 * 
+		 *
 		 */
 
 		rlt = userMapper.updateSelectiveById(new User(12L, "MybatisPlus"));
 		System.err.println("------------------updateSelectiveById---------------------- result=" + rlt + "\n\n");
 		sleep();
-		
+
 		rlt = userMapper.updateById(new User(12L, "update all column", 12, 12));
 		System.err.println("------------------updateById---------------------- result=" + rlt + "\n\n");
 		sleep();
-		
+
 		rlt = userMapper.update(new User("55", 55, 5), new User(15L, "5"));
 		System.err.println("------------------update---------------------- result=" + rlt + "\n\n");
 		sleep();
-		
+
 		rlt = userMapper.updateSelective(new User("00"), new User(15L, "55"));
 		System.err.println("------------------updateSelective---------------------- result=" + rlt + "\n\n");
 		sleep();
-		
+
 		/* 无条件选择更新 */
 		//userMapper.updateSelective(new User("11"), null);
 
@@ -209,7 +211,7 @@ public class UserMapperTest {
 		for ( int i = 0 ; i < ul0.size() ; i++ ) {
 			print(ul0.get(i));
 		}
-		
+
 		System.err.println("\n------------------selectByMap-----满足 map 条件的数据----");
 		Map<String, Object> cm = new HashMap<String, Object>();
 		cm.put("test_type", 1);
@@ -221,24 +223,35 @@ public class UserMapperTest {
 		System.err.println("\n------------------selectOne----------------------");
 		User userOne = userMapper.selectOne(new User("abc"));
 		print(userOne);
-		
+
 		System.err.println("\n------------------selectCount----------------------");
 		System.err.println("查询 type=1 总记录数：" + userMapper.selectCount(new User(1)));
 		System.err.println("总记录数：" + userMapper.selectCount(null));
 
 		System.err.println("\n------------------selectList-----所有数据----id--DESC--排序----");
-		List<User> ul2 = userMapper.selectList(new EntityWrapper<User>(null, "id DESC"));
+		List<User> ul2 = userMapper.selectList(new EntityWrapper<User>(null, " 1=1 ORDER BY id DESC"));
 		for ( int i = 0 ; i < ul2.size() ; i++ ) {
 			print(ul2.get(i));
 		}
 
 		System.err.println("\n------------------list 分页查询 ----查询 testType = 1 的所有数据--id--DESC--排序--------");
 		Page<User> page = new Page<User>(1, 2);
-		EntityWrapper<User> ew = new EntityWrapper<User>(new User(1), "id DESC");
-		/**
-		 * 查询条件，支持 sql 片段
+		/*
+		 * 排序 test_id desc
 		 */
-		ew.setSqlSegment(" AND name like '%dateBatch%'");
+		page.setOrderByField("test_id");
+		page.setAsc(false);
+		EntityWrapper<User> ew = new EntityWrapper<User>(new User(1));
+
+		/*
+		 * 查询字段
+		 */
+		ew.setSqlSelect("age,name");
+
+		/*
+		 * 查询条件，SQL 片段（ 注意！程序会自动在 sqlSegmet 内容前面添加 where 或者 and ）
+		 */
+		ew.setSqlSegment("name like '%dateBatch%'");
 		List<User> paginList = userMapper.selectPage(page, ew);
 		page.setRecords(paginList);
 		for ( int i = 0 ; i < page.getRecords().size() ; i++ ) {

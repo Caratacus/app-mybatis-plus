@@ -49,6 +49,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
+import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.mapper.BaseMapper;
 
 /**

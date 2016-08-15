@@ -1,31 +1,17 @@
 /**
-
- * Copyright (c) 2011-2014, hubin (jobob@qq.com).
-
+ * Copyright (c) 2011-2020, hubin (jobob@qq.com).
  *
-
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
-
  * use this file except in compliance with the License. You may obtain a copy of
-
  * the License at
-
  *
-
  * http://www.apache.org/licenses/LICENSE-2.0
-
  *
-
  * Unless required by applicable law or agreed to in writing, software
-
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-
  * License for the specific language governing permissions and limitations under
-
  * the License.
-
  */
 package com.app.mybatisplus.plugins;
 
@@ -55,17 +41,11 @@ import com.app.mybatisplus.plugins.pagination.IDialect;
 import com.app.mybatisplus.plugins.pagination.Pagination;
 
 /**
- * 
  * <p>
- * 
  * 分页拦截器
- * 
  * </p>
- * 
  *
- * 
  * @author hubin
- * 
  * @Date 2016-01-23
  */
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
@@ -112,17 +92,11 @@ public class PaginationInterceptor implements Interceptor {
 			}
 
 			/*
-			 * 
 			 * <p>
-			 * 
 			 * 禁用内存分页
-			 * 
 			 * </p>
-			 * 
 			 * <p>
-			 * 
 			 * 内存分页会查询所有结果出来处理（这个很吓人的），如果结果变化频繁这个数据还会不准。
-			 * 
 			 * </p>
 			 */
 			BoundSql boundSql = (BoundSql) metaStatementHandler.getValue("delegate.boundSql");
@@ -131,17 +105,11 @@ public class PaginationInterceptor implements Interceptor {
 			metaStatementHandler.setValue("delegate.rowBounds.limit", RowBounds.NO_ROW_LIMIT);
 
 			/**
-			 * 
 			 * <p>
-			 * 
 			 * 分页逻辑
-			 * 
 			 * </p>
-			 * 
 			 * <p>
-			 * 
 			 * 查询总记录数 count
-			 * 
 			 * </p>
 			 */
 			if (rowBounds instanceof Pagination) {
@@ -159,7 +127,6 @@ public class PaginationInterceptor implements Interceptor {
 			}
 
 			/**
-			 * 
 			 * 查询 SQL 设置
 			 */
 			metaStatementHandler.setValue("delegate.boundSql.sql", originalSql);
@@ -169,37 +136,38 @@ public class PaginationInterceptor implements Interceptor {
 	}
 
 	/**
-	 * 
 	 * 查询总记录条数
-	 * 
 	 *
-	 * 
 	 * @param sql
-	 * 
 	 * @param connection
-	 * 
 	 * @param mappedStatement
-	 * 
 	 * @param boundSql
-	 * 
 	 * @param page
 	 */
-	public Pagination count(String sql, Connection connection, MappedStatement mappedStatement, BoundSql boundSql, Pagination page) {
+	public Pagination count(String sql, Connection connection, MappedStatement mappedStatement, BoundSql boundSql,
+							Pagination page) {
+		/*
+		 * 去掉 ORDER BY
+		 */
 		String sqlUse = sql;
 		int order_by = sql.toUpperCase().lastIndexOf("ORDER BY");
-		if (order_by > -1) {
+		if ( order_by > -1 ) {
 			sqlUse = sql.substring(0, order_by);
 		}
-		StringBuffer countSql = new StringBuffer("SELECT COUNT(1) AS TOTAL FROM (");
-		countSql.append(sqlUse).append(") A");
+
+		/*
+		 * COUNT SQL
+		 */
+		StringBuffer countSql = new StringBuffer();
+		countSql.append("SELECT COUNT(1) AS TOTAL FROM (").append(sqlUse).append(") A");
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
 			pstmt = connection.prepareStatement(countSql.toString());
 			BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql.toString(),
 					boundSql.getParameterMappings(), boundSql.getParameterObject());
-			ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, boundSql.getParameterObject(),
-					countBS);
+			ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement,
+					boundSql.getParameterObject(), countBS);
 			parameterHandler.setParameters(pstmt);
 			rs = pstmt.executeQuery();
 			int total = 0;
@@ -208,10 +176,9 @@ public class PaginationInterceptor implements Interceptor {
 			}
 			page.setTotal(total);
 			/**
-			 * 
 			 * 当前页大于总页数，当前页设置为第一页
 			 */
-			if (page.getCurrent() > page.getPages()) {
+			if(page.getCurrent() > page.getPages()){
 				page = new Pagination(1, page.getSize());
 				page.setTotal(total);
 			}
