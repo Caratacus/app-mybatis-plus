@@ -532,7 +532,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	protected String sqlSelectColumns(TableInfo table, boolean entityWrapper) {
 		StringBuilder columns = new StringBuilder();
 		if (entityWrapper) {
-			columns.append("<choose><when test=\"ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
+			columns.append("<choose><when test=\"ew.sqlSelect != null and ew.sqlSelect != ''\">${ew.sqlSelect}</when><otherwise>");
 		}
 		if (table.isKeyRelated()) {
 			columns.append(table.getKeyColumn()).append(" AS ").append(table.getKeyProperty());
