@@ -25,6 +25,7 @@ import com.app.framework.service.IService;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
+import org.springframework.util.StringUtils;
 
 /**
  * <p>
@@ -120,17 +121,21 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 
 	public List<T> selectList(T entity, String sqlSelect, String sqlSegment, String orderByField) {
 		StringBuffer segment = new StringBuffer();
-		if (null != sqlSegment) {
+		if (!StringUtils.isEmpty(sqlSegment)) {
 			segment.append(sqlSegment);
+		} else {
+			segment.append(" 1=1 ");
 		}
-		if (null != orderByField) {
+
+		if (!StringUtils.isEmpty(orderByField)) {
 			segment.append(" ORDER BY ").append(orderByField);
 		}
 		return baseMapper.selectList(new EntityWrapper<T>(entity, sqlSelect, segment.toString()));
 	}
 
 	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity, String sqlSegment) {
-		page.setRecords(baseMapper.selectPage(page, new EntityWrapper<T>(entity, sqlSelect, this.convertSqlSegmet(page, sqlSegment))));
+		page.setRecords(baseMapper.selectPage(page,
+				new EntityWrapper<T>(entity, sqlSelect, this.convertSqlSegmet(page, sqlSegment))));
 		return page;
 	}
 
@@ -139,10 +144,14 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	 */
 	protected String convertSqlSegmet(Page<T> page, String sqlSegment) {
 		StringBuffer segment = new StringBuffer();
-		if (null != sqlSegment) {
+
+		if (!StringUtils.isEmpty(sqlSegment)) {
 			segment.append(sqlSegment);
+		} else {
+			segment.append(" 1=1 ");
 		}
-		if (null != page.getOrderByField()) {
+
+		if (!StringUtils.isEmpty(page.getOrderByField())) {
 			segment.append(" ORDER BY ").append(page.getOrderByField());
 			if (!page.isAsc()) {
 				segment.append(" DESC");
