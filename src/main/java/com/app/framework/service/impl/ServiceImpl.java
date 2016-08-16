@@ -139,6 +139,46 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		return page;
 	}
 
+	public Page<T> selectPage(Page<T> page, String sqlSelect) {
+		return selectPage(page, sqlSelect, null, null);
+	}
+
+	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity) {
+		return selectPage(page, sqlSelect, entity, null);
+	}
+
+	public Page<T> selectPage(Page<T> page, String sqlSelect, String sqlSegment) {
+		return selectPage(page, sqlSelect, null, sqlSegment);
+	}
+
+	public Page<T> selectPage(Page<T> page, T entity) {
+		return selectPage(page, null, entity, null);
+	}
+
+	public Page<T> selectPage(Page<T> page, T entity, String sqlSegment) {
+		return selectPage(page, null, entity, sqlSegment);
+	}
+
+	public Page<T> selectPageBySegment(Page<T> page, String sqlSegment) {
+		return selectPage(page, null, null, sqlSegment);
+	}
+
+	public List<T> selectListByEntity(T entity) {
+		return selectList(entity, null, null, null);
+	}
+
+	public List<T> selectListBySelect(String sqlSelect) {
+		return selectList(null, sqlSelect, null, null);
+	}
+
+	public List<T> selectListBySegment(String sqlSegment) {
+		return selectList(null, null, sqlSegment, null);
+	}
+
+	public List<T> selectListByOrder(String orderByField) {
+		return selectList(null, null, null, orderByField);
+	}
+
 	/**
 	 * 转换 SQL 片段 + 排序
 	 */

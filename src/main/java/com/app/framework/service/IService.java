@@ -257,4 +257,23 @@ public interface IService<T, I> {
 	 */
 	Page<T> selectPage(Page<T> page, String sqlSelect, T entity, String sqlSegment);
 
+	public Page<T> selectPage(Page<T> page, String sqlSelect);
+
+	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity);
+
+	public Page<T> selectPage(Page<T> page, String sqlSelect, String sqlSegment);
+
+	public Page<T> selectPage(Page<T> page, T entity);
+
+	public Page<T> selectPage(Page<T> page, T entity, String sqlSegment);
+
+	public Page<T> selectPageBySegment(Page<T> page, String sqlSegment);
+
+	public List<T> selectListByEntity(T entity);
+
+	public List<T> selectListBySelect(String sqlSelect);
+
+	public List<T> selectListBySegment(String sqlSegment);
+
+	public List<T> selectListByOrder(String orderByField);
 }
