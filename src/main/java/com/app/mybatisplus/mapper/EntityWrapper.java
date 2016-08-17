@@ -15,6 +15,8 @@
  */
 package com.app.mybatisplus.mapper;
 
+import org.springframework.util.StringUtils;
+
 /**
  * <p>
  * Entity 对象封装操作类
@@ -68,7 +70,8 @@ public class EntityWrapper<T> {
 	}
 
 	public String getSqlSelect() {
-		if (sqlSelect == null) {
+
+		if (StringUtils.isEmpty(sqlSelect)) {
 			return null;
 		}
 		return stripSqlInjection(sqlSelect);
@@ -81,7 +84,8 @@ public class EntityWrapper<T> {
 	}
 
 	public String getSqlSegment() {
-		if (null == sqlSegment) {
+
+		if (StringUtils.isEmpty(sqlSegment)) {
 			return null;
 		}
 		StringBuffer andOr = new StringBuffer();
