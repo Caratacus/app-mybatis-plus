@@ -120,18 +120,23 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	}
 
 	public List<T> selectList(T entity, String sqlSelect, String sqlSegment, String orderByField) {
-		return baseMapper.selectList(new EntityWrapper<T>(entity, sqlSelect, this
-				.convertSqlSegmet(sqlSegment, orderByField, true)));
+		StringBuffer segment = new StringBuffer();
+		if (!StringUtils.isEmpty(sqlSegment)) {
+			segment.append(sqlSegment);
+		} else {
+			segment.append(" 1=1 ");
+		}
+
+		if (!StringUtils.isEmpty(orderByField)) {
+			segment.append(" ORDER BY ").append(orderByField);
+		}
+		return baseMapper.selectList(new EntityWrapper<T>(entity, sqlSelect, segment.toString()));
 	}
 
 	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity, String sqlSegment) {
-
-		EntityWrapper<T> ew = new EntityWrapper<T>(entity, sqlSelect, this.convertSqlSegmet(page.getOrderByField(), sqlSegment,
-				page.isAsc()));
-		page.setRecords(baseMapper.selectPage(page, ew));
-
+		page.setRecords(baseMapper.selectPage(page,
+				new EntityWrapper<T>(entity, sqlSelect, this.convertSqlSegmet(page, sqlSegment))));
 		return page;
-
 	}
 
 	public Page<T> selectPage(Page<T> page, String sqlSelect) {
@@ -177,14 +182,18 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	/**
 	 * 转换 SQL 片段 + 排序
 	 */
-	protected String convertSqlSegmet(String sqlSegment, String orderByField, boolean isAsc) {
+	protected String convertSqlSegmet(Page<T> page, String sqlSegment) {
 		StringBuffer segment = new StringBuffer();
+
 		if (!StringUtils.isEmpty(sqlSegment)) {
 			segment.append(sqlSegment);
+		} else {
+			segment.append(" 1=1 ");
 		}
-		if (!StringUtils.isEmpty(sqlSegment)) {
-			segment.append(" ORDER BY ").append(orderByField);
-			if (!isAsc) {
+
+		if (!StringUtils.isEmpty(page.getOrderByField())) {
+			segment.append(" ORDER BY ").append(page.getOrderByField());
+			if (!page.isAsc()) {
 				segment.append(" DESC");
 			}
 		}
