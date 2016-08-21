@@ -15,9 +15,10 @@
  */
 package com.app.mybatisplus.generator;
 
-import com.app.mybatisplus.generator.ConfigDataSource;
 import com.app.mybatisplus.generator.ConfigIdType;
 import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.toolkit.StringUtils;
+
 
 /**
  * <p>
@@ -29,9 +30,13 @@ import com.app.mybatisplus.annotations.IdType;
  * xmlPackage xx_mapper.xml 包路径，默认为mapper/xml
  * servicePackage service 包路径
  * serviceImplPackage serviceImpl包路径，默认为service/impl
- * superServiceImpl service 父类包路径名称
- * tableNames   要生成的表名称，如为空就直接指定所有表.格式为逗号分割
- * fileOverride 是否覆盖当前已有文件
+ * superService 	service 父类包路径名称
+ * superServiceImpl service 实现父类包路径名称
+ * mapperName		自定义 mapper 名称
+ * serviceName		自定义 service 名称
+ * serviceImplName	自定义 serviceImp 名称
+ * tableNames   	要生成的表名称，如为空就直接指定所有表.格式为逗号分割
+ * fileOverride 	是否覆盖当前已有文件
  * -------------------------------------
  * 以下数据库相关配置：
  * -------------------------------------
@@ -48,60 +53,62 @@ import com.app.mybatisplus.annotations.IdType;
  */
 public class ConfigGenerator {
 
-	private String saveDir;
+	protected String saveDir;
 
-	private String entityPackage;
+	protected String entityPackage;
 
-	private String mapperPackage;
+	protected String mapperPackage;
 
-	private String xmlPackage;
+	protected String xmlPackage;
 
-	private String servicePackage;
+	protected String servicePackage;
 
-	private String serviceImplPackage;
+	protected String serviceImplPackage;
 
-	private String superServiceImpl;
+	protected String superService;
+
+	protected String superServiceImpl;
 
 	/*
 	 * 自定义 mapperName serviceName serviceImplName
 	 */
-	private String mapperName = "%sMapper";
+	protected String mapperName = "%sMapper";
 
-	private String serviceName = "%sService";
+	protected String serviceName = "I%sService";
 
-	private String serviceImplName = "%sServiceImpl";
+	protected String serviceImplName = "%sServiceImpl";
 
 	/*
 	 * 指定生成表名
 	 */
-	private String[] tableNames = null;
+	protected String[] tableNames = null;
 
 	/*
 	 * 是否覆盖当前路径下已有文件（默认 true）
 	 */
-	private boolean fileOverride = true;
+	protected boolean fileOverride = true;
 
 	/* db_config */
-	private boolean dbPrefix = false;
+	protected boolean dbPrefix = false;
 
 	/*
 	 * 数据库字段使用下划线命名（默认 false）
 	 */
-	private boolean dbColumnUnderline = false;
+	protected boolean dbColumnUnderline = false;
 
-	private String dbDriverName;
+	protected String dbDriverName;
 
-	private String dbUser;
+	protected String dbUser;
 
-	private String dbPassword;
+	protected String dbPassword;
 
-	private String dbUrl;
+	protected String dbUrl;
 
-	private IdType idType = null;
+	protected IdType idType = null;
 
-	private ConfigDataSource configDataSource = ConfigDataSource.MYSQL;
+	protected ConfigDataSource configDataSource = ConfigDataSource.MYSQL;
 
-	private ConfigIdType configIdType = ConfigIdType.LONG;
+	protected ConfigIdType configIdType = ConfigIdType.LONG;
 
 	public String getSaveDir() {
 		return saveDir;
@@ -135,8 +142,23 @@ public class ConfigGenerator {
 		this.servicePackage = servicePackage;
 	}
 
+	public String getSuperService() {
+		if (StringUtils.isEmpty(superService)) {
+			if (this.getConfigIdType() == ConfigIdType.STRING) {
+				return "com.app.framework.service.ICommonService";
+			} else {
+				return "com.app.framework.service.ISuperService";
+			}
+		}
+		return superService;
+	}
+
+	public void setSuperService(String superService) {
+		this.superService = superService;
+	}
+
 	public String getSuperServiceImpl() {
-		if (superServiceImpl == null || "".equals(superServiceImpl)) {
+		if (StringUtils.isEmpty(superServiceImpl)) {
 			if (this.getConfigIdType() == ConfigIdType.STRING) {
 				return "com.app.framework.service.impl.CommonServiceImpl";
 			} else {
@@ -257,7 +279,7 @@ public class ConfigGenerator {
 	}
 
 	public String getXmlPackage() {
-		if (null == xmlPackage || "".equals(xmlPackage)) {
+		if (StringUtils.isEmpty(xmlPackage)) {
 			xmlPackage = mapperPackage + ".xml";
 		}
 		return xmlPackage;
@@ -284,7 +306,7 @@ public class ConfigGenerator {
 	}
 
 	public String getServiceImplPackage() {
-		if (null == serviceImplPackage || "".equals(serviceImplPackage)) {
+		if (StringUtils.isEmpty(serviceImplPackage)) {
 			serviceImplPackage = servicePackage + ".impl";
 		}
 		return serviceImplPackage;

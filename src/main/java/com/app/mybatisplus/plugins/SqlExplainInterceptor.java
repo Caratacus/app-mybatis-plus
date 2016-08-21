@@ -1,33 +1,18 @@
 /**
 
-
-
  * Copyright (c) 2011-2020, hubin (jobob@qq.com).
-
  *
-
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
-
  * use this file except in compliance with the License. You may obtain a copy of
-
  * the License at
-
  *
-
  * http://www.apache.org/licenses/LICENSE-2.0
-
  *
-
  * Unless required by applicable law or agreed to in writing, software
-
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-
  * License for the specific language governing permissions and limitations under
-
  * the License.
-
  */
 package com.app.mybatisplus.plugins;
 
@@ -53,36 +38,25 @@ import org.apache.ibatis.session.Configuration;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 /**
-
  * <p>
-
  * SQL 执行分析拦截器
-
  * </p>
-
- * 
-
+ *
  * @author hubin
-
  * @Date 2016-08-16
-
  */
 @Intercepts({@Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class SqlExplainInterceptor implements Interceptor {
 	protected final Logger logger = Logger.getLogger("SqlExplainInterceptor");
-	
+
 	/**
-
 	 * 发现执行全表 delete update 语句是否停止执行
-
 	 */
 	private boolean stopProceed = false;
-	
+
 	public Object intercept(Invocation invocation) throws Throwable {
 		/**
-
 		 * 处理 DELETE UPDATE 语句
-
 		 */
 		MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
 		if (ms.getSqlCommandType() == SqlCommandType.DELETE || ms.getSqlCommandType() == SqlCommandType.UPDATE) {
@@ -93,9 +67,7 @@ public class SqlExplainInterceptor implements Interceptor {
 			Connection connection = exe.getTransaction().getConnection();
 
 			/**
-
 			 * 执行 SQL 分析
-
 			 */
 			sqlExplain(configuration, ms, boundSql, connection, parameter);
 		}
@@ -103,30 +75,19 @@ public class SqlExplainInterceptor implements Interceptor {
 	}
 
 	/**
-
 	 * <p>
-
 	 * 判断是否执行 SQL
-
 	 * </p>
-
 	 * @param configuration
-
 	 * @param mappedStatement
-
 	 * @param boundSql
-
 	 * @param connection
-
 	 * @param parameter
-
 	 * @return
-
 	 * @throws Exception
-
 	 */
 	protected void sqlExplain( Configuration configuration, MappedStatement mappedStatement, BoundSql boundSql,
-			Connection connection, Object parameter ) throws Exception {
+							   Connection connection, Object parameter ) throws Exception {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
@@ -153,7 +114,7 @@ public class SqlExplainInterceptor implements Interceptor {
 			}
 
 		} catch ( Exception e ) {
-			throw new MybatisPlusException(e); 
+			throw new MybatisPlusException(e);
 		} finally {
 			if ( rs != null ) {
 				rs.close();
@@ -175,8 +136,6 @@ public class SqlExplainInterceptor implements Interceptor {
 
 	public void setProperties(Properties prop) {
 		// TODO
-
-
 	}
 
 	public boolean isStopProceed() {
@@ -188,4 +147,3 @@ public class SqlExplainInterceptor implements Interceptor {
 	}
 
 }
-

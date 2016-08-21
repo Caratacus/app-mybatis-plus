@@ -5,7 +5,7 @@
 ## 分页原理
 简单来说就是通过拦截StatementHandler重写sql语句，实现数据库的物理分页
 
-## 如何使用分页插件 
+## 如何使用插件 
 > **mybatis** 配置文件中配置插件 [mybatis-config.xml]
 ```
 <plugins>
@@ -29,7 +29,7 @@
     <plugin interceptor="com.app.mybatisplus.plugins.PerformanceInterceptor">
         <property name="maxTime" value="100" />
     </plugin>
-     <!-- SQL 执行分析拦截器 stopProceed 发现全表执行 delete update 是否停止运行 -->
+    <!-- SQL 执行分析拦截器 stopProceed 发现全表执行 delete update 是否停止运行 -->
     <plugin interceptor="com.app.mybatisplus.plugins.SqlExplainInterceptor">
         <property name="stopProceed" value="false" />
     </plugin>

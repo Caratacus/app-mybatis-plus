@@ -36,6 +36,7 @@ import com.app.mybatisplus.generator.ConfigGenerator;
 import com.app.mybatisplus.generator.ConfigIdType;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>
@@ -47,7 +48,7 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
  */
 public class AutoGenerator {
 
-	private ConfigGenerator config;
+	protected ConfigGenerator config;
 
 	public ConfigGenerator getConfig() {
 		return config;
@@ -65,16 +66,16 @@ public class AutoGenerator {
 		this.config = config;
 	}
 
-	private static String PATH_ENTITY = null;
-	private static String PATH_MAPPER = null;
-	private static String PATH_XML = null;
-	private static String PATH_SERVICE = null;
-	private static String PATH_SERVICE_IMPL = null;
+	protected static String PATH_ENTITY = null;
+	protected static String PATH_MAPPER = null;
+	protected static String PATH_XML = null;
+	protected static String PATH_SERVICE = null;
+	protected static String PATH_SERVICE_IMPL = null;
 
-	private static boolean FILE_OVERRIDE = false;
+	protected static boolean FILE_OVERRIDE = false;
 
-	private static final String JAVA_SUFFIX = ".java";
-	private static final String XML_SUFFIX = ".xml";
+	protected static final String JAVA_SUFFIX = ".java";
+	protected static final String XML_SUFFIX = ".xml";
 
 	/**
 	 * run 执行
@@ -143,8 +144,8 @@ public class AutoGenerator {
 	 * @param packageName
 	 * @return
 	 */
-	private static String getPathFromPackageName(String packageName) {
-		if (null == packageName || "".equals(packageName)) {
+	protected static String getPathFromPackageName(String packageName) {
+		if (StringUtils.isEmpty(packageName)) {
 			return "";
 		}
 		return packageName.replace(".", File.separator);
@@ -157,7 +158,7 @@ public class AutoGenerator {
 	 *            文件地址片段
 	 * @return
 	 */
-	private static String getFilePath(String savePath, String segment) {
+	protected static String getFilePath(String savePath, String segment) {
 		File folder = new File(savePath + File.separator + segment);
 		if (!folder.exists()) {
 			folder.mkdirs();
@@ -278,7 +279,7 @@ public class AutoGenerator {
 	 * @param suffix
 	 * @return
 	 */
-	private boolean valideFile(String dirPath, String beanName, String suffix) {
+	protected boolean valideFile(String dirPath, String beanName, String suffix) {
 		File file = new File(dirPath, beanName + suffix);
 		return !file.exists() || FILE_OVERRIDE;
 	}
@@ -294,7 +295,7 @@ public class AutoGenerator {
 	 * @return
 	 * @throws SQLException
 	 */
-	private List<String> getTables(Connection conn) throws SQLException {
+	protected List<String> getTables(Connection conn) throws SQLException {
 		List<String> tables = new ArrayList<String>();
 		PreparedStatement pstate = conn.prepareStatement(config.getConfigDataSource().getTablesSql());
 		ResultSet results = pstate.executeQuery();
@@ -330,7 +331,7 @@ public class AutoGenerator {
 	 *            表名
 	 * @return beanName
 	 */
-	private String getBeanName(String table, boolean includePrefix) {
+	protected String getBeanName(String table, boolean includePrefix) {
 		StringBuilder sb = new StringBuilder();
 		if (table.contains("_")) {
 			String[] tables = table.split("_");
@@ -349,7 +350,7 @@ public class AutoGenerator {
 		return sb.toString();
 	}
 
-	private String processType(String type) {
+	protected String processType(String type) {
 		if (config.getConfigDataSource() == ConfigDataSource.ORACLE) {
 			return oracleProcessType(type);
 		}
@@ -363,26 +364,27 @@ public class AutoGenerator {
 	 *            字段类型
 	 * @return
 	 */
-	private String mysqlProcessType(String type) {
-		if (type.contains("char")) {
+	protected String mysqlProcessType(String type) {
+		String t = type.toLowerCase();
+		if (t.contains("char")) {
 			return "String";
-		} else if (type.contains("bigint")) {
+		} else if (t.contains("bigint")) {
 			return "Long";
-		} else if (type.contains("int")) {
+		} else if (t.contains("int")) {
 			return "Integer";
-		} else if (type.contains("date") || type.contains("timestamp")) {
+		} else if (t.contains("date") || t.contains("timestamp")) {
 			return "Date";
-		} else if (type.contains("text")) {
+		} else if (t.contains("text")) {
 			return "String";
-		} else if (type.contains("bit")) {
+		} else if (t.contains("bit")) {
 			return "Boolean";
-		} else if (type.contains("decimal")) {
+		} else if (t.contains("decimal")) {
 			return "BigDecimal";
-		} else if (type.contains("blob")) {
+		} else if (t.contains("blob")) {
 			return "byte[]";
-		} else if (type.contains("float")) {
+		} else if (t.contains("float")) {
 			return "Float";
-		} else if (type.contains("double")) {
+		} else if (t.contains("double")) {
 			return "Double";
 		}
 		return null;
@@ -395,18 +397,19 @@ public class AutoGenerator {
 	 *            字段类型
 	 * @return
 	 */
-	private String oracleProcessType(String type) {
-		if (type.contains("CHAR")) {
+	protected String oracleProcessType(String type) {
+		String t = type.toUpperCase();
+		if (t.contains("CHAR")) {
 			return "String";
-		} else if (type.contains("DATE") || type.contains("TIMESTAMP")) {
+		} else if (t.contains("DATE") || t.contains("TIMESTAMP")) {
 			return "Date";
-		} else if (type.contains("NUMBER")) {
+		} else if (t.contains("NUMBER")) {
 			return "Double";
-		} else if (type.contains("FLOAT")) {
+		} else if (t.contains("FLOAT")) {
 			return "Float";
-		} else if (type.contains("BLOB")) {
+		} else if (t.contains("BLOB")) {
 			return "Object";
-		} else if (type.contains("RAW")) {
+		} else if (t.contains("RAW")) {
 			return "byte[]";
 		}
 		return null;
@@ -419,9 +422,10 @@ public class AutoGenerator {
 	 *            字段类型列表
 	 * @return
 	 */
-	private boolean isDate(List<String> types) {
+	protected boolean isDate(List<String> types) {
 		for (String type : types) {
-			if (type.contains("date") || type.contains("timestamp")) {
+			String t = type.toLowerCase();
+			if (t.contains("date") || t.contains("timestamp")) {
 				return true;
 			}
 		}
@@ -435,27 +439,40 @@ public class AutoGenerator {
 	 *            字段类型列表
 	 * @return
 	 */
-	private boolean isDecimal(List<String> types) {
+	protected boolean isDecimal(List<String> types) {
 		for (String type : types) {
-			if (type.contains("decimal")) {
+			if (type.toLowerCase().contains("decimal")) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private String processField(String field) {
+	/**
+	 * 字段处理
+	 *
+	 * @param field
+	 *            表字段
+	 * @return
+	 */
+	protected String processField(String field) {
 		/*
 		 * 驼峰命名直接返回
 		 */
-		if (null != field && !field.contains("_")) {
+		if (!field.contains("_")) {
+			if (StringUtils.isUpperCase(field)) {
+				/*
+				 * 纯大写命名，转为小写属性
+				 */
+				return field.toLowerCase();
+			}
 			return field;
 		}
 
 		/*
 		 * 处理下划线分割命名字段
 		 */
-		StringBuilder sb = new StringBuilder(field.length());
+		StringBuilder sb = new StringBuilder();
 		String[] fields = field.split("_");
 		sb.append(fields[0].toLowerCase());
 		for (int i = 1; i < fields.length; i++) {
@@ -474,7 +491,7 @@ public class AutoGenerator {
 	 * @return
 	 * @throws IOException
 	 */
-	private BufferedWriter buildClassComment(BufferedWriter bw, String text) throws IOException {
+	protected BufferedWriter buildClassComment(BufferedWriter bw, String text) throws IOException {
 		bw.newLine();
 		bw.write("/**");
 		bw.newLine();
@@ -496,8 +513,8 @@ public class AutoGenerator {
 	 * @param comments
 	 * @throws IOException
 	 */
-	private void buildEntityBean(List<String> columns, List<String> types, List<String> comments, String tableComment,
-								 Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
+	protected void buildEntityBean(List<String> columns, List<String> types, List<String> comments, String tableComment,
+								   Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
 		File beanFile = new File(PATH_ENTITY, beanName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(beanFile)));
 		bw.write("package " + config.getEntityPackage() + ";");
@@ -520,8 +537,10 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.write("import com.app.mybatisplus.annotations.TableId;");
 		bw.newLine();
-		bw.write("import com.app.mybatisplus.annotations.TableName;");
-		bw.newLine();
+		if (table.contains("_")) {
+			bw.write("import com.app.mybatisplus.annotations.TableName;");
+			bw.newLine();
+		}
 		bw = buildClassComment(bw, tableComment);
 		bw.newLine();
 		/* 包含下划线注解 */
@@ -534,7 +553,7 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.write("\t@TableField(exist = false)");
 		bw.newLine();
-		bw.write("\tprivate static final long serialVersionUID = 1L;");
+		bw.write("\tprotected static final long serialVersionUID = 1L;");
 		bw.newLine();
 		int size = columns.size();
 		for (int i = 0; i < size; i++) {
@@ -579,7 +598,7 @@ public class AutoGenerator {
 				bw.write("\t@TableField(value = \"" + column + "\")");
 				bw.newLine();
 			}
-			bw.write("\tprivate " + processType(types.get(i)) + " " + field + ";");
+			bw.write("\tprotected " + processType(types.get(i)) + " " + field + ";");
 			bw.newLine();
 		}
 
@@ -631,7 +650,7 @@ public class AutoGenerator {
 	 * @param mapperName
 	 * @throws IOException
 	 */
-	private void buildMapper(String beanName, String mapperName) throws IOException {
+	protected void buildMapper(String beanName, String mapperName) throws IOException {
 		File mapperFile = new File(PATH_MAPPER, mapperName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperFile), "utf-8"));
 		bw.write("package " + config.getMapperPackage() + ";");
@@ -671,8 +690,8 @@ public class AutoGenerator {
 	 * @param comments
 	 * @throws IOException
 	 */
-	private void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
-								Map<String, IdInfo> idMap, String mapperName) throws IOException {
+	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
+								  Map<String, IdInfo> idMap, String mapperName) throws IOException {
 		File mapperXmlFile = new File(PATH_XML, mapperName + ".xml");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -701,7 +720,7 @@ public class AutoGenerator {
 	 * @param serviceName
 	 * @throws IOException
 	 */
-	private void buildService(String beanName, String serviceName) throws IOException {
+	protected void buildService(String beanName, String serviceName) throws IOException {
 		File serviceFile = new File(PATH_SERVICE, serviceName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(serviceFile), "utf-8"));
 		bw.write("package " + config.getServicePackage() + ";");
@@ -709,20 +728,14 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.write("import " + config.getEntityPackage() + "." + beanName + ";");
 		bw.newLine();
-		if (config.getConfigIdType() == ConfigIdType.STRING) {
-			bw.write("import com.app.framework.service.ICommonService;");
-		} else {
-			bw.write("import com.app.framework.service.ISuperService;");
-		}
+		String superService = config.getSuperService();
+		bw.write("import " + superService + ";");
 		bw.newLine();
 
 		bw = buildClassComment(bw, beanName + " 表数据服务层接口");
 		bw.newLine();
-		if (config.getConfigIdType() == ConfigIdType.STRING) {
-			bw.write("public interface " + serviceName + " extends ICommonService<" + beanName + "> {");
-		} else {
-			bw.write("public interface " + serviceName + " extends ISuperService<" + beanName + "> {");
-		}
+		superService = superService.substring(superService.lastIndexOf(".") + 1);
+		bw.write("public interface " + serviceName + " extends " + superService + "<" + beanName + "> {");
 		bw.newLine();
 		bw.newLine();
 
@@ -741,7 +754,7 @@ public class AutoGenerator {
 	 * @param mapperName
 	 * @throws IOException
 	 */
-	private void buildServiceImpl(String beanName, String serviceImplName, String serviceName, String mapperName)
+	protected void buildServiceImpl(String beanName, String serviceImplName, String serviceName, String mapperName)
 			throws IOException {
 		File serviceFile = new File(PATH_SERVICE_IMPL, serviceImplName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(serviceFile), "utf-8"));
@@ -787,7 +800,7 @@ public class AutoGenerator {
 	 * @param columns
 	 * @throws IOException
 	 */
-	private void buildSQL(BufferedWriter bw, Map<String, IdInfo> idMap, List<String> columns) throws IOException {
+	protected void buildSQL(BufferedWriter bw, Map<String, IdInfo> idMap, List<String> columns) throws IOException {
 		int size = columns.size();
 		bw.write("\t<!-- 通用查询结果列-->");
 		bw.newLine();
@@ -824,7 +837,7 @@ public class AutoGenerator {
 	 * @return
 	 * @throws SQLException
 	 */
-	private Map<String, String> getTableComment(Connection conn) throws SQLException {
+	protected Map<String, String> getTableComment(Connection conn) throws SQLException {
 		Map<String, String> maps = new HashMap<String, String>();
 		PreparedStatement pstate = conn.prepareStatement(config.getConfigDataSource().getTableCommentsSql());
 		ResultSet results = pstate.executeQuery();

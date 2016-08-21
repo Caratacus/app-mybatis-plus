@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, hubin (jobob@qq.com).
+ * Copyright (c) 2011-2020, hubin (jobob@qq.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
 
+import com.app.mybatisplus.MybatisXMLLanguageDriver;
 import com.app.mybatisplus.mapper.AutoSqlInjector;
 import com.app.mybatisplus.mapper.DBType;
 import com.app.mybatisplus.mapper.ISqlInjector;
@@ -28,7 +29,7 @@ import com.app.mybatisplus.mapper.ISqlInjector;
  * <p>
  * replace default Configuration class
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-01-23
  */

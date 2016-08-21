@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2011-2016, hubin (jobob@qq.com).
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -25,7 +25,6 @@ import com.app.framework.service.IService;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
-import org.springframework.util.StringUtils;
 
 /**
  * <p>
@@ -43,12 +42,11 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	/**
 	 * 判断数据库操作是否成功
 	 *
-	 * @param result
-	 *            数据库操作返回影响条数
+	 * @param result 数据库操作返回影响条数
 	 * @return boolean
 	 */
 	protected boolean retBool(int result) {
-		return (result >= 1) ? true : false;
+		return result >= 1;
 	}
 
 	public boolean insert(T entity) {
@@ -119,85 +117,16 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		return baseMapper.selectCount(entity);
 	}
 
-	public List<T> selectList(T entity, String sqlSelect, String sqlSegment, String orderByField) {
-		StringBuffer segment = new StringBuffer();
-		if (!StringUtils.isEmpty(sqlSegment)) {
-			segment.append(sqlSegment);
-		} else {
-			segment.append(" 1=1 ");
-		}
-
-		if (!StringUtils.isEmpty(orderByField)) {
-			segment.append(" ORDER BY ").append(orderByField);
-		}
-		return baseMapper.selectList(new EntityWrapper<T>(entity, sqlSelect, segment.toString()));
+	public List<T> selectList(EntityWrapper<T> entityWrapper) {
+		return baseMapper.selectList(entityWrapper);
 	}
 
-	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity, String sqlSegment) {
-		page.setRecords(baseMapper.selectPage(page,
-				new EntityWrapper<T>(entity, sqlSelect, this.convertSqlSegmet(page, sqlSegment))));
+	public Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper) {
+		if (null != entityWrapper) {
+			entityWrapper.orderBy(page.getOrderByField(), page.isAsc());
+		}
+		page.setRecords(baseMapper.selectPage(page, entityWrapper));
 		return page;
-	}
-
-	public Page<T> selectPage(Page<T> page, String sqlSelect) {
-		return selectPage(page, sqlSelect, null, null);
-	}
-
-	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity) {
-		return selectPage(page, sqlSelect, entity, null);
-	}
-
-	public Page<T> selectPage(Page<T> page, String sqlSelect, String sqlSegment) {
-		return selectPage(page, sqlSelect, null, sqlSegment);
-	}
-
-	public Page<T> selectPage(Page<T> page, T entity) {
-		return selectPage(page, null, entity, null);
-	}
-
-	public Page<T> selectPage(Page<T> page, T entity, String sqlSegment) {
-		return selectPage(page, null, entity, sqlSegment);
-	}
-
-	public Page<T> selectPageBySegment(Page<T> page, String sqlSegment) {
-		return selectPage(page, null, null, sqlSegment);
-	}
-
-	public List<T> selectListByEntity(T entity) {
-		return selectList(entity, null, null, null);
-	}
-
-	public List<T> selectListBySelect(String sqlSelect) {
-		return selectList(null, sqlSelect, null, null);
-	}
-
-	public List<T> selectListBySegment(String sqlSegment) {
-		return selectList(null, null, sqlSegment, null);
-	}
-
-	public List<T> selectListByOrder(String orderByField) {
-		return selectList(null, null, null, orderByField);
-	}
-
-	/**
-	 * 转换 SQL 片段 + 排序
-	 */
-	protected String convertSqlSegmet(Page<T> page, String sqlSegment) {
-		StringBuffer segment = new StringBuffer();
-
-		if (!StringUtils.isEmpty(sqlSegment)) {
-			segment.append(sqlSegment);
-		} else {
-			segment.append(" 1=1 ");
-		}
-
-		if (!StringUtils.isEmpty(page.getOrderByField())) {
-			segment.append(" ORDER BY ").append(page.getOrderByField());
-			if (!page.isAsc()) {
-				segment.append(" DESC");
-			}
-		}
-		return segment.toString();
 	}
 
 }

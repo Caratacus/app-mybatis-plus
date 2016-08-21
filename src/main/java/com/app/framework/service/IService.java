@@ -228,17 +228,11 @@ public interface IService<T, I> {
 	 * 查询列表
 	 * </p>
 	 *
-	 * @param entity
-	 *            实体对象
-	 * @param sqlSelect
-	 *            SQL 查询字段内容，例如：id,name,age
-	 * @param sqlSegment
-	 *            SQL 片段
-	 * @param orderByField
-	 *            对应 EntityWrapper 类中 orderByField 字段 {@link EntityWrapper}
+	 * @param entityWrapper
+	 *            实体包装类 {@link EntityWrapper}
 	 * @return
 	 */
-	List<T> selectList(T entity, String sqlSelect, String sqlSegment, String orderByField);
+	List<T> selectList(EntityWrapper<T> entityWrapper);
 
 	/**
 	 * <p>
@@ -247,33 +241,10 @@ public interface IService<T, I> {
 	 *
 	 * @param page
 	 *            翻页对象
-	 * @param sqlSelect
-	 *            SQL 查询字段内容，例如：id,name,age
-	 * @param entity
-	 *            实体对象
-	 * @param sqlSegment
-	 *            SQL 片段
+	 * @param entityWrapper
+	 *            实体包装类 {@link EntityWrapper}
 	 * @return
 	 */
-	Page<T> selectPage(Page<T> page, String sqlSelect, T entity, String sqlSegment);
+	Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper);
 
-	public Page<T> selectPage(Page<T> page, String sqlSelect);
-
-	public Page<T> selectPage(Page<T> page, String sqlSelect, T entity);
-
-	public Page<T> selectPage(Page<T> page, String sqlSelect, String sqlSegment);
-
-	public Page<T> selectPage(Page<T> page, T entity);
-
-	public Page<T> selectPage(Page<T> page, T entity, String sqlSegment);
-
-	public Page<T> selectPageBySegment(Page<T> page, String sqlSegment);
-
-	public List<T> selectListByEntity(T entity);
-
-	public List<T> selectListBySelect(String sqlSelect);
-
-	public List<T> selectListBySegment(String sqlSegment);
-
-	public List<T> selectListByOrder(String orderByField);
 }

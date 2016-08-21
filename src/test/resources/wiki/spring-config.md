@@ -1,5 +1,5 @@
 
-# Spring 配置 myBatis-plus
+# Spring 配置 Mybatis-Plus
 
 
 > 依赖包
@@ -80,7 +80,7 @@
 		 -->
 	</typeAliases>
 	<!-- 插件配置, spring 中配置，此处就可以不用配置。 -->
-     <!-- 
+    <!-- 
 	<plugins>
 	     | 分页插件配置 
 	     | 插件提供二种方言选择：1、默认方言 2、自定义方言实现类，两者均未配置则抛出异常！
@@ -102,7 +102,7 @@
         </plugin>
         <!-- SQL 执行分析拦截器 stopProceed 发现全表执行 delete update 是否停止运行 -->
         <plugin interceptor="com.app.mybatisplus.plugins.SqlExplainInterceptor">
-           <property name="stopProceed" value="false" />
+            <property name="stopProceed" value="false" />
         </plugin>
 	</plugins>
 	| -->

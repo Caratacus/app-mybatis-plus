@@ -42,13 +42,11 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
  * <p>
  * 性能分析拦截器，用于输出每条 SQL 语句及其执行时间
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-07-07
  */
-@Intercepts({
-		@Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class,
-				RowBounds.class, ResultHandler.class }),
+@Intercepts({@Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class }),
 		@Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class PerformanceInterceptor implements Interceptor {
 
