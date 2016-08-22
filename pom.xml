@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.app</groupId>
     <artifactId>mybatis-plus</artifactId>
-    <version>1.4.3.Beta1</version>
+    <version>1.4.4.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>mybatis-plus</name>
