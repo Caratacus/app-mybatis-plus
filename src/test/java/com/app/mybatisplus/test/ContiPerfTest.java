@@ -44,7 +44,7 @@ public class ContiPerfTest {
 	@Test
 	@PerfTest(invocations = 200000000, threads = 16)
 	public void testIdWorker() throws Exception {
-		IdWorker.getId();
+		//System.out.println(IdWorker.getId());
 	}
 
 }
