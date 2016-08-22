@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.app.common.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.app.framework.service.IService;
@@ -36,97 +37,102 @@ import com.app.mybatisplus.plugins.Page;
  */
 public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable> implements IService<T, PK> {
 
-	@Autowired
-	protected M baseMapper;
+    @Autowired
+    protected M baseMapper;
 
-	/**
-	 * 判断数据库操作是否成功
-	 *
-	 * @param result 数据库操作返回影响条数
-	 * @return boolean
-	 */
-	protected boolean retBool(int result) {
-		return result >= 1;
-	}
+    /**
+     * 判断数据库操作是否成功
+     *
+     * @param result 数据库操作返回影响条数
+     * @return boolean
+     */
+    protected boolean retBool(int result) {
+        return result >= 1;
+    }
 
-	public boolean insert(T entity) {
-		return retBool(baseMapper.insert(entity));
-	}
+    public boolean insert(T entity) {
+        return retBool(baseMapper.insert(entity));
+    }
 
-	public boolean insertSelective(T entity) {
-		return retBool(baseMapper.insertSelective(entity));
-	}
+    public boolean insertSelective(T entity) {
+        return retBool(baseMapper.insertSelective(entity));
+    }
 
-	public boolean insertBatch(List<T> entityList) {
-		return retBool(baseMapper.insertBatch(entityList));
-	}
+    public boolean insertBatch(List<T> entityList) {
+        return retBool(baseMapper.insertBatch(entityList));
+    }
 
-	public boolean deleteById(PK id) {
-		return retBool(baseMapper.deleteById(id));
-	}
+    public boolean deleteById(PK id) {
+        return retBool(baseMapper.deleteById(id));
+    }
 
-	public boolean deleteByMap(Map<String, Object> columnMap) {
-		return retBool(baseMapper.deleteByMap(columnMap));
-	}
+    public boolean deleteByMap(Map<String, Object> columnMap) {
+        return retBool(baseMapper.deleteByMap(columnMap));
+    }
 
-	public boolean deleteSelective(T entity) {
-		return retBool(baseMapper.deleteSelective(entity));
-	}
+    public boolean deleteSelective(T entity) {
+        return retBool(baseMapper.deleteSelective(entity));
+    }
 
-	public boolean deleteBatchIds(List<PK> idList) {
-		return retBool(baseMapper.deleteBatchIds(idList));
-	}
+    public boolean deleteBatchIds(List<PK> idList) {
+        return retBool(baseMapper.deleteBatchIds(idList));
+    }
 
-	public boolean updateById(T entity) {
-		return retBool(baseMapper.updateById(entity));
-	}
+    public boolean updateById(T entity) {
+        return retBool(baseMapper.updateById(entity));
+    }
 
-	public boolean updateSelectiveById(T entity) {
-		return retBool(baseMapper.updateSelectiveById(entity));
-	}
+    public boolean updateSelectiveById(T entity) {
+        return retBool(baseMapper.updateSelectiveById(entity));
+    }
 
-	public boolean update(T entity, T whereEntity) {
-		return retBool(baseMapper.update(entity, whereEntity));
-	}
+    public boolean update(T entity, T whereEntity) {
+        return retBool(baseMapper.update(entity, whereEntity));
+    }
 
-	public boolean updateSelective(T entity, T whereEntity) {
-		return retBool(baseMapper.updateSelective(entity, whereEntity));
-	}
+    public boolean updateSelective(T entity, T whereEntity) {
+        return retBool(baseMapper.updateSelective(entity, whereEntity));
+    }
 
-	public boolean updateBatchById(List<T> entityList) {
-		return retBool(baseMapper.updateBatchById(entityList));
-	}
+    public boolean updateBatchById(List<T> entityList) {
+        return retBool(baseMapper.updateBatchById(entityList));
+    }
 
-	public T selectById(PK id) {
-		return baseMapper.selectById(id);
-	}
+    public T selectById(PK id) {
+        return baseMapper.selectById(id);
+    }
 
-	public List<T> selectBatchIds(List<PK> idList) {
-		return baseMapper.selectBatchIds(idList);
-	}
+    public List<T> selectBatchIds(List<PK> idList) {
+        return baseMapper.selectBatchIds(idList);
+    }
 
-	public List<T> selectByMap(Map<String, Object> columnMap) {
-		return baseMapper.selectByMap(columnMap);
-	}
+    public List<T> selectByMap(Map<String, Object> columnMap) {
+        return baseMapper.selectByMap(columnMap);
+    }
 
-	public T selectOne(T entity) {
-		return baseMapper.selectOne(entity);
-	}
+    public T selectOne(T entity) {
+        return baseMapper.selectOne(entity);
+    }
 
-	public int selectCount(T entity) {
-		return baseMapper.selectCount(entity);
-	}
+    public int selectCount(T entity) {
+        return baseMapper.selectCount(entity);
+    }
 
-	public List<T> selectList(EntityWrapper<T> entityWrapper) {
-		return baseMapper.selectList(entityWrapper);
-	}
+    public List<T> selectList(EntityWrapper<T> entityWrapper) {
+        return baseMapper.selectList(entityWrapper);
+    }
 
-	public Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper) {
-		if (null != entityWrapper) {
-			entityWrapper.orderBy(page.getOrderByField(), page.isAsc());
-		}
-		page.setRecords(baseMapper.selectPage(page, entityWrapper));
-		return page;
-	}
+    public Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper) {
+        if (null != entityWrapper) {
+            entityWrapper.orderBy(page.getOrderByField(), page.isAsc());
+        }
+        page.setRecords(baseMapper.selectPage(page, entityWrapper));
+        return page;
+    }
 
+    @Override
+    public List query(EntityWrapper<T> entityWrapper) {
+        List<T> ts = selectList(entityWrapper);
+        return MapUtils.beanToListMapNotNull(ts);
+    }
 }

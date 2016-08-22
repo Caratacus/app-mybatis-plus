@@ -247,4 +247,15 @@ public interface IService<T, I> {
 	 */
 	Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper);
 
+	/**
+	 * <p>
+	 * 查询列表 返回Map*(map中字段过滤null)
+	 * </p>
+	 *
+	 * @param entityWrapper
+	 *            实体包装类 {@link EntityWrapper}
+	 * @return
+	 */
+	List query(EntityWrapper<T> entityWrapper);
+
 }
