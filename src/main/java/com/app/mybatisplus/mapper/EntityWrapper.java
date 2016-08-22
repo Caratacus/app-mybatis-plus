@@ -57,6 +57,10 @@ public class EntityWrapper<T> extends QueryFilter {
 	 * ORDER BY关键字
 	 */
 	protected final String ORDERBY = " ORDER BY ";
+	/**
+	 * ORDER BY关键字
+	 */
+	protected final String LIKE = " LIKE ";
 
 	/**
 	 * ORDER BY语句中排序的 DESC关键字
@@ -204,6 +208,24 @@ public class EntityWrapper<T> extends QueryFilter {
 	 */
 	public EntityWrapper<T> and(String sqlAnd, Object... params) {
 		addFilter(AND, sqlAnd, params);
+		return this;
+	}
+	/**
+	 * <p>
+	 * SQL中 LIKE 关键字跟的条件语句
+	 * </p>
+	 * <p>
+	 * eg: ew.like("name=","%22%")
+	 * </p>
+	 *
+	 * @param sqllike
+	 *            and连接串
+	 * @param params
+	 *            参数集
+	 * @return
+	 */
+	public EntityWrapper<T> like(String sqllike, Object... params) {
+		addFilter(LIKE, sqllike, params);
 		return this;
 	}
 
