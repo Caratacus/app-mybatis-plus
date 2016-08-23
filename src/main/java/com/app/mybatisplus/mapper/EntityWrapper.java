@@ -210,6 +210,7 @@ public class EntityWrapper<T> extends QueryFilter {
 		addFilter(AND, sqlAnd, params);
 		return this;
 	}
+
 	/**
 	 * <p>
 	 * SQL中 LIKE 关键字跟的条件语句
@@ -351,11 +352,13 @@ public class EntityWrapper<T> extends QueryFilter {
 	 * @return
 	 */
 	public EntityWrapper<T> orderBy(String sqlOrderBy, boolean isAsc) {
-		addFilter(ORDERBY, sqlOrderBy);
-		if (isAsc) {
-			queryFilter.append(ASC);
-		} else {
-			queryFilter.append(DESC);
+		if (StringUtils.isNotEmpty(sqlOrderBy)) {
+			addFilter(ORDERBY, sqlOrderBy);
+			if (isAsc) {
+				queryFilter.append(ASC);
+			} else {
+				queryFilter.append(DESC);
+			}
 		}
 		return this;
 	}
