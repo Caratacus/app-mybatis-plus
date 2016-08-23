@@ -123,9 +123,6 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
     }
 
     public Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper) {
-        if (null != entityWrapper) {
-            entityWrapper.orderBy(page.getOrderByField(), page.isAsc());
-        }
         page.setRecords(baseMapper.selectPage(page, entityWrapper));
         return page;
     }
