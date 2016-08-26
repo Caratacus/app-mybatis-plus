@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import com.app.mybatisplus.toolkit.StringUtils;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -40,6 +39,7 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.plugins.pagination.DialectFactory;
 import com.app.mybatisplus.plugins.pagination.IDialect;
 import com.app.mybatisplus.plugins.pagination.Pagination;
+import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>
@@ -51,6 +51,9 @@ import com.app.mybatisplus.plugins.pagination.Pagination;
  */
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
 public class PaginationInterceptor implements Interceptor {
+
+	/* 溢出总页数，设置第一页 */
+	private boolean overflowCurrent = false;
 
 	/* 方言类型 */
 	private String dialectType;
@@ -64,12 +67,12 @@ public class PaginationInterceptor implements Interceptor {
 			StatementHandler statementHandler = (StatementHandler) target;
 			MetaObject metaStatementHandler = SystemMetaObject.forObject(statementHandler);
 			RowBounds rowBounds = (RowBounds) metaStatementHandler.getValue("delegate.rowBounds");
-
+			
 			/* 不需要分页的场合 */
 			if (rowBounds == null || rowBounds == RowBounds.DEFAULT) {
 				return invocation.proceed();
 			}
-
+			
 			/* 定义数据库方言 */
 			IDialect dialect = null;
 			if (StringUtils.isNotEmpty(dialectType)) {
@@ -86,7 +89,7 @@ public class PaginationInterceptor implements Interceptor {
 					}
 				}
 			}
-
+			
 			/* 未配置方言则抛出异常 */
 			if (dialect == null) {
 				throw new MybatisPlusException("The value of the dialect property in mybatis configuration.xml is not defined.");
@@ -176,10 +179,10 @@ public class PaginationInterceptor implements Interceptor {
 				total = rs.getInt(1);
 			}
 			page.setTotal(total);
-			/**
-			 * 当前页大于总页数，当前页设置为第一页
+			/*
+			 * 溢出总页数，设置第一页
 			 */
-			if(page.getCurrent() > page.getPages()){
+			if (overflowCurrent && (page.getCurrent() > page.getPages())) {
 				page = new Pagination(1, page.getSize());
 				page.setTotal(total);
 			}
@@ -187,8 +190,12 @@ public class PaginationInterceptor implements Interceptor {
 			e.printStackTrace();
 		} finally {
 			try {
-				rs.close();
-				pstmt.close();
+				if (rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -220,6 +227,10 @@ public class PaginationInterceptor implements Interceptor {
 
 	public void setDialectClazz(String dialectClazz) {
 		this.dialectClazz = dialectClazz;
+	}
+
+	public void setOverflowCurrent(boolean overflowCurrent) {
+		this.overflowCurrent = overflowCurrent;
 	}
 
 }
