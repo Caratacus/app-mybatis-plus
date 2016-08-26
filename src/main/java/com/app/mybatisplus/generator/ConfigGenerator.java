@@ -74,7 +74,7 @@ public class ConfigGenerator {
 	 */
 	protected String mapperName = "%sMapper";
 
-	protected String serviceName = "I%sService";
+	protected String serviceName = "%sService";
 
 	protected String serviceImplName = "%sServiceImpl";
 
