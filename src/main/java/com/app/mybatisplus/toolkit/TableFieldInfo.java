@@ -15,11 +15,13 @@
  */
 package com.app.mybatisplus.toolkit;
 
+import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
+
 /**
  * <p>
  * 数据库表字段反射信息
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-02-29
  */
@@ -46,14 +48,14 @@ public class TableFieldInfo {
 
 	public TableFieldInfo( boolean related, String column, String property ) {
 		this.related = related;
-		this.column = column;
+		this.column = DBKeywordsProcessor.convert(column);
 		this.property = property;
 	}
 
 
 	public TableFieldInfo( String column ) {
 		this.related = false;
-		this.column = column;
+		this.column = DBKeywordsProcessor.convert(column);
 		this.property = column;
 	}
 
@@ -74,7 +76,7 @@ public class TableFieldInfo {
 
 
 	public void setColumn( String column ) {
-		this.column = column;
+		this.column = DBKeywordsProcessor.convert(column);
 	}
 
 

@@ -36,6 +36,7 @@ import com.app.mybatisplus.generator.ConfigGenerator;
 import com.app.mybatisplus.generator.ConfigIdType;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
 import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
@@ -236,6 +237,7 @@ public class AutoGenerator {
 				}
 				String beanName = getBeanName(table, config.isDbPrefix());
 				String mapperName = String.format(config.getMapperName(), beanName);
+				String mapperXMLName = String.format(config.getMapperXMLName(), beanName);
 				String serviceName = String.format(config.getServiceName(), beanName);
 				String serviceImplName = String.format(config.getServiceImplName(), beanName);
 
@@ -248,8 +250,8 @@ public class AutoGenerator {
 				if (valideFile(PATH_MAPPER, mapperName, JAVA_SUFFIX)) {
 					buildMapper(beanName, mapperName);
 				}
-				if (valideFile(PATH_XML, mapperName, XML_SUFFIX)) {
-					buildMapperXml(columns, types, comments, idMap, mapperName);
+				if (valideFile(PATH_XML, mapperXMLName, XML_SUFFIX)) {
+					buildMapperXml(columns, types, comments, idMap, mapperName, mapperXMLName);
 				}
 				if (valideFile(PATH_SERVICE, serviceName, JAVA_SUFFIX)) {
 					buildService(beanName, serviceName);
@@ -691,8 +693,8 @@ public class AutoGenerator {
 	 * @throws IOException
 	 */
 	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
-								  Map<String, IdInfo> idMap, String mapperName) throws IOException {
-		File mapperXmlFile = new File(PATH_XML, mapperName + ".xml");
+								  Map<String, IdInfo> idMap, String mapperName,String mapperXMLName) throws IOException {
+		File mapperXmlFile = new File(PATH_XML, mapperXMLName + ".xml");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		bw.newLine();
@@ -811,12 +813,12 @@ public class AutoGenerator {
 			String column = columns.get(i);
 			IdInfo idInfo = idMap.get(column);
 			if (idInfo != null) {
-				bw.write("\t\t " + idInfo.getValue());
+				bw.write("\t\t " + DBKeywordsProcessor.convert(idInfo.getValue()));
 				if (idInfo.getValue().contains("_")) {
 					bw.write(" AS " + processField(idInfo.getValue()));
 				}
 			} else {
-				bw.write(" " + column);
+				bw.write(" " + DBKeywordsProcessor.convert(column));
 				if (column.contains("_")) {
 					bw.write(" AS " + processField(column));
 				}
