@@ -133,6 +133,28 @@ public interface IService<T, I> {
 
 	/**
 	 * <p>
+	 * 保存修改方法
+	 * </p>
+	 *
+	 * @param entity
+	 *            实体对象
+	 * @return boolean
+	 */
+	boolean saveOrUpdate(T entity);
+
+	/**
+	 * <p>
+	 * 保存修改方法
+	 * </p>
+	 *
+	 * @param entity
+	 *            实体对象
+	 * @return boolean
+	 */
+	boolean saveOrUpdateSelective(T entity);
+
+	/**
+	 * <p>
 	 * 根据 whereEntity 条件，更新记录
 	 * </p>
 	 *
