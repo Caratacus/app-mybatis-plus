@@ -16,13 +16,17 @@
 package com.app.framework.service.impl;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import com.app.common.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.app.common.MapUtils;
+import com.app.common.reflection.ReflectionUtils;
 import com.app.framework.service.IService;
+import com.app.mybatisplus.annotations.TableId;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
@@ -89,15 +93,60 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 
 	@Override
 	public boolean saveOrUpdate(T entity) {
-		//TODO
-        //entity.getClass().
-		return false;
+		return saveOrUpdate(entity, false);
 	}
 
 	@Override
 	public boolean saveOrUpdateSelective(T entity) {
-		//TODO
-		return false;
+		return saveOrUpdate(entity, true);
+	}
+
+	/**
+	 * 根据对象主键属性正确的调用保存或修改方法
+	 *
+	 * @param entity
+	 * @param isSelective
+	 * @return boolean
+	 * @throws MybatisPlusException
+	 *             entity need @TableId
+	 * @author Caratacus
+	 * @date 2016/8/27 0027
+	 * @version 1.0
+	 */
+	private boolean saveOrUpdate(T entity, boolean isSelective) {
+		// 反射所有属性
+		Field[] fields = entity.getClass().getDeclaredFields();
+		// 反射对象是否具有@TableId
+		boolean flag = false;
+		// 是否调用成功
+		boolean result = false;
+		for (Field field : fields) {
+			if (null != field.getAnnotation(TableId.class)) {
+				// 获取主键名称
+				String name = field.getName();
+				// 获取主键值
+				Object pkVal = ReflectionUtils.invokeGetterMethod(entity, name);
+				if (pkVal != null) {
+					if (isSelective)
+						result = updateSelectiveById(entity);
+					else
+						result = updateById(entity);
+				} else {
+					if (isSelective)
+						result = insertSelective(entity);
+					else
+						result = insert(entity);
+				}
+				flag = true;
+				break;
+			}
+		}
+		if (!flag) {
+			System.err.println("Not found @TableId annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
+			throw new MybatisPlusException("Not found @TableId annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
+		}
+		return result;
+
 	}
 
 	public boolean update(T entity, T whereEntity) {
