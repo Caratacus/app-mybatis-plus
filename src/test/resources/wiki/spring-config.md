@@ -41,16 +41,35 @@
 <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 	<property name="basePackage" value="xxx.mapper" />
 </bean>
+```
 
-<!-- MyBatis 自动热加载 -->
-<bean class="com.app.mybatisplus.spring.MybatisXMLMapperLoader" >
-    <!-- 设置是否启用: 默认启用 -->
-    <property name="enableAutoReload" value="true" />
-    <!-- 设置sqlSessionFactory -->
-    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
-    <!-- 设置映射文件地址 -->
-    <property name="mapperLocations" value="classpath*:xx/mapper/*.xml" />
-</bean>
+> 开启动态加载 mapper
+
+```
+
+    参数说明：
+        sqlSessionFactory:session工厂
+        mapperLocations:mapper匹配路径
+        enabled:是否开启动态加载  默认:false
+        delaySeconds:项目启动延迟加载时间  单位：秒  默认:10s
+        sleepSeconds:刷新时间间隔  单位：秒 默认:20s
+    提供了两个构造,挑选一个配置进入spring配置文件即可：
+
+	构造1:
+	    <bean class="com.app.mybatisplus.spring.MybatisMapperRefresh">
+	        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	        <constructor-arg name="mapperLocations" value="classpath*:mybatis/mappers/*/*.xml"/>
+	        <constructor-arg name="enabled" value="true"/>
+	    </bean>
+
+	构造2:
+		<bean class="com.app.mybatisplus.spring.MybatisMapperRefresh">
+	        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	        <constructor-arg name="mapperLocations" value="classpath*:mybatis/mappers/*/*.xml"/>
+	        <constructor-arg name="delaySeconds" value="10"/>
+	        <constructor-arg name="sleepSeconds" value="20"/>
+	        <constructor-arg name="enabled" value="true"/>
+	    </bean>
 ```
 
 
@@ -61,7 +80,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <!-- 
+    <!--
      | 全局配置设置
      |
      | 可配置选项                                        默认值, 描述
@@ -86,16 +105,16 @@
 	</settings>
 	<!-- 查询对象别名配置 -->
 	<typeAliases>
-		<!-- 
+		<!--
 		<typeAlias alias="taskVo" type="xxx.vo.TaskVo" />
 		 -->
 	</typeAliases>
 	<!-- 插件配置, spring 中配置，此处就可以不用配置。 -->
-    <!-- 
+    <!--
 	<plugins>
-	     | 分页插件配置 
+	     | 分页插件配置
 	     | 插件提供二种方言选择：1、默认方言 2、自定义方言实现类，两者均未配置则抛出异常！
-	     | dialectType 数据库方言  
+	     | dialectType 数据库方言
 	     |             默认支持  mysql  oracle  hsql  sqlite  postgre  sqlserver
 	     | dialectClazz 方言实现类
 	     |              自定义需要实现 com.app.mybatisplus.plugins.pagination.IDialect 接口
@@ -103,7 +122,7 @@
 	    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
 	        <property name="dialectType" value="mysql" />
 	    </plugin>
-	    2、配置方式二、使用自定义方言实现类 
+	    2、配置方式二、使用自定义方言实现类
 	    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
 	        <property name="dialectClazz" value="xxx.dialect.XXDialect" />
 	    </plugin>

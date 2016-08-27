@@ -52,6 +52,11 @@ public class MybatisConfiguration extends Configuration {
 	 */
 	public static ISqlInjector SQL_INJECTOR = new AutoSqlInjector();
 
+	/*
+	 * 是否刷新mapper
+	 */
+	public static boolean IS_REFRESH = false;
+
 	/**
 	 * 初始化调用
 	 */
@@ -72,12 +77,19 @@ public class MybatisConfiguration extends Configuration {
 	@Override
 	public void addMappedStatement(MappedStatement ms) {
 		logger.fine(" addMappedStatement: " + ms.getId());
-		if (this.mappedStatements.containsKey(ms.getId())) {
+		if (IS_REFRESH) {
 			/*
-			 * 说明已加载了xml中的节点； 忽略mapper中的SqlProvider数据
+			 * 支持是否自动刷新 XML 变更内容，开发环境使用【 注：生产环境勿用！】
 			 */
-			logger.severe("mapper[" + ms.getId() + "] is ignored, because it's exists, maybe from xml file");
-			return;
+			this.mappedStatements.remove(ms.getId());
+		} else {
+			if (this.mappedStatements.containsKey(ms.getId())) {
+				/*
+				 * 说明已加载了xml中的节点； 忽略mapper中的SqlProvider数据
+				 */
+				logger.severe("mapper[" + ms.getId() + "] is ignored, because it's exists, maybe from xml file");
+				return;
+			}
 		}
 		super.addMappedStatement(ms);
 	}
