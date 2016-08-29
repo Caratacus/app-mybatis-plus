@@ -38,7 +38,8 @@ public class StringUtils {
 	 * 判断字符串是否为空
 	 * </p>
 	 *
-	 * @param str 需要判断字符串
+	 * @param str
+	 *            需要判断字符串
 	 * @return 判断结果
 	 */
 	public static boolean isEmpty(String str) {
@@ -50,7 +51,8 @@ public class StringUtils {
 	 * 判断字符串是否不为空
 	 * </p>
 	 *
-	 * @param str 需要判断字符串
+	 * @param str
+	 *            需要判断字符串
 	 * @return 判断结果
 	 */
 	public static boolean isNotEmpty(String str) {
@@ -62,7 +64,8 @@ public class StringUtils {
 	 * 字符串驼峰转下划线格式
 	 * </p>
 	 *
-	 * @param param 需要转换的字符串
+	 * @param param
+	 *            需要转换的字符串
 	 * @return 转换好的字符串
 	 */
 	public static String camelToUnderline(String param) {
@@ -86,7 +89,8 @@ public class StringUtils {
 	 * 字符串下划线转驼峰格式
 	 * </p>
 	 *
-	 * @param param 需要转换的字符串
+	 * @param param
+	 *            需要转换的字符串
 	 * @return 转换好的字符串
 	 */
 	public static String underlineToCamel(String param) {
@@ -113,7 +117,8 @@ public class StringUtils {
 	 * 判断字符串是否为纯大写字母
 	 * </p>
 	 *
-	 * @param str 要匹配的字符串
+	 * @param str
+	 *            要匹配的字符串
 	 * @return
 	 */
 	public static boolean isUpperCase(String str) {
@@ -125,8 +130,10 @@ public class StringUtils {
 	 * 正则表达式匹配
 	 * </p>
 	 *
-	 * @param regex 正则表达式字符串
-	 * @param str   要匹配的字符串
+	 * @param regex
+	 *            正则表达式字符串
+	 * @param str
+	 *            要匹配的字符串
 	 * @return 如果str 符合 regex的正则表达式格式,返回true, 否则返回 false;
 	 */
 	public static boolean match(String regex, String str) {
@@ -140,10 +147,12 @@ public class StringUtils {
 	 * 使用单引号包含字符串
 	 * </p>
 	 *
-	 * @param srcStr 原字符串
+	 * @param srcStr
+	 *            原字符串
 	 * @return 单引号包含的原字符串
 	 */
 	public static String quotaMark(String srcStr) {
 		return isEmpty(srcStr) ? "" : "\'" + srcStr + "\'";
 	}
+
 }

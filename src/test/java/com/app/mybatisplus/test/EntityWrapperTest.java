@@ -15,6 +15,9 @@
  */
 package com.app.mybatisplus.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -184,6 +187,31 @@ public class EntityWrapperTest {
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (id='11' AND name=22)", sqlPart);
+	}
+	/**
+	 * 测试EXISTS
+	 */
+	@Test
+	public void testNul16() {
+		ew.notExists("(select * from user)");
+		String sqlPart = ew.getSqlSegment();
+		System.out.println("sql ==> " + sqlPart);
+		Assert.assertEquals("WHERE ( NOT EXISTS ( (select * from user) ))", sqlPart);
+	}
+	/**
+	 * 测试IN
+	 */
+	@Test
+	public void testNul17() {
+		List list = new ArrayList();
+		list.add("'1'");
+		list.add("'2'");
+		list.add("'3'");
+		list.add("'4'");
+		ew.notIn("test_type",list);
+		String sqlPart = ew.getSqlSegment();
+		System.out.println("sql ==> " + sqlPart);
+		Assert.assertEquals("WHERE (test_type NOT IN ( '1','2','3','4' ))", sqlPart);
 	}
 
 }
