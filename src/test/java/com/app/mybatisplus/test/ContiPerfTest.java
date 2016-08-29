@@ -41,10 +41,11 @@ public class ContiPerfTest {
 	 * average: 0.0039698
 	 * median: 0
 	 */
+	/*
 	@Test
 	@PerfTest(invocations = 200000000, threads = 16)
 	public void testIdWorker() throws Exception {
 		//System.out.println(IdWorker.getId());
 	}
-
+	*/
 }
