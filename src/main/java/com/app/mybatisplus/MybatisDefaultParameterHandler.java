@@ -29,6 +29,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 
 import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.toolkit.IdWorker;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
@@ -58,7 +59,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 	 * @return
 	 */
 	protected static Object processBatch(MappedStatement ms, Object parameterObject) {
-		if ( ms.getSqlCommandType() == SqlCommandType.INSERT ) {
+		if (ms.getSqlCommandType() == SqlCommandType.INSERT) {
 			/**
 			 * 只处理插入操作
 			 */
@@ -122,20 +123,25 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 	 *            插入数据库对象
 	 * @return
 	 */
-	protected static Object populateKeys( MappedStatement ms, Object parameterObject ) {
+	protected static Object populateKeys(MappedStatement ms, Object parameterObject) {
 		TableInfo tableInfo = TableInfoHelper.getTableInfo(parameterObject.getClass());
 		if (null != tableInfo && null != tableInfo.getIdType() && tableInfo.getIdType().getKey() >= 2) {
-			MetaObject metaParam = ms.getConfiguration().newMetaObject(parameterObject);
-			Object idValue = metaParam.getValue(tableInfo.getKeyProperty());
+			MetaObject metaObject = ms.getConfiguration().newMetaObject(parameterObject);
+			Object idValue = metaObject.getValue(tableInfo.getKeyProperty());
 			/* 自定义 ID */
-			if ( null == idValue || "".equals(idValue) ) {
-				if ( tableInfo.getIdType() == IdType.ID_WORKER ) {
-					metaParam.setValue(tableInfo.getKeyProperty(), IdWorker.getId());
-				} else if ( tableInfo.getIdType() == IdType.UUID ) {
-					metaParam.setValue(tableInfo.getKeyProperty(), get32UUID());
+			if (null == idValue || "".equals(idValue)) {
+				if (tableInfo.getIdType() == IdType.ID_WORKER) {
+					metaObject.setValue(tableInfo.getKeyProperty(), IdWorker.getId());
+				} else if (tableInfo.getIdType() == IdType.UUID) {
+					metaObject.setValue(tableInfo.getKeyProperty(), get32UUID());
 				}
 			}
-			return metaParam.getOriginalObject();
+			/* 自定义元对象填充控制器 */
+			IMetaObjectHandler metaObjectHandler = MybatisConfiguration.META_OBJECT_HANDLER;
+			if (null != metaObjectHandler) {
+				metaObjectHandler.insertFill(metaObject);
+			}
+			return metaObject.getOriginalObject();
 		}
 		return parameterObject;
 	}

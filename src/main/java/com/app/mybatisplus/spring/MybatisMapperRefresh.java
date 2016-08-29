@@ -42,13 +42,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.ResourceUtils;
 
+import com.app.mybatisplus.MybatisConfiguration;
+
 /**
  * <p>
  * 切莫用于生产环境（后果自负）<br>
  * Mybatis 映射文件热加载（发生变动后自动重新加载）.<br>
  * 方便开发时使用，不用每次修改xml文件后都要去重启应用.<br>
  * </p>
- * 
+ *
  * @author nieqiurong
  * @Date 2016-08-25
  */
@@ -85,7 +87,7 @@ public class MybatisMapperRefresh implements Runnable {
 	private static Map<String, List<Resource>> jarMapper = new HashMap<String, List<Resource>>();
 
 	public MybatisMapperRefresh(Resource[] mapperLocations, SqlSessionFactory sqlSessionFactory, int delaySeconds,
-                                int sleepSeconds, boolean enabled) {
+								int sleepSeconds, boolean enabled) {
 		this.mapperLocations = mapperLocations;
 		this.sqlSessionFactory = sqlSessionFactory;
 		this.delaySeconds = delaySeconds;
@@ -102,8 +104,11 @@ public class MybatisMapperRefresh implements Runnable {
 	}
 
 	public void run() {
-		beforeTime = System.currentTimeMillis();
+		/*
+		 * 启动 XML 热加载
+		 */
 		if (enabled) {
+			beforeTime = System.currentTimeMillis();
 			final MybatisMapperRefresh runnable = this;
 			new Thread(new Runnable() {
 
@@ -140,7 +145,7 @@ public class MybatisMapperRefresh implements Runnable {
 							for (String filePath : fileSet) {
 								File file = new File(filePath);
 								if (file != null && file.isFile() && file.lastModified() > beforeTime) {
-									com.app.mybatisplus.MybatisConfiguration.IS_REFRESH = true;
+									MybatisConfiguration.IS_REFRESH = true;
 									List<Resource> removeList = jarMapper.get(filePath);
 									if (removeList != null && !removeList.isEmpty()) {// 如果是jar包中的xml，将刷新jar包中存在的所有xml，后期再修改加载jar中修改过后的xml
 										for (Resource resource : removeList) {
@@ -151,10 +156,10 @@ public class MybatisMapperRefresh implements Runnable {
 									}
 								}
 							}
-							if (com.app.mybatisplus.MybatisConfiguration.IS_REFRESH) {
+							if (MybatisConfiguration.IS_REFRESH) {
 								beforeTime = System.currentTimeMillis();
 							}
-							com.app.mybatisplus.MybatisConfiguration.IS_REFRESH = false;
+							MybatisConfiguration.IS_REFRESH = false;
 						} catch (Exception exception) {
 							exception.printStackTrace();
 						}
@@ -172,7 +177,7 @@ public class MybatisMapperRefresh implements Runnable {
 
 	/**
 	 * 刷新mapper
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
@@ -213,7 +218,7 @@ public class MybatisMapperRefresh implements Runnable {
 
 	/**
 	 * 清理parameterMap
-	 * 
+	 *
 	 * @param list
 	 * @param namespace
 	 */
@@ -226,7 +231,7 @@ public class MybatisMapperRefresh implements Runnable {
 
 	/**
 	 * 清理resultMap
-	 * 
+	 *
 	 * @param list
 	 * @param namespace
 	 */
@@ -240,7 +245,7 @@ public class MybatisMapperRefresh implements Runnable {
 
 	/**
 	 * 清理selectKey
-	 * 
+	 *
 	 * @param list
 	 * @param namespace
 	 */
@@ -254,7 +259,7 @@ public class MybatisMapperRefresh implements Runnable {
 
 	/**
 	 * 清理sql节点缓存
-	 * 
+	 *
 	 * @param list
 	 * @param namespace
 	 */

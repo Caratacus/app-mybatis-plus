@@ -25,68 +25,72 @@ import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import com.app.mybatisplus.MybatisXMLConfigBuilder;
 import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.mapper.ISqlInjector;
 
 /**
  * <p>
  * replace default SqlSessionFactoryBuilder class
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-01-23
  */
 public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
 
-
 	@Override
-	public SqlSessionFactory build( Reader reader, String environment, Properties properties ) {
+	public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
 		try {
 			MybatisXMLConfigBuilder parser = new MybatisXMLConfigBuilder(reader, environment, properties);
 			return build(parser.parse());
-		} catch ( Exception e ) {
+		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);
 		} finally {
 			ErrorContext.instance().reset();
 			try {
 				reader.close();
-			} catch ( IOException e ) {
+			} catch (IOException e) {
 				// Intentionally ignore. Prefer previous error.
 			}
 		}
 	}
 
-
 	@Override
-	public SqlSessionFactory build( InputStream inputStream, String environment, Properties properties ) {
+	public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
 		try {
 			MybatisXMLConfigBuilder parser = new MybatisXMLConfigBuilder(inputStream, environment, properties);
 			return build(parser.parse());
-		} catch ( Exception e ) {
+		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);
 		} finally {
 			ErrorContext.instance().reset();
 			try {
 				inputStream.close();
-			} catch ( IOException e ) {
+			} catch (IOException e) {
 				// Intentionally ignore. Prefer previous error.
 			}
 		}
 	}
 
-	//TODO 注入数据库类型
-	public void setDbType( String dbType ) {
+	// TODO 注入数据库类型
+	public void setDbType(String dbType) {
 		MybatisConfiguration.DB_TYPE = DBType.getDBType(dbType);
 	}
 
-	//TODO 注入表字段使用下划线命名
+	// TODO 注入表字段使用下划线命名
 	public void setDbColumnUnderline(boolean dbColumnUnderline) {
 		MybatisConfiguration.DB_COLUMN_UNDERLINE = dbColumnUnderline;
 	}
 
-	//TODO 注入 SQL注入器
+	// TODO 注入 SQL注入器
 	public void setSqlInjector(ISqlInjector sqlInjector) {
 		MybatisConfiguration.SQL_INJECTOR = sqlInjector;
 	}
 
+	// TODO 注入 元对象字段填充控制器
+	public void setMetaObjectHandler(IMetaObjectHandler metaObjectHandler) {
+		MybatisConfiguration.META_OBJECT_HANDLER = metaObjectHandler;
+	}
 }

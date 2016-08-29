@@ -23,6 +23,7 @@ import org.apache.ibatis.session.Configuration;
 import com.app.mybatisplus.MybatisXMLLanguageDriver;
 import com.app.mybatisplus.mapper.AutoSqlInjector;
 import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.mapper.ISqlInjector;
 
 /**
@@ -51,6 +52,11 @@ public class MybatisConfiguration extends Configuration {
 	 * SQL 注入器，实现 ISqlInjector 或继承 AutoSqlInjector 自定义方法
 	 */
 	public static ISqlInjector SQL_INJECTOR = new AutoSqlInjector();
+
+	/*
+	 * 元对象字段填充控制器
+	 */
+	public static IMetaObjectHandler META_OBJECT_HANDLER = null;
 
 	/*
 	 * 是否刷新mapper

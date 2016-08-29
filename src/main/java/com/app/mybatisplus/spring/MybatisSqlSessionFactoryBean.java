@@ -58,6 +58,7 @@ import com.app.mybatisplus.MybatisXMLConfigBuilder;
 import com.app.mybatisplus.MybatisXMLMapperBuilder;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.mapper.ISqlInjector;
 import com.app.mybatisplus.toolkit.PackageHelper;
 
@@ -66,11 +67,12 @@ import com.app.mybatisplus.toolkit.PackageHelper;
  * 拷贝类 org.mybatis.spring.SqlSessionFactoryBean 修改方法 buildSqlSessionFactory()
  * 加载自定义 MybatisXmlConfigBuilder
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-01-23
  */
-public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>, InitializingBean, ApplicationListener<ApplicationEvent> {
+public class MybatisSqlSessionFactoryBean
+		implements FactoryBean<SqlSessionFactory>, InitializingBean, ApplicationListener<ApplicationEvent> {
 
 	private static final Log LOGGER = LogFactory.getLog(MybatisSqlSessionFactoryBean.class);
 
@@ -117,20 +119,25 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 	private ObjectFactory objectFactory;
 
 	private ObjectWrapperFactory objectWrapperFactory;
-	
-	//TODO 注入数据库类型
+
+	// TODO 注入数据库类型
 	public void setDbType(String dbType) {
 		MybatisConfiguration.DB_TYPE = DBType.getDBType(dbType);
 	}
-	
-	//TODO 注入表字段使用下划线命名
+
+	// TODO 注入表字段使用下划线命名
 	public void setDbColumnUnderline(boolean dbColumnUnderline) {
 		MybatisConfiguration.DB_COLUMN_UNDERLINE = dbColumnUnderline;
 	}
 
-	//TODO 注入 SQL注入器
+	// TODO 注入 SQL注入器
 	public void setSqlInjector(ISqlInjector sqlInjector) {
 		MybatisConfiguration.SQL_INJECTOR = sqlInjector;
+	}
+
+	// TODO 注入 元对象字段填充控制器
+	public void setMetaObjectHandler(IMetaObjectHandler metaObjectHandler) {
+		MybatisConfiguration.META_OBJECT_HANDLER = metaObjectHandler;
 	}
 
 	/**
@@ -293,7 +300,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 
 	/**
 	 * Set a customized MyBatis configuration.
-	 * 
+	 *
 	 * @param configuration
 	 *            MyBatis configuration
 	 * @since 1.3.0
@@ -432,7 +439,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 
 		Configuration configuration;
 
-		//TODO 加载自定义 MybatisXmlConfigBuilder
+		// TODO 加载自定义 MybatisXmlConfigBuilder
 		MybatisXMLConfigBuilder xmlConfigBuilder = null;
 		if (this.configuration != null) {
 			configuration = this.configuration;
@@ -450,7 +457,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 				LOGGER.debug(
 						"Property `configuration` or 'configLocation' not specified, using default MyBatis Configuration");
 			}
-			//TODO 使用自定义配置
+			// TODO 使用自定义配置
 			configuration = new MybatisConfiguration();
 			configuration.setVariables(this.configurationProperties);
 		}
@@ -468,7 +475,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 		}
 
 		if (hasLength(this.typeAliasesPackage)) {
-			//TODO
+			// TODO
 			String[] typeAliasPackageArray = null;
 			if (typeAliasesPackage.contains("*")) {
 				typeAliasPackageArray = PackageHelper.convertTypeAliasesPackage(typeAliasesPackage);
@@ -527,7 +534,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 		}
 
 		if (this.databaseIdProvider != null) {// fix #64 set databaseId before
-												// parse mapper xmls
+			// parse mapper xmls
 			try {
 				configuration.setDatabaseId(this.databaseIdProvider.getDatabaseId(this.dataSource));
 			} catch (SQLException e) {
@@ -566,9 +573,10 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 				}
 
 				try {
-					//TODO
-					MybatisXMLMapperBuilder xmlMapperBuilder = new MybatisXMLMapperBuilder(mapperLocation.getInputStream(),
-							configuration, mapperLocation.toString(), configuration.getSqlFragments());
+					// TODO
+					MybatisXMLMapperBuilder xmlMapperBuilder = new MybatisXMLMapperBuilder(
+							mapperLocation.getInputStream(), configuration, mapperLocation.toString(),
+							configuration.getSqlFragments());
 					xmlMapperBuilder.parse();
 				} catch (Exception e) {
 					throw new NestedIOException("Failed to parse mapping resource: '" + mapperLocation + "'", e);
