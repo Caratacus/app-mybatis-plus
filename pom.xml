@@ -2,11 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.app</groupId>
-    <artifactId>mybatis-plus</artifactId>
+    <artifactId>app-mybatis-plus</artifactId>
     <version>1.4.7.RELEASE</version>
     <packaging>jar</packaging>
 
-    <name>mybatis-plus</name>
+    <name>app-mybatis-plus</name>
     <description>mybatis-plus is an enhanced version of mybaits.</description>
     <url>http://maven.apache.org</url>
 
