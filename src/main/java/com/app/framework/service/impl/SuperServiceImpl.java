@@ -25,6 +25,6 @@ import com.app.mybatisplus.mapper.AutoMapper;
  * @author hubin
  * @Date 2016-04-20
  */
-public class SuperServiceImpl<M extends AutoMapper<T>, T> extends ServiceImpl<M, T, Long> {
+public class SuperServiceImpl<M extends AutoMapper<T>, T> extends ServiceImpl<T, Long> {
 
 }

@@ -39,10 +39,10 @@ import com.app.mybatisplus.plugins.Page;
  * @author hubin
  * @Date 2016-04-20
  */
-public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable> implements IService<T, PK> {
+public class ServiceImpl<T, PK extends Serializable> implements IService<T, PK> {
 
 	@Autowired
-	protected M baseMapper;
+	protected BaseMapper<T, PK> baseMapper;
 
 	/**
 	 * 判断数据库操作是否成功
