@@ -25,6 +25,6 @@ import com.app.mybatisplus.mapper.CommonMapper;
  * @author hubin
  * @Date 2016-04-20
  */
-public class CommonServiceImpl<M extends CommonMapper<T>, T> extends ServiceImpl<T, String> {
+public class CommonServiceImpl<M extends CommonMapper<T>, T> extends ServiceImpl<M, T, String> {
 
 }
