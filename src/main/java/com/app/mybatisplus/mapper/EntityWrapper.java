@@ -31,7 +31,7 @@ import com.app.mybatisplus.toolkit.StringUtils;
  */
 @SuppressWarnings("serial")
 public class EntityWrapper<T> implements Serializable {
-
+	public final static EntityWrapper DEFAULT = new EntityWrapper();
 	/**
 	 * 数据库表映射实体类
 	 */
@@ -48,7 +48,7 @@ public class EntityWrapper<T> implements Serializable {
 	protected TSqlPlus sql = new TSqlPlus();
 
 	public EntityWrapper() {
-        /* 注意，传入查询参数 */
+		/* 注意，传入查询参数 */
 	}
 
 	public EntityWrapper(T entity) {
@@ -85,8 +85,8 @@ public class EntityWrapper<T> implements Serializable {
 	 * SQL 片段
 	 */
 	public String getSqlSegment() {
-        /*
-         * 无条件
+		/*
+		 * 无条件
 		 */
 		String sqlWhere = sql.toString();
 		if (StringUtils.isEmpty(sqlWhere)) {
@@ -97,7 +97,7 @@ public class EntityWrapper<T> implements Serializable {
 		sqlWhere = (null != entity) ? sqlWhere.replaceFirst("WHERE", "AND") : sqlWhere;
 
 		/*
-         * 使用防SQL注入处理后返回
+		 * 使用防SQL注入处理后返回
 		 */
 		return stripSqlInjection(sqlWhere);
 	}
@@ -112,8 +112,10 @@ public class EntityWrapper<T> implements Serializable {
 	 * 输出: WHERE (NAME='zhangsan' AND id=123)
 	 * </p>
 	 *
-	 * @param sqlWhere where语句
-	 * @param params   参数集
+	 * @param sqlWhere
+	 *            where语句
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	public EntityWrapper<T> where(String sqlWhere, Object... params) {
@@ -126,8 +128,10 @@ public class EntityWrapper<T> implements Serializable {
 	 * AND 连接后续条件
 	 * </p>
 	 *
-	 * @param sqlAnd and条件语句
-	 * @param params 参数集
+	 * @param sqlAnd
+	 *            and条件语句
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	public EntityWrapper<T> and(String sqlAnd, Object... params) {
@@ -144,8 +148,10 @@ public class EntityWrapper<T> implements Serializable {
 	 * (name='zhangsan' AND id=11) AND (statu=1)
 	 * </p>
 	 *
-	 * @param sqlAnd AND 条件语句
-	 * @param params 参数值
+	 * @param sqlAnd
+	 *            AND 条件语句
+	 * @param params
+	 *            参数值
 	 * @return this
 	 */
 	public EntityWrapper<T> andNew(String sqlAnd, Object... params) {
@@ -158,8 +164,10 @@ public class EntityWrapper<T> implements Serializable {
 	 * 添加OR条件
 	 * </p>
 	 *
-	 * @param sqlOr  or 条件语句
-	 * @param params 参数集
+	 * @param sqlOr
+	 *            or 条件语句
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	public EntityWrapper<T> or(String sqlOr, Object... params) {
@@ -176,8 +184,10 @@ public class EntityWrapper<T> implements Serializable {
 	 * (name='zhangsan' AND id=11) OR (statu=1)
 	 * </p>
 	 *
-	 * @param sqlOr  AND 条件语句
-	 * @param params 参数值
+	 * @param sqlOr
+	 *            AND 条件语句
+	 * @param params
+	 *            参数值
 	 * @return this
 	 */
 	public EntityWrapper<T> orNew(String sqlOr, Object... params) {
@@ -193,7 +203,8 @@ public class EntityWrapper<T> implements Serializable {
 	 * eg: ew.where("name='zhangsan'").groupBy("id,name")
 	 * </p>
 	 *
-	 * @param columns SQL 中的 Group by 语句，无需输入 Group By 关键字
+	 * @param columns
+	 *            SQL 中的 Group by 语句，无需输入 Group By 关键字
 	 * @return this
 	 */
 	public EntityWrapper<T> groupBy(String columns) {
@@ -209,8 +220,10 @@ public class EntityWrapper<T> implements Serializable {
 	 * eg: ew.groupBy("id,name").having("id={0}",22).and("password is not null")
 	 * </p>
 	 *
-	 * @param sqlHaving having关键字后面跟随的语句
-	 * @param params    参数集
+	 * @param sqlHaving
+	 *            having关键字后面跟随的语句
+	 * @param params
+	 *            参数集
 	 * @return EntityWrapper
 	 */
 	public EntityWrapper<T> having(String sqlHaving, Object... params) {
@@ -227,7 +240,8 @@ public class EntityWrapper<T> implements Serializable {
 	 * ).orderBy("id,name")
 	 * </p>
 	 *
-	 * @param columns SQL 中的 order by 语句，无需输入 Order By 关键字
+	 * @param columns
+	 *            SQL 中的 order by 语句，无需输入 Order By 关键字
 	 * @return this
 	 */
 	public EntityWrapper<T> orderBy(String columns) {
@@ -240,8 +254,10 @@ public class EntityWrapper<T> implements Serializable {
 	 * SQL中orderby关键字跟的条件语句，可根据变更动态排序
 	 * </p>
 	 *
-	 * @param columns SQL 中的 order by 语句，无需输入 Order By 关键字
-	 * @param isAsc   是否为升序
+	 * @param columns
+	 *            SQL 中的 order by 语句，无需输入 Order By 关键字
+	 * @param isAsc
+	 *            是否为升序
 	 * @return this
 	 */
 	public EntityWrapper<T> orderBy(String columns, boolean isAsc) {
@@ -254,8 +270,10 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * LIKE条件语句，value中无需前后% 目前适配mysql及oracle
 	 *
-	 * @param column 字段名称
-	 * @param value  匹配值
+	 * @param column
+	 *            字段名称
+	 * @param value
+	 *            匹配值
 	 * @return this
 	 */
 	public EntityWrapper<T> like(String column, String value) {
@@ -266,18 +284,22 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * NOT LIKE条件语句，value中无需前后% 目前适配mysql及oracle
 	 *
-	 * @param column 字段名称
-	 * @param value  匹配值
+	 * @param column
+	 *            字段名称
+	 * @param value
+	 *            匹配值
 	 * @return this
 	 */
 	public EntityWrapper<T> notLike(String column, String value) {
 		sql.NOT_LIKE(column, value);
 		return this;
 	}
+
 	/**
 	 * EXISTS 条件语句，目前适配mysql及oracle
 	 *
-	 * @param value  匹配值
+	 * @param value
+	 *            匹配值
 	 * @return this
 	 */
 	public EntityWrapper<T> exists(String value) {
@@ -288,18 +310,22 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * NOT EXISTS条件语句
 	 *
-	 * @param value  匹配值
+	 * @param value
+	 *            匹配值
 	 * @return this
 	 */
 	public EntityWrapper<T> notExists(String value) {
 		sql.NOT_EXISTS(value);
 		return this;
 	}
+
 	/**
 	 * IN 条件语句，目前适配mysql及oracle
 	 *
-	 * @param column 字段名称
-	 * @param value  逗号拼接的字符串
+	 * @param column
+	 *            字段名称
+	 * @param value
+	 *            逗号拼接的字符串
 	 * @return this
 	 */
 	public EntityWrapper<T> in(String column, String value) {
@@ -310,19 +336,24 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * NOT IN条件语句
 	 *
-	 * @param column 字段名称
-	 * @param value  逗号拼接的字符串
+	 * @param column
+	 *            字段名称
+	 * @param value
+	 *            逗号拼接的字符串
 	 * @return this
 	 */
 	public EntityWrapper<T> notIn(String column, String value) {
 		sql.NOT_IN(column, value);
 		return this;
 	}
+
 	/**
 	 * IN 条件语句，目前适配mysql及oracle
 	 *
-	 * @param column 字段名称
-	 * @param value  匹配值 List集合
+	 * @param column
+	 *            字段名称
+	 * @param value
+	 *            匹配值 List集合
 	 * @return this
 	 */
 	public EntityWrapper<T> in(String column, List value) {
@@ -333,8 +364,10 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * NOT IN 条件语句，目前适配mysql及oracle
 	 *
-	 * @param column 字段名称
-	 * @param value  匹配值 List集合
+	 * @param column
+	 *            字段名称
+	 * @param value
+	 *            匹配值 List集合
 	 * @return this
 	 */
 	public EntityWrapper<T> notIn(String column, List value) {
@@ -345,7 +378,8 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * is not null 条件
 	 *
-	 * @param columns 字段名称。多个字段以逗号分隔。
+	 * @param columns
+	 *            字段名称。多个字段以逗号分隔。
 	 * @return this
 	 */
 	public EntityWrapper<T> isNotNull(String columns) {
@@ -356,7 +390,8 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * is not null 条件
 	 *
-	 * @param columns 字段名称。多个字段以逗号分隔。
+	 * @param columns
+	 *            字段名称。多个字段以逗号分隔。
 	 * @return this
 	 */
 	public EntityWrapper<T> isNull(String columns) {
@@ -367,8 +402,10 @@ public class EntityWrapper<T> implements Serializable {
 	/**
 	 * 为了兼容之前的版本,可使用where()或and()替代
 	 *
-	 * @param sqlWhere where sql部分
-	 * @param params   参数集
+	 * @param sqlWhere
+	 *            where sql部分
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	public EntityWrapper<T> addFilter(String sqlWhere, Object... params) {
@@ -386,9 +423,12 @@ public class EntityWrapper<T> implements Serializable {
 	 * 输出: WHERE (name='zhangsan' AND id=22)
 	 * </p>
 	 *
-	 * @param need     是否需要添加该条件
-	 * @param sqlWhere 条件语句
-	 * @param params   参数集
+	 * @param need
+	 *            是否需要添加该条件
+	 * @param sqlWhere
+	 *            条件语句
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	public EntityWrapper<T> addFilterIfNeed(boolean need, String sqlWhere, Object... params) {
@@ -400,21 +440,23 @@ public class EntityWrapper<T> implements Serializable {
 	 * SQL注入内容剥离
 	 * </p>
 	 *
-	 * @param value 待处理内容
+	 * @param value
+	 *            待处理内容
 	 * @return this
 	 */
 	protected String stripSqlInjection(String value) {
 		return value.replaceAll("('.+--)|(--)|(\\|)|(%7C)", "");
 	}
 
-
 	/**
 	 * <p>
 	 * 格式化SQL
 	 * </p>
 	 *
-	 * @param sqlStr SQL语句部分
-	 * @param params 参数集
+	 * @param sqlStr
+	 *            SQL语句部分
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	protected String formatSql(String sqlStr, Object... params) {
@@ -426,9 +468,12 @@ public class EntityWrapper<T> implements Serializable {
 	 * 根据需要格式化SQL
 	 * </p>
 	 *
-	 * @param need   是否需要格式化
-	 * @param sqlStr SQL语句部分
-	 * @param params 参数集
+	 * @param need
+	 *            是否需要格式化
+	 * @param sqlStr
+	 *            SQL语句部分
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	protected String formatSqlIfNeed(boolean need, String sqlStr, Object... params) {
@@ -444,11 +489,11 @@ public class EntityWrapper<T> implements Serializable {
 
 	/**
 	 * <p>
-	 * 处理String类型的参数，自动添加单引号 'value'.
-	 * 如果当前字符串已经包含单引号，则不做修改
+	 * 处理String类型的参数，自动添加单引号 'value'. 如果当前字符串已经包含单引号，则不做修改
 	 * </p>
 	 *
-	 * @param params 参数集
+	 * @param params
+	 *            参数集
 	 */
 	protected void dealParams(Object[] params) {
 		for (int i = 0; i < params.length; i++) {
