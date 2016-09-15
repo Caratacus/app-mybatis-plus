@@ -562,7 +562,7 @@ public class AutoGenerator {
 			 * 判断ID 添加注解 <br> isLine 是否包含下划线
 			 */
 
-			if (idInfo != null || "id".equals(column)) {
+			if (idInfo != null || "id".equalsIgnoreCase(column)) {
 
 			} else if (isLine && !config.isDbColumnUnderline()) {
 				bw.newLine();
@@ -587,7 +587,7 @@ public class AutoGenerator {
 			String _tempType = processType(types.get(i));
 			String _tempField = processField(columns.get(i));
 			String _field = _tempField.substring(0, 1).toUpperCase() + _tempField.substring(1);
-			if(!"Id".equals(_field)) {
+			if(!"Id".equalsIgnoreCase(_field)) {
 				bw.newLine();
 				bw.write("\tpublic " + _tempType + " get" + _field + "() {");
 				bw.newLine();

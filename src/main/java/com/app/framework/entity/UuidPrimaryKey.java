@@ -5,7 +5,7 @@ import com.app.mybatisplus.annotations.IdType;
 
 public class UuidPrimaryKey {
 
-	@Id(type = IdType.UUID)
+	@Id(value = "ID", type = IdType.UUID)
 	protected String id;
 
 	public String getId() {
