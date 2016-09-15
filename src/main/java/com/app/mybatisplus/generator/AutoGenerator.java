@@ -533,25 +533,25 @@ public class AutoGenerator {
 			bw.write("import com.app.mybatisplus.annotations.IdType;");
 			bw.newLine();
 		}
-		bw.write("import com.app.mybatisplus.annotations.TableField;");
+		bw.write("import com.app.mybatisplus.annotations.Column;");
 		bw.newLine();
-		bw.write("import com.app.mybatisplus.annotations.TableId;");
+		bw.write("import com.app.mybatisplus.annotations.Id;");
 		bw.newLine();
 		if (table.contains("_")) {
-			bw.write("import com.app.mybatisplus.annotations.TableName;");
+			bw.write("import com.app.mybatisplus.annotations.Table;");
 			bw.newLine();
 		}
 		bw = buildClassComment(bw, tableComment);
 		bw.newLine();
 		/* 包含下划线注解 */
 		if (table.contains("_")) {
-			bw.write("@TableName(\"" + table + "\")");
+			bw.write("@Table(\"" + table + "\")");
 			bw.newLine();
 		}
 		bw.write("public class " + beanName + " extends BaseModel {");
 		bw.newLine();
 		bw.newLine();
-		bw.write("\t@TableField(exist = false)");
+		bw.write("\t@Column(exist = false)");
 		bw.newLine();
 		bw.write("\tprivate static final long serialVersionUID = " + Math.abs(new Random().nextLong()) + "L;");
 		bw.newLine();
@@ -568,8 +568,8 @@ public class AutoGenerator {
 			boolean isLine = column.contains("_");
 			IdInfo idInfo = idMap.get(column);
 			if (idInfo != null) {
-				// @TableId(value = "test_id", type = IdType.AUTO)
-				bw.write("\t@TableId");
+				// @Id(value = "test_id", type = IdType.AUTO)
+				bw.write("\t@Id");
 				String idType = toIdType();
 				if (isLine) {
 					if (config.isDbColumnUnderline()) {
@@ -594,8 +594,8 @@ public class AutoGenerator {
 				}
 				bw.newLine();
 			} else if (isLine && !config.isDbColumnUnderline()) {
-				// @TableField(value = "test_type", exist = false)
-				bw.write("\t@TableField(value = \"" + column + "\")");
+				// @Column(value = "test_type", exist = false)
+				bw.write("\t@Column(value = \"" + column + "\")");
 				bw.newLine();
 			}
 			bw.write("\tprivate " + processType(types.get(i)) + " " + field + ";");

@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.app.common.MapUtils;
 import com.app.common.reflection.ReflectionUtils;
 import com.app.framework.service.IService;
-import com.app.mybatisplus.annotations.TableId;
+import com.app.mybatisplus.annotations.Id;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
@@ -108,7 +108,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	 * @param isSelective
 	 * @return boolean
 	 * @throws MybatisPlusException
-	 *             entity need @TableId
+	 *             entity need @Id
 	 * @author Caratacus
 	 * @date 2016/8/27 0027
 	 * @version 1.0
@@ -116,12 +116,12 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	private boolean saveOrUpdate(T entity, boolean isSelective) {
 		// 反射所有属性
 		Field[] fields = entity.getClass().getDeclaredFields();
-		// 反射对象是否具有@TableId
+		// 反射对象是否具有@Id
 		boolean flag = false;
 		// 是否调用成功
 		boolean result = false;
 		for (Field field : fields) {
-			if (null != field.getAnnotation(TableId.class)) {
+			if (null != field.getAnnotation(Id.class)) {
 				// 获取主键名称
 				String name = field.getName();
 				// 获取主键值
@@ -142,8 +142,8 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 			}
 		}
 		if (!flag) {
-			System.err.println("Not found @TableId annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
-			throw new MybatisPlusException("Not found @TableId annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
+			System.err.println("Not found @Id annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
+			throw new MybatisPlusException("Not found @Id annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
 		}
 		return result;
 

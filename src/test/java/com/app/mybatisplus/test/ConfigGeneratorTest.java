@@ -39,7 +39,7 @@ public class ConfigGeneratorTest {
 		/*
 		 * <p> true 表示数据库设置全局下划线命名规则，默认 false
 		 * ---------------------------------------------------------------------
-		 * ---------------<br> 【 开启该设置实体可无 @TableId(value = "test_id")
+		 * ---------------<br> 【 开启该设置实体可无 @Id(value = "test_id")
 		 * 字段映射，启动配置对应也要开启 true 设置 】 </p>
 		 */
         cg.setDbColumnUnderline(false);

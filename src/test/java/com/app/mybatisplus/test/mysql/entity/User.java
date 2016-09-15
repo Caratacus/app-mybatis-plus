@@ -18,9 +18,9 @@ package com.app.mybatisplus.test.mysql.entity;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import com.app.mybatisplus.annotations.TableField;
-import com.app.mybatisplus.annotations.TableId;
-import com.app.mybatisplus.annotations.TableName;
+import com.app.mybatisplus.annotations.Column;
+import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.annotations.Table;
 
 /**
  * <p>
@@ -31,15 +31,15 @@ import com.app.mybatisplus.annotations.TableName;
  * @Date 2016-01-23
  */
 /* 表名 注解 */
-@TableName("user")
+@Table("user")
 public class User implements Serializable {
 
 	/* 表字段注解，false 表中不存在的字段，可无该注解 默认 true */
-	@TableField(exist = false)
+	@Column(exist = false)
 	private static final long serialVersionUID = 1L;
 
 	/* 主键ID 注解，value 字段名，type 用户输入ID */
-	@TableId(value = "test_id")
+	@Id(value = "test_id")
 	private Long id;
 
 	private String name;
@@ -47,7 +47,7 @@ public class User implements Serializable {
 	private Integer age;
 
 	/* 测试下划线字段命名类型 */
-	@TableField(value = "test_type")
+	@Column(value = "test_type")
 	private Integer testType;
 
 	public User() {

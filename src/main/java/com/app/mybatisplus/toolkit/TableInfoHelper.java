@@ -23,13 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.app.mybatisplus.toolkit.StringUtils;
-import com.app.mybatisplus.toolkit.TableFieldInfo;
-import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.annotations.TableField;
-import com.app.mybatisplus.annotations.TableId;
-import com.app.mybatisplus.annotations.TableName;
+import com.app.mybatisplus.annotations.Column;
+import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.annotations.Table;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 /**
@@ -65,7 +62,7 @@ public class TableInfoHelper {
 		TableInfo tableInfo = new TableInfo();
 
 		/* 表名 */
-		TableName table = clazz.getAnnotation(TableName.class);
+		Table table = clazz.getAnnotation(Table.class);
 		if (table != null && table.value() != null && table.value().trim().length() > 0) {
 			tableInfo.setTableName(table.value());
 		} else {
@@ -77,7 +74,7 @@ public class TableInfoHelper {
 			/**
 			 * 主键ID
 			 */
-			TableId tableId = field.getAnnotation(TableId.class);
+			Id tableId = field.getAnnotation(Id.class);
 			if (tableId != null) {
 				if (tableInfo.getKeyColumn() == null) {
 					tableInfo.setIdType(tableId.type());
@@ -95,12 +92,12 @@ public class TableInfoHelper {
 					continue;
 				} else {
 					/* 发现设置多个主键注解抛出异常 */
-					throw new MybatisPlusException("There must be only one, Discover multiple @TableId annotation in " + clazz);
+					throw new MybatisPlusException("There must be only one, Discover multiple @Id annotation in " + clazz);
 				}
 			}
 
 			/* 获取注解属性，自定义字段 */
-			TableField tableField = field.getAnnotation(TableField.class);
+			Column tableField = field.getAnnotation(Column.class);
 			if (tableField != null && StringUtils.isNotEmpty(tableField.value())) {
 				fieldList.add(new TableFieldInfo(true, tableField.value(), field.getName()));
 				continue;
@@ -122,7 +119,7 @@ public class TableInfoHelper {
 
 		/* 未发现主键注解抛出异常 */
 		if (tableInfo.getKeyColumn() == null) {
-			throw new MybatisPlusException("Not found @TableId annotation in " + clazz);
+			throw new MybatisPlusException("Not found @Id annotation in " + clazz);
 		}
 
 		tableInfoCache.put(clazz.getName(), tableInfo);
@@ -148,7 +145,7 @@ public class TableInfoHelper {
 			}
 
 			/* 过滤注解非表字段属性 */
-			TableField tableField = field.getAnnotation(TableField.class);
+			Column tableField = field.getAnnotation(Column.class);
 			if (tableField == null || tableField.exist()) {
 				result.add(field);
 			}

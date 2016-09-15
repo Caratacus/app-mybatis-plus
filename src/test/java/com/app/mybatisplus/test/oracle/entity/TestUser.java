@@ -3,23 +3,23 @@ package com.app.mybatisplus.test.oracle.entity;
 import java.io.Serializable;
 
 import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.annotations.TableField;
-import com.app.mybatisplus.annotations.TableId;
-import com.app.mybatisplus.annotations.TableName;
+import com.app.mybatisplus.annotations.Column;
+import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.annotations.Table;
 
 /**
  *
  * 用户表
  *
  */
-@TableName("TEST_USER")
+@Table("TEST_USER")
 public class TestUser implements Serializable {
 
-	@TableField(exist = false)
+	@Column(exist = false)
 	private static final long serialVersionUID = 1L;
 
 	/** 主键ID */
-	@TableId(value = "TEST_ID", type = IdType.UUID)
+	@Id(value = "TEST_ID", type = IdType.UUID)
 	private String testId;
 
 	/** 名称 */
@@ -29,7 +29,7 @@ public class TestUser implements Serializable {
 	private Integer age;
 
 	/** 测试下划线字段命名类型 */
-	@TableField(value = "TEST_TYPE")
+	@Column(value = "TEST_TYPE")
 	private Integer testType;
 
 

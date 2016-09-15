@@ -22,29 +22,21 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * 表字段标识
+ * 数据库表名
  * </p>
  * 
  * @author hubin
  * @Date 2016-01-23
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface TableField {
-	
+@Target(ElementType.TYPE)
+public @interface Table {
+
 	/*
 	 * <p>
-	 * 字段值（驼峰命名方式，该值可无）
+	 * 实体对应的表名【必须】
 	 * </p>
 	 */
-	String value() default "";
-	
-	/*
-	 * <p>
-	 * 是否为数据库表字段
-	 * </p>
-	 * 默认 true 存在，false 不存在
-	 * 
-	 */
-	boolean exist() default true;
+	String value();
+
 }
