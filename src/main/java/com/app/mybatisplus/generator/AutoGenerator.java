@@ -15,6 +15,11 @@
  */
 package com.app.mybatisplus.generator;
 
+import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
+import com.app.mybatisplus.toolkit.StringUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,11 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
-import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>
@@ -529,10 +529,6 @@ public class AutoGenerator {
 			bw.newLine();
 		}
 		bw.newLine();
-		if (config.getIdType() != IdType.ID_WORKER) {
-			bw.write("import com.app.mybatisplus.annotations.IdType;");
-			bw.newLine();
-		}
 		bw.write("import com.app.mybatisplus.annotations.Column;");
 		bw.newLine();
 		bw.write("import com.app.mybatisplus.annotations.Id;");
@@ -557,48 +553,30 @@ public class AutoGenerator {
 		bw.newLine();
 		int size = columns.size();
 		for (int i = 0; i < size; i++) {
-			bw.newLine();
-			bw.write("\t/** " + comments.get(i) + " */");
-			bw.newLine();
-			/*
-			 * 判断ID 添加注解 <br> isLine 是否包含下划线
-			 */
 			String column = columns.get(i);
 			String field = processField(column);
 			boolean isLine = column.contains("_");
 			IdInfo idInfo = idMap.get(column);
-			if (idInfo != null) {
-				// @Id(value = "test_id", type = IdType.AUTO)
-				bw.write("\t@Id");
-				String idType = toIdType();
-				if (isLine) {
-					if (config.isDbColumnUnderline()) {
-						// 排除默认自增
-						if (null != idType) {
-							bw.write("(");
-							bw.write(idType);
-							bw.write(")");
-						}
-					} else {
-						bw.write("(value = \"" + column + "\"");
-						if (null != idType) {
-							bw.write(", ");
-							bw.write(idType);
-						}
-						bw.write(")");
-					}
-				} else if (null != idType) {
-					bw.write("(");
-					bw.write(idType);
-					bw.write(")");
-				}
-				bw.newLine();
+
+			/*
+			 * 判断ID 添加注解 <br> isLine 是否包含下划线
+			 */
+
+			if (idInfo != null || "id".equals(column)) {
+
 			} else if (isLine && !config.isDbColumnUnderline()) {
-				// @Column(value = "test_type", exist = false)
+				bw.newLine();
+				bw.write("\t/** " + comments.get(i) + " */");
+				bw.newLine();
 				bw.write("\t@Column(value = \"" + column + "\")");
 				bw.newLine();
+				bw.write("\tprivate " + processType(types.get(i)) + " " + field + ";");
+			}else {
+				bw.newLine();
+				bw.write("\t/** " + comments.get(i) + " */");
+				bw.newLine();
+				bw.write("\tprivate " + processType(types.get(i)) + " " + field + ";");
 			}
-			bw.write("\tprivate " + processType(types.get(i)) + " " + field + ";");
 			bw.newLine();
 		}
 
@@ -609,20 +587,22 @@ public class AutoGenerator {
 			String _tempType = processType(types.get(i));
 			String _tempField = processField(columns.get(i));
 			String _field = _tempField.substring(0, 1).toUpperCase() + _tempField.substring(1);
-			bw.newLine();
-			bw.write("\tpublic " + _tempType + " get" + _field + "() {");
-			bw.newLine();
-			bw.write("\t\treturn this." + _tempField + ";");
-			bw.newLine();
-			bw.write("\t}");
-			bw.newLine();
-			bw.newLine();
-			bw.write("\tpublic void set" + _field + "(" + _tempType + " " + _tempField + ") {");
-			bw.newLine();
-			bw.write("\t\tthis." + _tempField + " = " + _tempField + ";");
-			bw.newLine();
-			bw.write("\t}");
-			bw.newLine();
+			if(!"Id".equals(_field)) {
+				bw.newLine();
+				bw.write("\tpublic " + _tempType + " get" + _field + "() {");
+				bw.newLine();
+				bw.write("\t\treturn this." + _tempField + ";");
+				bw.newLine();
+				bw.write("\t}");
+				bw.newLine();
+				bw.newLine();
+				bw.write("\tpublic void set" + _field + "(" + _tempType + " " + _tempField + ") {");
+				bw.newLine();
+				bw.write("\t\tthis." + _tempField + " = " + _tempField + ";");
+				bw.newLine();
+				bw.write("\t}");
+				bw.newLine();
+			}
 		}
 
 		bw.newLine();
