@@ -118,7 +118,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> where(String sqlWhere, Object... params) {
+	public EntityWrapper<T> where(String sqlWhere, String... params) {
 		sql.WHERE(formatSql(sqlWhere, params));
 		return this;
 	}
@@ -134,7 +134,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> and(String sqlAnd, Object... params) {
+	public EntityWrapper<T> and(String sqlAnd, String... params) {
 		sql.AND().WHERE(formatSql(sqlAnd, params));
 		return this;
 	}
@@ -154,7 +154,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数值
 	 * @return this
 	 */
-	public EntityWrapper<T> andNew(String sqlAnd, Object... params) {
+	public EntityWrapper<T> andNew(String sqlAnd, String... params) {
 		sql.AND_NEW().WHERE(formatSql(sqlAnd, params));
 		return this;
 	}
@@ -170,7 +170,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> or(String sqlOr, Object... params) {
+	public EntityWrapper<T> or(String sqlOr, String... params) {
 		sql.OR().WHERE(formatSql(sqlOr, params));
 		return this;
 	}
@@ -190,7 +190,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数值
 	 * @return this
 	 */
-	public EntityWrapper<T> orNew(String sqlOr, Object... params) {
+	public EntityWrapper<T> orNew(String sqlOr, String... params) {
 		sql.OR_NEW().WHERE(formatSql(sqlOr, params));
 		return this;
 	}
@@ -226,7 +226,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return EntityWrapper
 	 */
-	public EntityWrapper<T> having(String sqlHaving, Object... params) {
+	public EntityWrapper<T> having(String sqlHaving, String... params) {
 		sql.HAVING(formatSql(sqlHaving, params));
 		return this;
 	}
@@ -408,7 +408,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> addFilter(String sqlWhere, Object... params) {
+	public EntityWrapper<T> addFilter(String sqlWhere, String... params) {
 		return and(sqlWhere, params);
 	}
 
@@ -431,7 +431,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> addFilterIfNeed(boolean need, String sqlWhere, Object... params) {
+	public EntityWrapper<T> addFilterIfNeed(boolean need, String sqlWhere, String... params) {
 		return need ? where(sqlWhere, params) : this;
 	}
 
@@ -459,7 +459,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	protected String formatSql(String sqlStr, Object... params) {
+	protected String formatSql(String sqlStr, String... params) {
 		return formatSqlIfNeed(true, sqlStr, params);
 	}
 
@@ -476,7 +476,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	protected String formatSqlIfNeed(boolean need, String sqlStr, Object... params) {
+	protected String formatSqlIfNeed(boolean need, String sqlStr, String... params) {
 		if (!need || StringUtils.isEmpty(sqlStr)) {
 			return null;
 		}
