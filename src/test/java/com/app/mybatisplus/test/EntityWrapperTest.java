@@ -183,10 +183,10 @@ public class EntityWrapperTest {
 	 */
 	@Test
 	public void testNul15() {
-		ew.where("id={0}", "11").and("name={0}", 22);
+		ew.where("id={0}", "11").and("name={0}", 221111111);
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
-		Assert.assertEquals("WHERE (id='11' AND name=22)", sqlPart);
+		Assert.assertEquals("WHERE (id='11' AND name=221111111)", sqlPart);
 	}
 	/**
 	 * 测试EXISTS

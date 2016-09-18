@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.List;
 
+import com.app.common.Logis;
 import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
@@ -118,7 +119,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> where(String sqlWhere, String... params) {
+	public EntityWrapper<T> where(String sqlWhere, Object... params) {
 		sql.WHERE(formatSql(sqlWhere, params));
 		return this;
 	}
@@ -134,7 +135,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> and(String sqlAnd, String... params) {
+	public EntityWrapper<T> and(String sqlAnd, Object... params) {
 		sql.AND().WHERE(formatSql(sqlAnd, params));
 		return this;
 	}
@@ -154,7 +155,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数值
 	 * @return this
 	 */
-	public EntityWrapper<T> andNew(String sqlAnd, String... params) {
+	public EntityWrapper<T> andNew(String sqlAnd, Object... params) {
 		sql.AND_NEW().WHERE(formatSql(sqlAnd, params));
 		return this;
 	}
@@ -170,7 +171,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> or(String sqlOr, String... params) {
+	public EntityWrapper<T> or(String sqlOr, Object... params) {
 		sql.OR().WHERE(formatSql(sqlOr, params));
 		return this;
 	}
@@ -190,7 +191,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数值
 	 * @return this
 	 */
-	public EntityWrapper<T> orNew(String sqlOr, String... params) {
+	public EntityWrapper<T> orNew(String sqlOr, Object... params) {
 		sql.OR_NEW().WHERE(formatSql(sqlOr, params));
 		return this;
 	}
@@ -226,7 +227,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return EntityWrapper
 	 */
-	public EntityWrapper<T> having(String sqlHaving, String... params) {
+	public EntityWrapper<T> having(String sqlHaving, Object... params) {
 		sql.HAVING(formatSql(sqlHaving, params));
 		return this;
 	}
@@ -408,7 +409,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> addFilter(String sqlWhere, String... params) {
+	public EntityWrapper<T> addFilter(String sqlWhere, Object... params) {
 		return and(sqlWhere, params);
 	}
 
@@ -431,7 +432,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	public EntityWrapper<T> addFilterIfNeed(boolean need, String sqlWhere, String... params) {
+	public EntityWrapper<T> addFilterIfNeed(boolean need, String sqlWhere, Object... params) {
 		return need ? where(sqlWhere, params) : this;
 	}
 
@@ -459,7 +460,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	protected String formatSql(String sqlStr, String... params) {
+	protected String formatSql(String sqlStr, Object... params) {
 		return formatSqlIfNeed(true, sqlStr, params);
 	}
 
@@ -476,7 +477,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            参数集
 	 * @return this
 	 */
-	protected String formatSqlIfNeed(boolean need, String sqlStr, String... params) {
+	protected String formatSqlIfNeed(boolean need, String sqlStr, Object... params) {
 		if (!need || StringUtils.isEmpty(sqlStr)) {
 			return null;
 		}
@@ -500,6 +501,8 @@ public class EntityWrapper<T> implements Serializable {
 			Object tempVal = params[i];
 			if (tempVal instanceof String && !String.valueOf(tempVal).matches("\'(.+)\'")) {
 				params[i] = StringUtils.quotaMark(String.valueOf(tempVal));
+			}else{
+				params[i] = Logis.getString(tempVal);
 			}
 		}
 	}
