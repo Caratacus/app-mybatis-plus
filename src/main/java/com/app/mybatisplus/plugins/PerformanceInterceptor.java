@@ -71,7 +71,7 @@ public class PerformanceInterceptor implements Interceptor {
 		Object result = invocation.proceed();
 		long end = System.currentTimeMillis();
 		long timing = end - start;
-		System.err.println(" Time：" + timing + " ms" + " - ID：" + statementId + "\n Execute SQL：" + sql);
+		System.err.println(" Time：" + timing + " ms" + " - ID：" + statementId + "\n Execute SQL：" + sql + "\n");
 		if (maxTime >= 1 && timing > maxTime) {
 			throw new MybatisPlusException(" The SQL execution time is too large, please optimize ! ");
 		}
@@ -129,6 +129,13 @@ public class PerformanceInterceptor implements Interceptor {
 		} else {
 			result = "null";
 		}
+
+		/* 特殊处理 $ 符内容 */
+		if (null != result && result.contains("$")) {
+			return sql.replaceFirst("\\?", "[?]").replace("[?]", result);
+		}
+
+		/* 填充占位符 */
 		return sql.replaceFirst("\\?", result);
 	}
 

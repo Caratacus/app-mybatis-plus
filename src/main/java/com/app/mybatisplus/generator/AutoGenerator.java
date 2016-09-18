@@ -15,11 +15,6 @@
  */
 package com.app.mybatisplus.generator;
 
-import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
-import com.app.mybatisplus.toolkit.StringUtils;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,6 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
+import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>
@@ -131,10 +131,10 @@ public class AutoGenerator {
 					System.err.println("save dir:" + config.getSaveDir());
 				}
 			}
+			System.out.println(" generate success! ");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(" generate success! ");
 	}
 
 	/**
@@ -223,9 +223,9 @@ public class AutoGenerator {
 				}
 				if (isOracle) {
 					/* ORACLE 主键ID 处理方式 */
-					String idSql = String
-							.format("SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
-									table);
+					String idSql = String.format(
+							"SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
+							table);
 					ResultSet rs = conn.prepareStatement(idSql).executeQuery();
 					while (rs.next() && !idExist) {
 						String field = rs.getString(config.getConfigDataSource().getFieldKey());
@@ -514,7 +514,7 @@ public class AutoGenerator {
 	 * @throws IOException
 	 */
 	protected void buildEntityBean(List<String> columns, List<String> types, List<String> comments, String tableComment,
-			Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
+								   Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
 		File beanFile = new File(PATH_ENTITY, beanName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(beanFile)));
 		bw.write("package " + config.getEntityPackage() + ";");
@@ -553,6 +553,12 @@ public class AutoGenerator {
 		bw.newLine();
 		int size = columns.size();
 		for (int i = 0; i < size; i++) {
+			bw.newLine();
+			bw.write("\t/** " + comments.get(i) + " */");
+			bw.newLine();
+			/*
+			 * 判断ID 添加注解 <br> isLine 是否包含下划线
+			 */
 			String column = columns.get(i);
 			String field = processField(column);
 			boolean isLine = column.contains("_");
@@ -670,8 +676,8 @@ public class AutoGenerator {
 	 * @param comments
 	 * @throws IOException
 	 */
-	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments, Map<String, IdInfo> idMap,
-			String mapperName, String mapperXMLName) throws IOException {
+	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
+								  Map<String, IdInfo> idMap, String mapperName,String mapperXMLName) throws IOException {
 		File mapperXmlFile = new File(PATH_XML, mapperXMLName + ".xml");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

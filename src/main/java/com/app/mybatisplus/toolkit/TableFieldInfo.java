@@ -16,14 +16,15 @@
 package com.app.mybatisplus.toolkit;
 
 import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
+import com.app.mybatisplus.annotations.FieldStrategy;
 
 /**
  * <p>
  * 数据库表字段反射信息
  * </p>
  *
- * @author hubin
- * @Date 2016-02-29
+ * @author hubin sjy
+ * @Date 2016-09-09
  */
 public class TableFieldInfo {
 
@@ -45,48 +46,76 @@ public class TableFieldInfo {
 	 */
 	private String property;
 
+	/**
+	 * 属性表达式#{property}, 可以指定jdbcType, typeHandler等
+	 */
+	private String el;
 
-	public TableFieldInfo( boolean related, String column, String property ) {
+	/**
+	 * 字段策略【 默认，自判断 null 】
+	 */
+	private FieldStrategy fieldStrategy = FieldStrategy.NOT_NULL;
+
+	public TableFieldInfo(boolean related, String column, String property, String el, FieldStrategy fieldStrategy) {
 		this.related = related;
-		this.column = DBKeywordsProcessor.convert(column);
+		this.setColumn(column);
 		this.property = property;
+		this.el = el;
+		this.fieldStrategy = fieldStrategy;
 	}
 
+	public TableFieldInfo(boolean related, String column, String property) {
+		this.related = related;
+		this.setColumn(column);
+		this.property = property;
+		this.el = property;
+	}
 
-	public TableFieldInfo( String column ) {
+	public TableFieldInfo(String column) {
 		this.related = false;
-		this.column = DBKeywordsProcessor.convert(column);
+		this.setColumn(column);
 		this.property = column;
+		this.el = column;
 	}
-
 
 	public boolean isRelated() {
 		return related;
 	}
 
-
-	public void setRelated( boolean related ) {
+	public void setRelated(boolean related) {
 		this.related = related;
 	}
-
 
 	public String getColumn() {
 		return column;
 	}
 
-
-	public void setColumn( String column ) {
+	public void setColumn(String column) {
 		this.column = DBKeywordsProcessor.convert(column);
 	}
-
 
 	public String getProperty() {
 		return property;
 	}
 
-
-	public void setProperty( String property ) {
+	public void setProperty(String property) {
 		this.property = property;
+	}
+
+	public String getEl() {
+		return el;
+	}
+
+	public void setEl(String el) {
+		this.el = el;
+	}
+
+	public FieldStrategy getFieldStrategy() {
+		return fieldStrategy;
+	}
+
+	public void setFieldStrategy(FieldStrategy fieldStrategy) {
+		this.fieldStrategy = fieldStrategy;
 	}
 
 }

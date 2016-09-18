@@ -28,6 +28,7 @@ import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 
+import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.toolkit.IdWorker;
@@ -64,19 +65,23 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 			 * 只处理插入操作
 			 */
 			Collection<Object> parameters = getParameters(parameterObject);
-			if (parameters != null) {
+			if (null != parameters) {
 				List<Object> objList = new ArrayList<Object>();
 				for (Object parameter : parameters) {
-					if (parameter instanceof Map) {
-						/* map 插入不处理 */
-						objList.add(parameter);
+					TableInfo tableInfo = TableInfoHelper.getTableInfo(parameter.getClass());
+					if (null != tableInfo) {
+						objList.add(populateKeys(tableInfo, ms, parameter));
 					} else {
-						objList.add(populateKeys(ms, parameter));
+						/*
+						 * 非表映射类不处理
+						 */
+						objList.add(parameter);
 					}
 				}
 				return objList;
 			} else {
-				return populateKeys(ms, parameterObject);
+				TableInfo tableInfo = TableInfoHelper.getTableInfo(parameterObject.getClass());
+				return populateKeys(tableInfo, ms, parameterObject);
 			}
 		}
 		return parameterObject;
@@ -118,13 +123,13 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 	 * 填充主键 ID
 	 * </p>
 	 *
+	 * @param tableInfo
 	 * @param ms
 	 * @param parameterObject
 	 *            插入数据库对象
 	 * @return
 	 */
-	protected static Object populateKeys(MappedStatement ms, Object parameterObject) {
-		TableInfo tableInfo = TableInfoHelper.getTableInfo(parameterObject.getClass());
+	protected static Object populateKeys(TableInfo tableInfo, MappedStatement ms, Object parameterObject) {
 		if (null != tableInfo && null != tableInfo.getIdType() && tableInfo.getIdType().getKey() >= 2) {
 			MetaObject metaObject = ms.getConfiguration().newMetaObject(parameterObject);
 			Object idValue = metaObject.getValue(tableInfo.getKeyProperty());
@@ -143,6 +148,9 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 			}
 			return metaObject.getOriginalObject();
 		}
+		/*
+		 * 不处理
+		 */
 		return parameterObject;
 	}
 

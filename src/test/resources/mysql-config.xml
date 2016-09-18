@@ -4,7 +4,7 @@
     <!--
      | 属性定义配置
      |
-     | 加载配置文件 resource="jdbc.properties" 
+     | 加载配置文件 resource="jdbc.properties"
      | 可以在本配置文件中使用 ${name} 来使用属性值
      | -->
     <!--
@@ -14,7 +14,7 @@
 </properties>
      | -->
 
-    <!-- 
+    <!--
      | 全局配置设置
      |
      | 可配置选项                                        默认值, 描述
@@ -34,11 +34,11 @@
         <setting name="lazyLoadingEnabled" value="true" />
     </settings>
 
-    <!-- 
+    <!--
      | 别名定义
      |
     <typeAliases>
-     	1、明确定义 
+     	1、明确定义
         <typeAlias type="com.app.mybatisplus.test.mysql.entity.User" alias="User" />
 
      	2、扫描指定包下的实体
@@ -75,14 +75,14 @@
     <!-- 环境配置 -->
     <environments default="development">
         <environment id="development">
-            <transactionManager type="JDBC">
-                <property name="" value="" />
-            </transactionManager>
-            <dataSource type="UNPOOLED">
+            <!-- 使用 JDBC 管理事务 -->
+            <transactionManager type="JDBC" />
+            <!-- 数据库连接池 -->
+            <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.jdbc.Driver" />
                 <property name="url" value="jdbc:mysql://localhost:3306/mybatis-plus" />
                 <property name="username" value="root" />
-                <property name="password" value="" />
+                <property name="password" value="123456" />
                 <!--
                     <property name="driver" value="${jdbc.driver}" />
                     <property name="url" value="${jdbc.url}" />
@@ -92,6 +92,7 @@
             </dataSource>
         </environment>
     </environments>
+
 
     <!--
      | SQL映射定义Mappers
@@ -103,6 +104,8 @@
      | -->
     <mappers>
         <mapper class="com.app.mybatisplus.test.mysql.UserMapper" />
+        <mapper class="com.app.mybatisplus.test.mysql.RoleMapper" />
         <mapper resource="mysql/UserMapper.xml"/>
+        <mapper resource="mysql/RoleMapper.xml"/>
     </mappers>
 </configuration>

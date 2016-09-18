@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import com.app.mybatisplus.annotations.Column;
+import com.app.mybatisplus.annotations.FieldStrategy;
 import com.app.mybatisplus.annotations.Id;
 import com.app.mybatisplus.annotations.Table;
 
@@ -27,11 +28,11 @@ import com.app.mybatisplus.annotations.Table;
  * 测试用户类
  * </p>
  * 
- * @author hubin
- * @Date 2016-01-23
+ * @author hubin sjy
+ * @Date 2016-09-09
  */
-/* 表名 注解 */
-@Table("user")
+/* 表名 value 注解【 驼峰命名可无 】, resultMap 注解测试【 映射 xml 的 resultMap 内容 】 */
+@Table(resultMap = "userMap")
 public class User implements Serializable {
 
 	/* 表字段注解，false 表中不存在的字段，可无该注解 默认 true */
@@ -42,6 +43,8 @@ public class User implements Serializable {
 	@Id(value = "test_id")
 	private Long id;
 
+	/* 测试忽略验证 */
+	@Column(validate = FieldStrategy.IGNORED)
 	private String name;
 
 	private Integer age;
@@ -49,6 +52,13 @@ public class User implements Serializable {
 	/* 测试下划线字段命名类型 */
 	@Column(value = "test_type")
 	private Integer testType;
+
+	@Column(el = "role.id")
+	private Role role;
+
+	//或@TableField(el = "role,jdbcType=BIGINT)
+	@Column(el = "phone, typeHandler=com.app.mybatisplus.test.mysql.typehandler.PhoneTypeHandler")
+	private PhoneNumber phone;
 
 	public User() {
 
@@ -120,6 +130,34 @@ public class User implements Serializable {
 
 	public void setTestType(Integer testType) {
 		this.testType = testType;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public PhoneNumber getPhone() {
+		return phone;
+	}
+
+	public void setPhone(PhoneNumber phone) {
+		this.phone = phone;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", age=" + age +
+				", testType=" + testType +
+				", role=" + role +
+				", phone=" + phone +
+				'}';
 	}
 
 	/**

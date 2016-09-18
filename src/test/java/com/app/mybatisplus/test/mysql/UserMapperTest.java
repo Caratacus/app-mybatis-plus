@@ -31,6 +31,7 @@ import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
 import com.app.mybatisplus.plugins.pagination.Pagination;
+import com.app.mybatisplus.test.mysql.entity.Role;
 import com.app.mybatisplus.test.mysql.entity.User;
 import com.app.mybatisplus.toolkit.IdWorker;
 
@@ -38,8 +39,13 @@ import com.app.mybatisplus.toolkit.IdWorker;
  * <p>
  * MybatisPlus 测试类
  * </p>
+ * <p>
+ * 自动提交了事务问题：<br>
+ * http://www.mybatis.org/spring/transactions.html#programmatic<br>
+ * https://github.com/mybatis/spring/issues/39<br>
+ * </p>
  *
- * @author hubin
+ * @author hubin sjy
  * @Date 2016-01-23
  */
 public class UserMapperTest {
@@ -90,9 +96,33 @@ public class UserMapperTest {
 		userMapper.deleteAll();
 
 		/**
+		 * sjy
+		 * 测试@TableField的el属性
+		 */
+		Role role = new Role();
+		role.setId(IdWorker.getId());
+		role.setName("admin");
+
+		User userA = new User();
+		userA.setId(IdWorker.getId());
+		userA.setName("junyu_shi");
+		userA.setAge(1);
+		userA.setTestType(1);
+		userA.setRole(role);
+
+		int rlt = userMapper.insert(userA);
+		User whereUser = userMapper.selectOne(userA);
+		print(whereUser);
+
+		userA.setAge(18);
+		userMapper.updateById(userA);
+		userMapper.deleteSelective(userA);
+		System.err.println("--------- @TableField el() --------- " + rlt);
+
+		/**
 		 * 注解插件测试
 		 */
-		int rlt = userMapper.insertInjector(new User(1L, "1", 1, 1));
+		rlt = userMapper.insertInjector(new User(1L, "1", 1, 1));
 		System.err.println("--------- insertInjector --------- " + rlt);
 
 		/**
@@ -111,8 +141,8 @@ public class UserMapperTest {
 		System.err.println("\n--------------insert-------" + rlt);
 		sleep();
 
-		rlt = userMapper.insertSelective(new User("abc", 18));
-		System.err.println("\n--------------insertSelective-------" + rlt);
+		rlt = userMapper.insertSelective(new User(18));
+		System.err.println("\n----------测试 name 字段忽略验证----insertSelective-------" + rlt);
 		sleep();
 
 		List<User> ul = new ArrayList<User>();
@@ -145,6 +175,7 @@ public class UserMapperTest {
 
 		Map<String, Object> columnMap = new HashMap<String, Object>();
 		columnMap.put("name", "deleteByMap");
+		columnMap.put("age", null);
 		rlt = userMapper.deleteByMap(columnMap);
 		System.err.println("---------deleteByMap------- result=" + rlt + "\n\n");
 		sleep();
@@ -168,7 +199,6 @@ public class UserMapperTest {
          * updateById 是从 AutoMapper 中继承而来的，UserMapper.xml中并没有申明改sql
          *
          */
-
 		rlt = userMapper.updateSelectiveById(new User(12L, "MybatisPlus"));
 		System.err.println("------------------updateSelectiveById---------------------- result=" + rlt + "\n\n");
 		sleep();
