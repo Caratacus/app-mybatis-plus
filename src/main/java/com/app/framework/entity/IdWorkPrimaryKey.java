@@ -3,9 +3,9 @@ package com.app.framework.entity;
 import com.app.mybatisplus.annotations.Id;
 import com.app.mybatisplus.annotations.IdType;
 
-public class AutoPrimaryKey {
+public class IdWorkPrimaryKey {
 
-	@Id(type = IdType.AUTO)
+	@Id(type = IdType.ID_WORKER)
 	protected Long id;
 
 	public Long getId() {
