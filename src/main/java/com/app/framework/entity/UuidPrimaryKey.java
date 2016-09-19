@@ -8,11 +8,11 @@ public class UuidPrimaryKey {
 	@Id(value = "ID", type = IdType.UUID)
 	protected String id;
 
-	public String getId() {
+	protected String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	protected void setId(String id) {
 		this.id = id;
 	}
 

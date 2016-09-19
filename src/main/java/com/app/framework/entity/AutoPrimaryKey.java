@@ -5,14 +5,14 @@ import com.app.mybatisplus.annotations.IdType;
 
 public class AutoPrimaryKey {
 
-	@Id(type = IdType.AUTO)
+	@Id(type = IdType.ID_WORKER)
 	protected Long id;
 
-	public Long getId() {
+	protected Long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	protected void setId(Long id) {
 		this.id = id;
 	}
 
