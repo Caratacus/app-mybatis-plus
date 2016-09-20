@@ -15,19 +15,22 @@
  */
 package com.app.framework.service.impl;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.app.common.MapUtils;
 import com.app.framework.entity.AutoPrimaryKey;
+import com.app.framework.entity.IdWorkPrimaryKey;
+import com.app.framework.entity.InputPrimaryKey;
 import com.app.framework.entity.UuidPrimaryKey;
 import com.app.framework.service.IService;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -117,6 +120,14 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
         } else if (entity instanceof UuidPrimaryKey) {
             UuidPrimaryKey uuid = (UuidPrimaryKey) entity;
             String id = uuid.getId();
+            return saveOrUpdate(id, entity, isSelective);
+        }else if(entity instanceof IdWorkPrimaryKey){
+            IdWorkPrimaryKey idwork = (IdWorkPrimaryKey) entity;
+            Long id = idwork.getId();
+            return saveOrUpdate(id, entity, isSelective);
+        }else if(entity instanceof InputPrimaryKey){
+            InputPrimaryKey input = (InputPrimaryKey) entity;
+            Long id = input.getId();
             return saveOrUpdate(id, entity, isSelective);
         } else {
             throw new MybatisPlusException("Not found @Id annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
