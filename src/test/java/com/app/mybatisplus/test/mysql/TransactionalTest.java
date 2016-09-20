@@ -15,15 +15,22 @@
  */
 package com.app.mybatisplus.test.mysql;
 
-import java.io.InputStream;
-
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.test.mysql.entity.User;
 import com.app.mybatisplus.toolkit.IdWorker;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 
+import java.io.InputStream;
+
+/**
+ * <p>
+ * MySQL 数据库，表引擎  MyISAM  不支持事务，请使用  InnoDB  ！！！！
+ * </p>
+ *
+ * @author hubin
+ * @date 2016-09-20
+ */
 public class TransactionalTest {
 
 	/**
@@ -39,7 +46,6 @@ public class TransactionalTest {
 		MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
 		SqlSessionFactory sessionFactory = mf.build(in);
 		SqlSession sqlSession = sessionFactory.openSession();
-		
 		/**
 		 * 插入
 		 */
@@ -47,8 +53,9 @@ public class TransactionalTest {
 		int rlt = userMapper.insert(new User(IdWorker.getId(), "1", 1, 1));
 		System.err.println("--------- insertInjector --------- " + rlt);
 
-//		session.commit();
-//		sqlSession.close();
+		//session.commit();
+		sqlSession.rollback();
+		sqlSession.close();
 	}
 
 }

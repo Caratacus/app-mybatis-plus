@@ -15,11 +15,11 @@
  */
 package com.app.framework.service;
 
-import java.util.List;
-import java.util.Map;
-
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -188,6 +188,27 @@ public interface IService<T, PK> {
 	 * @return boolean
 	 */
 	boolean updateBatchById(List<T> entityList);
+
+	/**
+	 * <p>
+	 * TableId 注解存在更新记录，否插入一条记录
+	 * </p>
+	 *
+	 * @param entity
+	 *            实体对象
+	 * @return boolean
+	 */
+	boolean insertOrUpdate(T entity);
+	/**
+	 * <p>
+	 * TableId 注解存在更新记录，否插入一条记录 （选择字段， null 字段不插入）
+	 * </p>
+	 *
+	 * @param entity
+	 *            实体对象
+	 * @return boolean
+	 */
+	boolean insertOrUpdateSelective(T entity);
 
 	/**
 	 * <p>

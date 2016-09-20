@@ -15,8 +15,6 @@
  */
 package com.app.mybatisplus.generator;
 
-import com.app.mybatisplus.generator.ConfigDataSource;
-import com.app.mybatisplus.generator.ConfigIdType;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.toolkit.StringUtils;
 
@@ -38,6 +36,8 @@ import com.app.mybatisplus.toolkit.StringUtils;
  * serviceName		自定义 service 名称
  * serviceImplName	自定义 serviceImp 名称
  * tableNames   	要生成的表名称，如为空就直接指定所有表.格式为逗号分割
+ * columnConstant  【实体】是否生成字段常量（默认 false）
+ * buliderModel	   【实体】是否为构建者模型（默认 false）
  * fileOverride 	是否覆盖当前已有文件
  * -------------------------------------
  * 以下数据库相关配置：
@@ -86,6 +86,22 @@ public class ConfigGenerator {
 	 * 指定生成表名
 	 */
 	protected String[] tableNames = null;
+	/*
+	 * 【实体】是否生成字段常量（默认 false）<br>
+	 * -----------------------------------<br>
+	 * public static final String ID = "test_id";
+	 */
+	protected boolean columnConstant = false;
+
+	/*
+	 * 【实体】是否为构建者模型（默认 false）<br>
+	 * -----------------------------------<br>
+	 * 	public User setName(String name) {
+	 * 		this.name = name;
+	 * 		return this;
+	 * 	}
+	 */
+	protected boolean buliderModel = false;
 
 	/*
 	 * 是否覆盖当前路径下已有文件（默认 true）
@@ -311,6 +327,21 @@ public class ConfigGenerator {
 		this.tableNames = tableNames;
 	}
 
+	public boolean isColumnConstant() {
+		return columnConstant;
+	}
+
+	public void setColumnConstant(boolean columnConstant) {
+		this.columnConstant = columnConstant;
+	}
+
+	public boolean isBuliderModel() {
+		return buliderModel;
+	}
+
+	public void setBuliderModel(boolean buliderModel) {
+		this.buliderModel = buliderModel;
+	}
 	public boolean isFileOverride() {
 		return fileOverride;
 	}

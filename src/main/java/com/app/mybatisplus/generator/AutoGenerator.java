@@ -15,6 +15,11 @@
  */
 package com.app.mybatisplus.generator;
 
+import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
+import com.app.mybatisplus.toolkit.StringUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,11 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
-import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>
@@ -386,6 +386,8 @@ public class AutoGenerator {
 			return "Float";
 		} else if (t.contains("double")) {
 			return "Double";
+		} else if (t.contains("json")) {
+			return "String";
 		}
 		return null;
 	}
@@ -587,6 +589,12 @@ public class AutoGenerator {
 		}
 
 		/*
+		 * 字段常量处理
+		 */
+		this.buildEntityBeanColumnConstant(columns, types, comments, bw, size);
+		bw.newLine();
+
+		/*
 		 * 生成get 和 set方法
 		 */
 		for (int i = 0; i < size; i++) {
@@ -602,9 +610,20 @@ public class AutoGenerator {
 				bw.write("\t}");
 				bw.newLine();
 				bw.newLine();
-				bw.write("\tpublic void set" + _field + "(" + _tempType + " " + _tempField + ") {");
-				bw.newLine();
-				bw.write("\t\tthis." + _tempField + " = " + _tempField + ";");
+
+				/* 是否为构建者模型 */
+				if (config.isBuliderModel()) {
+					bw.write("\tpublic " + beanName + " set" + _field + "(" + _tempType + " " + _tempField + ") {");
+					bw.newLine();
+					bw.write("\t\tthis." + _tempField + " = " + _tempField + ";");
+					bw.newLine();
+					bw.write("\t\treturn this;");
+				} else {
+					bw.write("\tpublic void set" + _field + "(" + _tempType + " " + _tempField + ") {");
+					bw.newLine();
+					bw.write("\t\tthis." + _tempField + " = " + _tempField + ";");
+				}
+
 				bw.newLine();
 				bw.write("\t}");
 				bw.newLine();
@@ -616,6 +635,22 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.flush();
 		bw.close();
+	}
+
+	protected void buildEntityBeanColumnConstant(List<String> columns, List<String> types, List<String> comments,
+												 BufferedWriter bw, int size) throws IOException {
+		/*
+		 * 【实体】是否生成字段常量（默认 false）
+		 */
+		if (config.isColumnConstant()) {
+			for (int i = 0; i < size; i++) {
+				String _tempType = processType(types.get(i));
+				String _column = columns.get(i);
+				bw.newLine();
+				bw.write("\tpublic static final " + _tempType + " " + _column.toUpperCase() + " = \"" + _column + "\";");
+			}
+			bw.newLine();
+		}
 	}
 
 	public String toIdType() {

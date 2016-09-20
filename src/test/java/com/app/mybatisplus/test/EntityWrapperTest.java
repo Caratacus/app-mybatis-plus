@@ -15,14 +15,13 @@
  */
 package com.app.mybatisplus.test;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.app.mybatisplus.mapper.EntityWrapper;
+import com.app.mybatisplus.test.mysql.entity.User;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.app.mybatisplus.mapper.EntityWrapper;
-import com.app.mybatisplus.test.mysql.entity.User;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -183,11 +182,12 @@ public class EntityWrapperTest {
 	 */
 	@Test
 	public void testNul15() {
-		ew.where("id={0}", "11").and("name={0}", 221111111);
+		ew.where("id={0}", "11").and("name={0}", 222222222);
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
-		Assert.assertEquals("WHERE (id='11' AND name=221111111)", sqlPart);
+		Assert.assertEquals("WHERE (id='11' AND name=222222222)", sqlPart);
 	}
+
 	/**
 	 * 测试EXISTS
 	 */
@@ -196,22 +196,35 @@ public class EntityWrapperTest {
 		ew.notExists("(select * from user)");
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
-		Assert.assertEquals("WHERE ( NOT EXISTS ( (select * from user) ))", sqlPart);
+		Assert.assertEquals("WHERE ( NOT EXISTS ((select * from user)))", sqlPart);
+	}
+	/**
+	 * 测试NOT IN
+	 */
+	@Test
+	public void testNul17() {
+		List<String> list = new ArrayList<String>();
+		list.add("'1'");
+		list.add("'2'");
+		list.add("'3'");
+		ew.notIn("test_type",list);
+		String sqlPart = ew.getSqlSegment();
+		System.out.println("sql ==> " + sqlPart);
+		Assert.assertEquals("WHERE (test_type NOT IN ('1','2','3'))", sqlPart);
 	}
 	/**
 	 * 测试IN
 	 */
 	@Test
-	public void testNul17() {
-		List list = new ArrayList();
-		list.add("'1'");
-		list.add("'2'");
-		list.add("'3'");
-		list.add("'4'");
-		ew.notIn("test_type",list);
+	public void testNul18() {
+		List<Long> list = new ArrayList<Long>();
+		list.add(111111111L);
+		list.add(222222222L);
+		list.add(333333333L);
+		ew.in("test_type",list);
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
-		Assert.assertEquals("WHERE (test_type NOT IN ( '1','2','3','4' ))", sqlPart);
+		Assert.assertEquals("WHERE (test_type IN (111111111,222222222,333333333))", sqlPart);
 	}
 
 }

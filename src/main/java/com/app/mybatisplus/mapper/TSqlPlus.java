@@ -15,12 +15,12 @@
  */
 package com.app.mybatisplus.mapper;
 
-import java.text.MessageFormat;
-import java.util.List;
-
 import com.app.common.CollectionUtil;
 import com.app.mybatisplus.MybatisAbstractSQL;
 import com.app.mybatisplus.toolkit.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * <p>
@@ -35,6 +35,7 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
 
     private final String IS_NOT_NULL = " IS NOT NULL";
     private final String IS_NULL = " IS NULL";
+    private final String SQL_LIKE = " LIKE CONCAT(CONCAT({0},{1}),{2})";
 
     @Override
     public TSqlPlus getSelf() {
@@ -44,8 +45,10 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
     /**
      * 将LIKE语句添加到WHERE条件中
      *
-     * @param column 字段名
-     * @param value  like值,无需前后%, MYSQL及ORACEL通用
+     * @param column
+     *            字段名
+     * @param value
+     *            like值,无需前后%, MYSQL及ORACEL通用
      * @return
      */
     public TSqlPlus LIKE(String column, String value) {
@@ -56,13 +59,61 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
     /**
      * 将LIKE语句添加到WHERE条件中
      *
-     * @param column 字段名
-     * @param value  like值,无需前后%, MYSQL及ORACEL通用
+     * @param column
+     *            字段名
+     * @param value
+     *            like值,无需前后%, MYSQL及ORACEL通用
      * @return
      */
     public TSqlPlus NOT_LIKE(String column, String value) {
         handerLike(column, value, true);
         return this;
+    }
+
+    /**
+     * IS NOT NULL查询
+     *
+     * @param columns
+     *            以逗号分隔的字段名称
+     * @return this
+     */
+    public TSqlPlus IS_NOT_NULL(String columns) {
+        handerNull(columns, IS_NOT_NULL);
+        return this;
+    }
+
+    /**
+     * IS NULL查询
+     *
+     * @param columns
+     *            以逗号分隔的字段名称
+     * @return
+     */
+    public TSqlPlus IS_NULL(String columns) {
+        handerNull(columns, IS_NULL);
+        return this;
+    }
+
+    /**
+     * 处理LIKE操作
+     *
+     * @param column
+     *            字段名称
+     * @param value
+     *            like匹配值
+     * @param isNot
+     *            是否为NOT LIKE操作
+     */
+    private void handerLike(String column, String value, boolean isNot) {
+        if (StringUtils.isNotEmpty(column) && StringUtils.isNotEmpty(value)) {
+            StringBuilder inSql = new StringBuilder();
+            inSql.append(column);
+            if (isNot) {
+                inSql.append(" NOT");
+            }
+            inSql.append(MessageFormat.format(SQL_LIKE, "%", StringUtils.quotaMark(value), "%"));
+            WHERE(inSql.toString());
+        }
     }
 
     /**
@@ -72,7 +123,7 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
      * @param value  List集合
      * @return
      */
-    public TSqlPlus IN(String column, List value) {
+    public TSqlPlus IN(String column, List<?> value) {
         handerIn(column, value, false);
         return this;
     }
@@ -84,7 +135,7 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
      * @param value  List集合
      * @return
      */
-    public TSqlPlus NOT_IN(String column, List value) {
+    public TSqlPlus NOT_IN(String column, List<?> value) {
         handerIn(column, value, true);
         return this;
     }
@@ -132,11 +183,12 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
      */
     private void handerExists(String value, boolean isNot) {
         if (StringUtils.isNotEmpty(value)) {
-            String inSql = " EXISTS ( %s )";
+            StringBuilder inSql = new StringBuilder();
             if (isNot) {
-                inSql = " NOT" + inSql;
+                inSql.append(" NOT");
             }
-            WHERE(String.format(inSql, value));
+            inSql.append(" EXISTS (").append(value).append(")");
+            WHERE(inSql.toString());
         }
     }
 
@@ -158,26 +210,26 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
      * @param value  集合List
      * @param isNot  是否为NOT IN操作
      */
-    private void handerIn(String column, List value, boolean isNot) {
+    private void handerIn(String column, List<?> value, boolean isNot) {
         if (StringUtils.isNotEmpty(column) && CollectionUtil.isNotEmpty(value)) {
-            String inSql = " IN ( %s )";
+            StringBuilder inSql = new StringBuilder();
+            inSql.append(column);
             if (isNot) {
-                inSql = " NOT" + inSql;
+                inSql.append(" NOT");
             }
-            StringBuilder invalue = new StringBuilder();
-            for (int i = 0; i < value.size(); i++) {
-                Object tempVal = value.get(i);
-                if (tempVal instanceof String && !String.valueOf(tempVal).matches("\'(.+)\'")) {
-                    tempVal = StringUtils.quotaMark(String.valueOf(tempVal));
-                }
-                if (i + 1 == value.size()) {
-                    invalue.append(tempVal);
+            inSql.append(" IN (");
+            int _size = value.size();
+            for (int i = 0; i < _size; i++) {
+                String tempVal = StringUtils.quotaMark(value.get(i));
+                if (i + 1 == _size) {
+                    inSql.append(tempVal);
                 } else {
-                    invalue.append(tempVal);
-                    invalue.append(",");
+                    inSql.append(tempVal);
+                    inSql.append(",");
                 }
             }
-            WHERE(column + String.format(inSql, invalue.toString()));
+            inSql.append(")");
+            WHERE(inSql.toString());
         }
     }
 
@@ -190,59 +242,23 @@ public class TSqlPlus extends MybatisAbstractSQL<TSqlPlus> {
      */
     private void handerIn(String column, String value, boolean isNot) {
         if (StringUtils.isNotEmpty(column) && StringUtils.isNotEmpty(value)) {
-            String inSql = " IN ( %s )";
+            StringBuilder inSql = new StringBuilder();
+            inSql.append(column);
             if (isNot) {
-                inSql = " NOT" + inSql;
+                inSql.append(" NOT");
             }
-            WHERE(column + String.format(inSql, value));
-        }
-    }
-
-    /**
-     * IS NOT NULL查询
-     *
-     * @param columns 以逗号分隔的字段名称
-     * @return this
-     */
-    public TSqlPlus IS_NOT_NULL(String columns) {
-        handerNull(columns, IS_NOT_NULL);
-        return this;
-    }
-
-    /**
-     * IS NULL查询
-     *
-     * @param columns 以逗号分隔的字段名称
-     * @return
-     */
-    public TSqlPlus IS_NULL(String columns) {
-        handerNull(columns, IS_NULL);
-        return this;
-    }
-
-    /**
-     * 处理LIKE操作
-     *
-     * @param column 字段名称
-     * @param value  like匹配值
-     * @param isNot  是否为NOT LIKE操作
-     */
-    private void handerLike(String column, String value, boolean isNot) {
-        if (StringUtils.isNotEmpty(column) && StringUtils.isNotEmpty(value)) {
-            String likeSql = " LIKE CONCAT(CONCAT({0},{1}),{2})";
-            if (isNot) {
-                likeSql = " NOT" + likeSql;
-            }
-            String percent = StringUtils.quotaMark("%");
-            WHERE(column + MessageFormat.format(likeSql, percent, StringUtils.quotaMark(value), percent));
+            inSql.append(" IN (").append(value).append(")");
+            WHERE(inSql.toString());
         }
     }
 
     /**
      * 以相同的方式处理null和notnull
      *
-     * @param columns 以逗号分隔的字段名称
-     * @param sqlPart SQL部分
+     * @param columns
+     *            以逗号分隔的字段名称
+     * @param sqlPart
+     *            SQL部分
      */
     private void handerNull(String columns, String sqlPart) {
         if (StringUtils.isNotEmpty(columns)) {

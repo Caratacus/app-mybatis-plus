@@ -34,13 +34,34 @@ public class ConfigGeneratorTest {
 		/* 此处设置 String 类型数据库ID，默认Long类型 */
         // cg.setConfigIdType(ConfigIdType.STRING);
 
-        cg.setSaveDir("D:/mybatis-plus/");// 生成文件保存位置
+		/*
+		 * 生成文件保存位置
+		 */
+        cg.setSaveDir("D:/mybatis-plus/");
 
 		/*
-		 * <p> true 表示数据库设置全局下划线命名规则，默认 false
-		 * ---------------------------------------------------------------------
-		 * ---------------<br> 【 开启该设置实体可无 @Id(value = "test_id")
-		 * 字段映射，启动配置对应也要开启 true 设置 】 </p>
+		 * 【实体】是否生成字段常量（默认 false）<br>
+		 * -----------------------------------<br>
+		 * public static final String ID = "test_id";
+		 */
+        cg.setColumnConstant(false);
+
+		/*
+		 * 【实体】是否为构建者模型（默认 false）<br>
+		 * -----------------------------------<br>
+		 * 	public User setName(String name) {
+		 * 		this.name = name;
+		 * 		return this;
+		 * 	}
+		 */
+        cg.setBuliderModel(false);
+
+		/*
+		 * <p>
+		 * true 表示数据库设置全局下划线命名规则，默认 false
+		 * -------------------------------------------------------<br>
+		 *【 开启该设置实体可无 @TableId(value = "test_id") 字段映射，启动配置对应也要开启 true 设置 】<br>
+		 * </p>
 		 */
         cg.setDbColumnUnderline(false);
 

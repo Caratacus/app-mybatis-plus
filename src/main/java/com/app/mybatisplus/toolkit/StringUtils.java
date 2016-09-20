@@ -147,12 +147,16 @@ public class StringUtils {
 	 * 使用单引号包含字符串
 	 * </p>
 	 *
-	 * @param srcStr
+	 * @param obj
 	 *            原字符串
 	 * @return 单引号包含的原字符串
 	 */
-	public static String quotaMark(String srcStr) {
-		return isEmpty(srcStr) ? "" : "\'" + srcStr + "\'";
+	public static String quotaMark(Object obj) {
+		String srcStr = String.valueOf(obj);
+		if (obj instanceof String && !srcStr.matches("\'(.+)\'")) {
+			return "\'" + srcStr + "\'";
+		}
+		return srcStr;
 	}
 
 }

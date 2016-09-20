@@ -15,12 +15,6 @@
  */
 package com.app.framework.service.impl;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.app.common.MapUtils;
 import com.app.framework.entity.AutoPrimaryKey;
 import com.app.framework.entity.IdWorkPrimaryKey;
@@ -31,6 +25,15 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
+import com.app.mybatisplus.toolkit.TableInfo;
+import com.app.mybatisplus.toolkit.TableInfoHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -136,6 +139,47 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
     }
 
     /**
+     * <p>
+     * TableId 注解存在更新记录，否插入一条记录
+     * </p>
+     *
+     * @param entity
+     *            实体对象
+     * @param selective
+     *            true 选择字段 false 不选择字段
+     * @return boolean
+     */
+    public boolean insertOrUpdate(T entity, boolean selective) {
+        if (null != entity) {
+            Class<?> cls = entity.getClass();
+            TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
+            if (null != tableInfo) {
+                try {
+                    Method m = cls.getMethod("get" + StringUtils.capitalize(tableInfo.getKeyProperty()));
+                    Serializable idVal = (Serializable) m.invoke(entity);
+                    return saveOrUpdate(idVal, entity, selective);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean insertOrUpdate(T entity) {
+        return insertOrUpdate(entity, false);
+    }
+
+    @Override
+    public boolean insertOrUpdateSelective(T entity) {
+        return insertOrUpdate(entity, true);
+    }
+
+
+    /**
      * 类型转换执行saveOrUpdate
      *
      * @param id
@@ -147,19 +191,11 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
      * @version 1.0
      */
     private boolean saveOrUpdate(Serializable id, T entity, boolean isSelective) {
-        boolean result;
-        if (id != null) {
-            if (isSelective)
-                result = updateSelectiveById(entity);
-            else
-                result = updateById(entity);
+        if (null != id) {
+            return isSelective ? updateSelectiveById(entity) : updateById(entity);
         } else {
-            if (isSelective)
-                result = insertSelective(entity);
-            else
-                result = insert(entity);
+            return isSelective ? insertSelective(entity) : insert(entity);
         }
-        return result;
     }
 
     public boolean update(T entity, T whereEntity) {

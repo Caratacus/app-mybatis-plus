@@ -15,12 +15,12 @@
  */
 package com.app.mybatisplus.mapper;
 
+import com.app.common.Logis;
+import com.app.mybatisplus.toolkit.StringUtils;
+
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.List;
-
-import com.app.common.Logis;
-import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>
@@ -357,7 +357,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            匹配值 List集合
 	 * @return this
 	 */
-	public EntityWrapper<T> in(String column, List value) {
+	public EntityWrapper<T> in(String column, List<?> value) {
 		sql.IN(column, value);
 		return this;
 	}
@@ -371,7 +371,7 @@ public class EntityWrapper<T> implements Serializable {
 	 *            匹配值 List集合
 	 * @return this
 	 */
-	public EntityWrapper<T> notIn(String column, List value) {
+	public EntityWrapper<T> notIn(String column, List<?> value) {
 		sql.NOT_IN(column, value);
 		return this;
 	}
@@ -469,41 +469,39 @@ public class EntityWrapper<T> implements Serializable {
 	 * 根据需要格式化SQL
 	 * </p>
 	 *
-	 * @param need
-	 *            是否需要格式化
-	 * @param sqlStr
-	 *            SQL语句部分
-	 * @param params
-	 *            参数集
+	 * @param need   是否需要格式化
+	 * @param sqlStr SQL语句部分
+	 * @param params 参数集
 	 * @return this
 	 */
 	protected String formatSqlIfNeed(boolean need, String sqlStr, Object... params) {
 		if (!need || StringUtils.isEmpty(sqlStr)) {
 			return null;
 		}
-		if (null != params && params.length > 0) {
-			dealParams(params);
-			sqlStr = MessageFormat.format(sqlStr, params);
+		if (null != params) {
+			int length = params.length;
+			if (length >= 1) {
+				dealParams(params, length);
+				sqlStr = MessageFormat.format(sqlStr, params);
+			}
 		}
 		return sqlStr;
 	}
 
 	/**
 	 * <p>
-	 * 处理String类型的参数，自动添加单引号 'value'. 如果当前字符串已经包含单引号，则不做修改
+	 * 处理Object类型的参数
+	 * 如果类型为String，自动添加单引号 'value'。当前字符串已经包含单引号，则不做修改
+	 * 如果类型为Object，自动转换成String类型
 	 * </p>
 	 *
-	 * @param params
-	 *            参数集
+	 * @param params 参数集
+	 * @param length 参数数量
 	 */
-	protected void dealParams(Object[] params) {
-		for (int i = 0; i < params.length; i++) {
-			Object tempVal = params[i];
-			if (tempVal instanceof String && !String.valueOf(tempVal).matches("\'(.+)\'")) {
-				params[i] = StringUtils.quotaMark(String.valueOf(tempVal));
-			}else{
-				params[i] = Logis.getString(tempVal);
-			}
+	protected void dealParams(Object[] params, int length) {
+		for (int i = 0; i < length; i++) {
+			params[i] = StringUtils.quotaMark(params[i]);
 		}
 	}
+
 }
