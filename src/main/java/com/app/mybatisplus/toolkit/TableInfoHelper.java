@@ -15,6 +15,14 @@
  */
 package com.app.mybatisplus.toolkit;
 
+import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.annotations.Column;
+import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.annotations.Table;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -22,12 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.annotations.Column;
-import com.app.mybatisplus.annotations.Id;
-import com.app.mybatisplus.annotations.Table;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 /**
  * <p>
@@ -38,6 +40,8 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
  * @Date 2016-09-09
  */
 public class TableInfoHelper {
+
+    private final static Logger logger = LoggerFactory.getLogger(TableInfoHelper.class);
 
 	/**
 	 * 缓存反射类表信息

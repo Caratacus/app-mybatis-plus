@@ -15,7 +15,7 @@
  */
 package com.app.mybatisplus.mapper;
 
-import com.app.common.Logis;
+import com.app.mybatisplus.toolkit.ReflectionKit;
 import com.app.mybatisplus.toolkit.StringUtils;
 
 import java.io.Serializable;
@@ -95,7 +95,8 @@ public class EntityWrapper<T> implements Serializable {
 		}
 
 		// 根据当前实体判断是否需要将WHERE替换成AND
-		sqlWhere = (null != entity) ? sqlWhere.replaceFirst("WHERE", "AND") : sqlWhere;
+		sqlWhere = ((null != entity) && ReflectionKit.checkFieldValueNull(entity)) ? sqlWhere.replaceFirst("WHERE", "AND")
+				: sqlWhere;
 
 		/*
 		 * 使用防SQL注入处理后返回

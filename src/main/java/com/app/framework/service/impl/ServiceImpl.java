@@ -25,9 +25,9 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
+import com.app.mybatisplus.toolkit.StringUtils;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
@@ -145,19 +145,19 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
      *
      * @param entity
      *            实体对象
-     * @param selective
+     * @param isSelective
      *            true 选择字段 false 不选择字段
      * @return boolean
      */
-    public boolean insertOrUpdate(T entity, boolean selective) {
+    public boolean insertOrUpdate(T entity, boolean isSelective) {
         if (null != entity) {
             Class<?> cls = entity.getClass();
             TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
             if (null != tableInfo) {
                 try {
-                    Method m = cls.getMethod("get" + StringUtils.capitalize(tableInfo.getKeyProperty()));
+                    Method m = cls.getMethod(StringUtils.concatCapitalize("get",tableInfo.getKeyProperty()));
                     Serializable idVal = (Serializable) m.invoke(entity);
-                    return saveOrUpdate(idVal, entity, selective);
+                    return saveOrUpdate(idVal, entity, isSelective);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

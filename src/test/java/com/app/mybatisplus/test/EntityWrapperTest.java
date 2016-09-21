@@ -17,6 +17,7 @@ package com.app.mybatisplus.test;
 
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.test.mysql.entity.User;
+import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,23 +35,27 @@ import java.util.List;
 public class EntityWrapperTest {
 
 	/*
-     * User 查询包装器
-     */
+	 * User 查询包装器
+	 */
 	private EntityWrapper<User> ew = new EntityWrapper<User>();
+	// 初始化
+	static {
+		TableInfoHelper.initTableInfo(User.class);
+	}
 
 	@Test
 	public void test() {
-        /*
-         * 无条件测试
+		/*
+		 * 无条件测试
 		 */
 		Assert.assertNull(ew.getSqlSegment());
 	}
 
 	@Test
 	public void test11() {
-        /*
-         * 实体带where   ifneed
-         */
+		/*
+		 * 实体带where ifneed
+		 */
 		ew.setEntity(new User(1));
 		ew.where("name={0}", "'123'").addFilterIfNeed(false, "id=12");
 		String sqlSegment = ew.getSqlSegment();
@@ -60,9 +65,9 @@ public class EntityWrapperTest {
 
 	@Test
 	public void test12() {
-        /*
-         * 实体带where orderby
-         */
+		/*
+		 * 实体带where orderby
+		 */
 		ew.setEntity(new User(1));
 		ew.where("name={0}", "'123'").orderBy("id", false);
 		String sqlSegment = ew.getSqlSegment();
@@ -72,8 +77,8 @@ public class EntityWrapperTest {
 
 	@Test
 	public void test13() {
-        /*
-         * 实体排序
+		/*
+		 * 实体排序
 		 */
 		ew.setEntity(new User(1));
 		ew.orderBy("id", false);
@@ -84,9 +89,9 @@ public class EntityWrapperTest {
 
 	@Test
 	public void test21() {
-        /*
-         * 无实体 where ifneed orderby
-         */
+		/*
+		 * 无实体 where ifneed orderby
+		 */
 		ew.where("name={0}", "'123'").addFilterIfNeed(false, "id=1").orderBy("id");
 		String sqlSegment = ew.getSqlSegment();
 		System.err.println("test21 = " + sqlSegment);
@@ -103,8 +108,8 @@ public class EntityWrapperTest {
 
 	@Test
 	public void test23() {
-        /*
-         * 无实体查询，只排序
+		/*
+		 * 无实体查询，只排序
 		 */
 		ew.orderBy("id", false);
 		String sqlSegment = ew.getSqlSegment();
@@ -114,8 +119,8 @@ public class EntityWrapperTest {
 
 	@Test
 	public void testNoTSQL() {
-        /*
-         * 实体 filter orderby
+		/*
+		 * 实体 filter orderby
 		 */
 		ew.setEntity(new User(1));
 		ew.addFilter("name={0}", "'123'").orderBy("id,name");
@@ -126,8 +131,8 @@ public class EntityWrapperTest {
 
 	@Test
 	public void testNoTSQL1() {
-        /*
-         * 非 T-SQL 无实体查询
+		/*
+		 * 非 T-SQL 无实体查询
 		 */
 		ew.addFilter("name={0}", "'123'").addFilterIfNeed(false, "status={1}", "1");
 		String sqlSegment = ew.getSqlSegment();
@@ -137,18 +142,13 @@ public class EntityWrapperTest {
 
 	@Test
 	public void testTSQL11() {
-        /*
-         * 实体带查询使用方法  输出看结果
-         */
+		/*
+		 * 实体带查询使用方法 输出看结果
+		 */
 		ew.setEntity(new User(1));
-		ew.where("name={0}", "'zhangsan'").and("id=1")
-				.orNew("status={0}", "0").or("status=1")
-				.notLike("nlike", "notvalue")
-				.andNew("new=xx").like("hhh", "ddd")
-				.andNew("pwd=11").isNotNull("n1,n2").isNull("n3")
-				.groupBy("x1").groupBy("x2,x3")
-				.having("x1=11").having("x3=433")
-				.orderBy("dd").orderBy("d1,d2");
+		ew.where("name={0}", "'zhangsan'").and("id=1").orNew("status={0}", "0").or("status=1").notLike("nlike", "notvalue")
+				.andNew("new=xx").like("hhh", "ddd").andNew("pwd=11").isNotNull("n1,n2").isNull("n3").groupBy("x1")
+				.groupBy("x2,x3").having("x1=11").having("x3=433").orderBy("dd").orderBy("d1,d2");
 		System.out.println(ew.getSqlSegment());
 	}
 
@@ -198,6 +198,7 @@ public class EntityWrapperTest {
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE ( NOT EXISTS ((select * from user)))", sqlPart);
 	}
+
 	/**
 	 * 测试NOT IN
 	 */
@@ -207,11 +208,12 @@ public class EntityWrapperTest {
 		list.add("'1'");
 		list.add("'2'");
 		list.add("'3'");
-		ew.notIn("test_type",list);
+		ew.notIn("test_type", list);
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (test_type NOT IN ('1','2','3'))", sqlPart);
 	}
+
 	/**
 	 * 测试IN
 	 */
@@ -221,7 +223,7 @@ public class EntityWrapperTest {
 		list.add(111111111L);
 		list.add(222222222L);
 		list.add(333333333L);
-		ew.in("test_type",list);
+		ew.in("test_type", list);
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (test_type IN (111111111,222222222,333333333))", sqlPart);

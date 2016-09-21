@@ -32,6 +32,10 @@ public class StringUtils {
 	 * 下划线字符
 	 */
 	public static final char UNDERLINE = '_';
+	/**
+	 * 空字符串
+	 */
+	public static final String EMPTY_STRING = "";
 
 	/**
 	 * <p>
@@ -157,6 +161,40 @@ public class StringUtils {
 			return "\'" + srcStr + "\'";
 		}
 		return srcStr;
+	}
+
+	/**
+	 * 拼接字符串第二个字符串第一个字母大写
+	 *
+	 * @param concatStr
+	 * @param str
+	 * @return
+	 */
+	public static String concatCapitalize(String concatStr, final String str) {
+		if (isEmpty(concatStr)){
+			concatStr = EMPTY_STRING;
+		}
+		int strLen;
+		if (str == null || (strLen = str.length()) == 0) {
+			return str;
+		}
+
+		final char firstChar = str.charAt(0);
+		if (Character.isTitleCase(firstChar)) {
+			// already capitalized
+			return str;
+		}
+
+		return new StringBuilder(strLen).append(concatStr).append(Character.toTitleCase(firstChar)).append(str.substring(1)).toString();
+	}
+	/**
+	 * 字符串第一个字母大写
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static String capitalize(final String str) {
+		return concatCapitalize(null,str);
 	}
 
 }
