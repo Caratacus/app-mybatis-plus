@@ -46,7 +46,7 @@ public class ReflectionKit {
 					break;
 				}
 			} catch (Exception e) {
-				logger.warn("Unexpected exception on checkFieldValueNull.  Cause:" + e);
+				logger.warn("Warn: Unexpected exception on checkFieldValueNull.  Cause:" + e);
 			}
 
 		}
