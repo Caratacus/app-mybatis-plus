@@ -25,7 +25,7 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
-import com.app.mybatisplus.toolkit.StringUtils;
+import com.app.mybatisplus.toolkit.ReflectionKit;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,22 +118,18 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
     private boolean saveOrUpdate(T entity, boolean isSelective) {
         if (entity instanceof AutoPrimaryKey) {
             AutoPrimaryKey auto = (AutoPrimaryKey) entity;
-            Long id = auto.getId();
-            return saveOrUpdate(id, entity, isSelective);
+            return saveOrUpdate(auto.getId(), entity, isSelective);
         } else if (entity instanceof UuidPrimaryKey) {
             UuidPrimaryKey uuid = (UuidPrimaryKey) entity;
-            String id = uuid.getId();
-            return saveOrUpdate(id, entity, isSelective);
+            return saveOrUpdate(uuid.getId(), entity, isSelective);
         }else if(entity instanceof IdWorkPrimaryKey){
             IdWorkPrimaryKey idwork = (IdWorkPrimaryKey) entity;
-            Long id = idwork.getId();
-            return saveOrUpdate(id, entity, isSelective);
+            return saveOrUpdate(idwork.getId(), entity, isSelective);
         }else if(entity instanceof InputPrimaryKey){
             InputPrimaryKey input = (InputPrimaryKey) entity;
-            Long id = input.getId();
-            return saveOrUpdate(id, entity, isSelective);
+            return saveOrUpdate(input.getId(), entity, isSelective);
         } else {
-            throw new MybatisPlusException("Not found @Id annotation in " + entity.getClass() + ",saveOrUpdate is Fail!");
+            throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
         }
 
     }
@@ -155,7 +151,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
             TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
             if (null != tableInfo) {
                 try {
-                    Method m = cls.getMethod(StringUtils.concatCapitalize("get",tableInfo.getKeyProperty()));
+                    Method m = cls.getMethod(ReflectionKit.getMethodCapitalize(tableInfo.getKeyProperty()));
                     Serializable idVal = (Serializable) m.invoke(entity);
                     return saveOrUpdate(idVal, entity, isSelective);
                 } catch (Exception e) {
