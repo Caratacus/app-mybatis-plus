@@ -15,16 +15,14 @@
  */
 package com.app.mybatisplus;
 
-import java.util.logging.Logger;
-
-import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.session.Configuration;
-
-import com.app.mybatisplus.MybatisXMLLanguageDriver;
 import com.app.mybatisplus.mapper.AutoSqlInjector;
 import com.app.mybatisplus.mapper.DBType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.mapper.ISqlInjector;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.session.Configuration;
+
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -52,6 +50,8 @@ public class MybatisConfiguration extends Configuration {
 	 * SQL 注入器，实现 ISqlInjector 或继承 AutoSqlInjector 自定义方法
 	 */
 	public static ISqlInjector SQL_INJECTOR = new AutoSqlInjector();
+
+	public final MyBatisMapperRegistry myBatisMapperRegistry = new MyBatisMapperRegistry(this);
 
 	/*
 	 * 元对象字段填充控制器
@@ -108,5 +108,8 @@ public class MybatisConfiguration extends Configuration {
 		}
 		super.setDefaultScriptingLanguage(driver);
 	}
-
+	@Override
+	public <T> void addMapper(Class<T> type) {
+		myBatisMapperRegistry.addMapper(type);
+	}
 }
