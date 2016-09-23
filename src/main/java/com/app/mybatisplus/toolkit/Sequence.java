@@ -15,14 +15,13 @@
  */
 package com.app.mybatisplus.toolkit;
 
+import com.app.common.SystemClock;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.logging.Logger;
-
-import com.app.mybatisplus.toolkit.StringUtils;
-import com.app.mybatisplus.toolkit.SystemClock;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 /**
  * <p>

@@ -15,24 +15,6 @@
  */
 package com.app.mybatisplus;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.ibatis.annotations.Arg;
 import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.CacheNamespaceRef;
@@ -45,6 +27,7 @@ import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Lang;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Options.FlushCachePolicy;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.ResultType;
@@ -55,7 +38,6 @@ import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.TypeDiscriminator;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.annotations.UpdateProvider;
-import org.apache.ibatis.annotations.Options.FlushCachePolicy;
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.builder.BuilderException;
@@ -89,6 +71,24 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Clinton Begin
  */
@@ -104,20 +104,7 @@ public class MyBatisMapperAnnotationBuilder extends MapperAnnotationBuilder{
 
 	public MyBatisMapperAnnotationBuilder(Configuration configuration, Class<?> type) {
 
-		String resource = type.getName().replace('.', '/') + ".java (best guess)";
-		this.assistant = new MapperBuilderAssistant(configuration, resource);
-		this.configuration = configuration;
-		this.type = type;
-
-		sqlAnnotationTypes.add(Select.class);
-		sqlAnnotationTypes.add(Insert.class);
-		sqlAnnotationTypes.add(Update.class);
-		sqlAnnotationTypes.add(Delete.class);
-
-		sqlProviderAnnotationTypes.add(SelectProvider.class);
-		sqlProviderAnnotationTypes.add(InsertProvider.class);
-		sqlProviderAnnotationTypes.add(UpdateProvider.class);
-		sqlProviderAnnotationTypes.add(DeleteProvider.class);
+		super(configuration,type);
 	}
 
 	public void parse() {
