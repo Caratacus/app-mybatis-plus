@@ -17,6 +17,7 @@ package com.app.mybatisplus;
 
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.binding.MapperProxyFactory;
+import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.ResolverUtil;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -28,16 +29,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * 继承至MapperRegistry
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
  */
-public class MyBatisMapperRegistry {
+public class MybatisPulsMapperRegistry extends MapperRegistry {
 
   private final Configuration config;
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<Class<?>, MapperProxyFactory<?>>();
 
-  public MyBatisMapperRegistry(Configuration config) {
+  public MybatisPulsMapperRegistry(Configuration config) {
+    super(config);
     this.config = config;
   }
 
@@ -53,7 +56,7 @@ public class MyBatisMapperRegistry {
       throw new BindingException("Error getting mapper instance. Cause: " + e, e);
     }
   }
-  
+
   public <T> boolean hasMapper(Class<T> type) {
     return knownMappers.containsKey(type);
   }
@@ -70,7 +73,7 @@ public class MyBatisMapperRegistry {
         // otherwise the binding may automatically be attempted by the
         // mapper parser. If the type is already known, it won't try.
 
-        MyBatisMapperAnnotationBuilder parser = new MyBatisMapperAnnotationBuilder(config, type);
+        MybatisPlusMapperBuilder parser = new MybatisPlusMapperBuilder(config, type);
         parser.parse();
         loadCompleted = true;
       } finally {
@@ -106,5 +109,5 @@ public class MyBatisMapperRegistry {
   public void addMappers(String packageName) {
     addMappers(packageName, Object.class);
   }
-  
+
 }

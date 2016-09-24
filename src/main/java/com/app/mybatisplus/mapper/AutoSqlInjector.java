@@ -15,12 +15,12 @@
  */
 package com.app.mybatisplus.mapper;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
+import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.annotations.FieldStrategy;
+import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.toolkit.TableFieldInfo;
+import com.app.mybatisplus.toolkit.TableInfo;
+import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
@@ -33,16 +33,12 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.session.Configuration;
 
-import com.app.mybatisplus.mapper.BaseMapper;
-import com.app.mybatisplus.mapper.DBType;
-import com.app.mybatisplus.mapper.ISqlInjector;
-import com.app.mybatisplus.mapper.SqlMethod;
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.annotations.FieldStrategy;
-import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.toolkit.TableFieldInfo;
-import com.app.mybatisplus.toolkit.TableInfo;
-import com.app.mybatisplus.toolkit.TableInfoHelper;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -64,9 +60,26 @@ public class AutoSqlInjector implements ISqlInjector {
 	protected DBType dbType = DBType.MYSQL;
 
 	/**
+	 * CRUD注入后给予标识 注入过后不再注入
+	 * 
+	 * @param configuration
+	 * @param builderAssistant
+	 * @param mapperClass
+	 */
+	public void inspectInject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass) {
+		String className = mapperClass.toString();
+		Set<String> mapperRegistryCache = MybatisConfiguration.MAPPER_REGISTRY_CACHE;
+		if (!mapperRegistryCache.contains(className)) {
+			inject(configuration, builderAssistant, mapperClass);
+			mapperRegistryCache.add(className);
+		}
+	};
+
+	/**
 	 * 注入单点 crudSql
 	 */
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass) {
+
 		this.configuration = configuration;
 		this.builderAssistant = builderAssistant;
 		this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
@@ -111,7 +124,8 @@ public class AutoSqlInjector implements ISqlInjector {
 			/**
 			 * 警告
 			 */
-			logger.warning(String.format("%s ,Not found @Id annotation, cannot use mybatis-plus curd method.", modelClass.toString()));
+			logger.warning(String.format("%s ,Not found @Id annotation, cannot use mybatis-plus curd method.",
+					modelClass.toString()));
 		}
 	}
 
@@ -119,8 +133,8 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 自定义方法，注入点（子类需重写该方法）
 	 */
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
-					   Class<?> modelClass, TableInfo table) {
-		//to do nothing
+			Class<?> modelClass, TableInfo table) {
+		// to do nothing
 	}
 
 	protected Class<?> extractModelClass(Class<?> mapperClass) {
@@ -143,7 +157,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * </p>
 	 *
 	 * @param selective
-	 * 				是否选择插入
+	 *            是否选择插入
 	 * @param mapperClass
 	 * @param modelClass
 	 * @param table
@@ -191,10 +205,11 @@ public class AutoSqlInjector implements ISqlInjector {
 		}
 		fieldBuilder.append("\n</trim>");
 		placeholderBuilder.append("\n</trim>");
-		String sql = String.format(sqlMethod.getSql(), table.getTableName(), fieldBuilder.toString(), placeholderBuilder.toString());
+		String sql = String.format(sqlMethod.getSql(), table.getTableName(), fieldBuilder.toString(),
+				placeholderBuilder.toString());
 		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
-		this.addInsertMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource, keyGenerator,
-				keyProperty, keyColumn);
+		this.addInsertMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource, keyGenerator, keyProperty,
+				keyColumn);
 	}
 
 	/**
@@ -237,10 +252,11 @@ public class AutoSqlInjector implements ISqlInjector {
 		}
 		fieldBuilder.append("\n</trim>");
 		placeholderBuilder.append("\n</trim>");
-		String sql = String.format(sqlMethod.getSql(), table.getTableName(), fieldBuilder.toString(), placeholderBuilder.toString());
+		String sql = String.format(sqlMethod.getSql(), table.getTableName(), fieldBuilder.toString(),
+				placeholderBuilder.toString());
 		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
-		this.addInsertMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource, keyGenerator,
-				keyProperty, keyColumn);
+		this.addInsertMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource, keyGenerator, keyProperty,
+				keyColumn);
 	}
 
 	/**
@@ -309,22 +325,21 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * </p>
 	 *
 	 * @param selective
-	 * 				是否选择更新
+	 *            是否选择更新
 	 * @param mapperClass
 	 * @param modelClass
 	 * @param table
 	 */
-	protected void injectUpdateByIdSql( boolean selective, Class<?> mapperClass, Class<?> modelClass, TableInfo table ) {
+	protected void injectUpdateByIdSql(boolean selective, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
 		SqlMethod sqlMethod = SqlMethod.UPDATE_BY_ID;
-		if ( selective ) {
+		if (selective) {
 			sqlMethod = SqlMethod.UPDATE_SELECTIVE_BY_ID;
 		}
-		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlSet(selective, table),
-				table.getKeyColumn(), table.getKeyProperty());
+		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlSet(selective, table), table.getKeyColumn(),
+				table.getKeyProperty());
 		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
 		this.addUpdateMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource);
 	}
-
 
 	/**
 	 * <p>
@@ -372,21 +387,20 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * </p>
 	 *
 	 * @param selective
-	 * 				是否选择更新
+	 *            是否选择更新
 	 * @param mapperClass
 	 * @param modelClass
 	 * @param table
 	 */
-	protected void injectUpdateSql( boolean selective, Class<?> mapperClass, Class<?> modelClass, TableInfo table ) {
+	protected void injectUpdateSql(boolean selective, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
 		SqlMethod sqlMethod = SqlMethod.UPDATE;
-		if ( selective ) {
+		if (selective) {
 			sqlMethod = SqlMethod.UPDATE_SELECTIVE;
 		}
 		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlSet(selective, table), sqlWhere(table, true));
 		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
 		this.addUpdateMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource);
 	}
-
 
 	/**
 	 * <p>
@@ -442,9 +456,10 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * @param modelClass
 	 * @param table
 	 */
-	protected void injectSelectOneSql( Class<?> mapperClass, Class<?> modelClass, TableInfo table ) {
+	protected void injectSelectOneSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
 		SqlMethod sqlMethod = SqlMethod.SELECT_ONE;
-		String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, false), table.getTableName(), sqlWhere(table, false));
+		String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, false), table.getTableName(),
+				sqlWhere(table, false));
 		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
 		this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, modelClass, table);
 	}
@@ -458,7 +473,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * @param modelClass
 	 * @param table
 	 */
-	protected void injectSelectCountSql( Class<?> mapperClass, Class<?> modelClass, TableInfo table ) {
+	protected void injectSelectCountSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
 		SqlMethod sqlMethod = SqlMethod.SELECT_COUNT;
 		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlWhere(table, true));
 		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
@@ -501,20 +516,20 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * </p>
 	 *
 	 * @param selective
-	 * 				是否选择更新
+	 *            是否选择更新
 	 * @param table
 	 * @return
 	 */
-	protected String sqlSet( boolean selective, TableInfo table ) {
+	protected String sqlSet(boolean selective, TableInfo table) {
 		StringBuilder set = new StringBuilder();
 		set.append("<trim prefix=\"SET\" suffixOverrides=\",\">");
 		List<TableFieldInfo> fieldList = table.getFieldList();
-		for ( TableFieldInfo fieldInfo : fieldList ) {
-			if ( selective ) {
+		for (TableFieldInfo fieldInfo : fieldList) {
+			if (selective) {
 				set.append(convertIfTag(fieldInfo, "et.", false));
 			}
 			set.append(fieldInfo.getColumn()).append("=#{et.").append(fieldInfo.getEl()).append("},");
-			if ( selective ) {
+			if (selective) {
 				set.append(convertIfTag(fieldInfo, true));
 			}
 		}
@@ -533,27 +548,22 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * @return
 	 */
 	protected String sqlSelectColumns(TableInfo table, boolean entityWrapper) {
-        // TODO by Caratacus
-		/*StringBuilder columns = new StringBuilder();
-		if (entityWrapper) {
-			columns.append("<choose><when test=\"ew.sqlSelect != null and ew.sqlSelect != ''\">${ew.sqlSelect}</when><otherwise>");
-		}
-		if (table.isKeyRelated()) {
-			columns.append(table.getKeyColumn()).append(" AS ").append(table.getKeyProperty());
-		} else {
-			columns.append(table.getKeyProperty());
-		}
-		List<TableFieldInfo> fieldList = table.getFieldList();
-		for (TableFieldInfo fieldInfo : fieldList) {
-			columns.append(",").append(fieldInfo.getColumn());
-			if (fieldInfo.isRelated()) {
-				columns.append(" AS ").append(fieldInfo.getProperty());
-			}
-		}
-		if (entityWrapper) {
-			columns.append("</otherwise></choose>");
-		}
-		return columns.toString();*/
+		// TODO by Caratacus
+		/*
+		 * StringBuilder columns = new StringBuilder(); if (entityWrapper) {
+		 * columns.append(
+		 * "<choose><when test=\"ew.sqlSelect != null and ew.sqlSelect != ''\">${ew.sqlSelect}</when><otherwise>"
+		 * ); } if (table.isKeyRelated()) {
+		 * columns.append(table.getKeyColumn()).
+		 * append(" AS ").append(table.getKeyProperty()); } else {
+		 * columns.append(table.getKeyProperty()); } List<TableFieldInfo>
+		 * fieldList = table.getFieldList(); for (TableFieldInfo fieldInfo :
+		 * fieldList) { columns.append(",").append(fieldInfo.getColumn()); if
+		 * (fieldInfo.isRelated()) {
+		 * columns.append(" AS ").append(fieldInfo.getProperty()); } } if
+		 * (entityWrapper) { columns.append("</otherwise></choose>"); } return
+		 * columns.toString();
+		 */
 
 		StringBuilder columns = new StringBuilder();
 		if (null != table.getResultMap()) {
@@ -604,12 +614,12 @@ public class AutoSqlInjector implements ISqlInjector {
 	 *
 	 * @param table
 	 * @param space
-	 * 				是否为空判断
+	 *            是否为空判断
 	 * @return
 	 */
 	protected String sqlWhere(TableInfo table, boolean space) {
 		StringBuilder where = new StringBuilder();
-		if ( space ) {
+		if (space) {
 			where.append("\n<if test=\"ew!=null\">");
 		}
 		where.append("\n<where>");
@@ -623,7 +633,7 @@ public class AutoSqlInjector implements ISqlInjector {
 			where.append(convertIfTag(fieldInfo, true));
 		}
 		where.append("\n</where>");
-		if ( space ) {
+		if (space) {
 			where.append("\n</if>");
 		}
 		return where.toString();
@@ -648,11 +658,11 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * </p>
 	 *
 	 * @param fieldInfo
-	 * 				字段信息
+	 *            字段信息
 	 * @param prefix
-	 * 				条件前缀
+	 *            条件前缀
 	 * @param colse
-	 * 				是否闭合标签
+	 *            是否闭合标签
 	 * @return
 	 */
 	protected String convertIfTag(TableFieldInfo fieldInfo, String prefix, boolean colse) {
@@ -686,54 +696,54 @@ public class AutoSqlInjector implements ISqlInjector {
 	/*
 	 * 查询
 	 */
-	public MappedStatement addSelectMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource,
-													Class<?> resultType, TableInfo table) {
+	public MappedStatement addSelectMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource, Class<?> resultType,
+			TableInfo table) {
 		if (null != table) {
 			String resultMap = table.getResultMap();
 			if (null != resultMap) {
 				/* 返回 resultMap 映射结果集 */
-				return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.SELECT, null, resultMap,
-						null, new NoKeyGenerator(), null, null);
+				return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.SELECT, null, resultMap, null,
+						new NoKeyGenerator(), null, null);
 			}
 		}
 
 		/* 普通查询 */
-		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.SELECT, null, null,
-				resultType, new NoKeyGenerator(), null, null);
+		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.SELECT, null, null, resultType,
+				new NoKeyGenerator(), null, null);
 	}
 
 	/*
 	 * 插入
 	 */
-	public MappedStatement addInsertMappedStatement(Class<?> mapperClass, Class<?> modelClass, String id,
-													SqlSource sqlSource, KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
-		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.INSERT, modelClass, null,
-				Integer.class, keyGenerator, keyProperty, keyColumn);
+	public MappedStatement addInsertMappedStatement(Class<?> mapperClass, Class<?> modelClass, String id, SqlSource sqlSource,
+			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.INSERT, modelClass, null, Integer.class,
+				keyGenerator, keyProperty, keyColumn);
 	}
 
 	/*
 	 * 删除
 	 */
 	public MappedStatement addDeleteMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource) {
-		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.DELETE, null, null,
-				Integer.class, new NoKeyGenerator(), null, null);
+		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.DELETE, null, null, Integer.class,
+				new NoKeyGenerator(), null, null);
 	}
 
 	/*
 	 * 更新
 	 */
-	public MappedStatement addUpdateMappedStatement(Class<?> mapperClass, Class<?> modelClass, String id,
-													SqlSource sqlSource) {
-		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.UPDATE, modelClass, null,
-				Integer.class, new NoKeyGenerator(), null, null);
+	public MappedStatement addUpdateMappedStatement(Class<?> mapperClass, Class<?> modelClass, String id, SqlSource sqlSource) {
+		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.UPDATE, modelClass, null, Integer.class,
+				new NoKeyGenerator(), null, null);
 	}
 
 	public MappedStatement addMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource,
-											  SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
-											  KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+			SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
+			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		String statementName = mapperClass.getName() + "." + id;
 		if (configuration.hasStatement(statementName)) {
-			System.err.println("{" + statementName + "} Has been loaded by XML or SqlProvider, ignoring the injection of the SQL.");
+			System.err.println("{" + statementName
+					+ "} Has been loaded by XML or SqlProvider, ignoring the injection of the SQL.");
 			return null;
 		}
 		/* 缓存逻辑处理 */

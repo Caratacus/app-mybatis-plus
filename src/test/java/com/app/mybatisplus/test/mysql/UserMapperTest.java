@@ -15,18 +15,6 @@
  */
 package com.app.mybatisplus.test.mysql;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-
-import com.app.mybatisplus.test.mysql.MyMetaObjectHandler;
-import com.app.mybatisplus.test.mysql.MySqlInjector;
-import com.app.mybatisplus.test.mysql.UserMapper;
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.plugins.Page;
@@ -34,6 +22,14 @@ import com.app.mybatisplus.plugins.pagination.Pagination;
 import com.app.mybatisplus.test.mysql.entity.Role;
 import com.app.mybatisplus.test.mysql.entity.User;
 import com.app.mybatisplus.toolkit.IdWorker;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
