@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2011-2014, hubin (jobob@qq.com).
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -17,7 +17,6 @@ package com.app.mybatisplus;
 
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.executor.ErrorContext;
@@ -46,6 +45,8 @@ import org.apache.ibatis.type.JdbcType;
 import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -365,6 +366,9 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
 	}
 
 	private void mapperElement(XNode parent) throws Exception {
+		List<String> resources = new ArrayList<String>();
+		List<String> urls = new ArrayList<String>();
+		List<String> mapperClasses = new ArrayList<String>();
 		if (parent != null) {
 			for (XNode child : parent.getChildren()) {
 				if ("package".equals(child.getName())) {
@@ -375,28 +379,40 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
 					String url = child.getStringAttribute("url");
 					String mapperClass = child.getStringAttribute("class");
 					if (resource != null && url == null && mapperClass == null) {
-						ErrorContext.instance().resource(resource);
-						InputStream inputStream = Resources.getResourceAsStream(resource);
-						//TODO
-						XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource,
-								configuration.getSqlFragments());
-						mapperParser.parse();
+						resources.add(resource);
 					} else if (resource == null && url != null && mapperClass == null) {
-						ErrorContext.instance().resource(url);
-						InputStream inputStream = Resources.getUrlAsStream(url);
-						//TODO
-						XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url,
-								configuration.getSqlFragments());
-						mapperParser.parse();
+						urls.add(url);
+
 					} else if (resource == null && url == null && mapperClass != null) {
-						Class<?> mapperInterface = Resources.classForName(mapperClass);
-						configuration.addMapper(mapperInterface);
+						mapperClasses.add(mapperClass);
+
 					} else {
 						throw new BuilderException(
 								"A mapper element may only specify a url, resource or class, but not more than one.");
 					}
 				}
 			}
+			for (String url : urls) {
+				ErrorContext.instance().resource(url);
+				InputStream inputStream = Resources.getUrlAsStream(url);
+				//TODO
+				MybatisXMLMapperBuilder mapperParser = new MybatisXMLMapperBuilder(inputStream, configuration, url,
+						configuration.getSqlFragments());
+				mapperParser.parse();
+			}
+			for (String resource : resources) {
+				ErrorContext.instance().resource(resource);
+				InputStream inputStream = Resources.getResourceAsStream(resource);
+				//TODO
+				MybatisXMLMapperBuilder mapperParser = new MybatisXMLMapperBuilder(inputStream, configuration, resource,
+						configuration.getSqlFragments());
+				mapperParser.parse();
+			}
+			for (String mapper : mapperClasses) {
+				Class<?> mapperInterface = Resources.classForName(mapper);
+				configuration.addMapper(mapperInterface);
+			}
+
 		}
 	}
 

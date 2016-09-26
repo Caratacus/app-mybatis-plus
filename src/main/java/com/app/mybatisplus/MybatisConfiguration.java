@@ -24,6 +24,8 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 
 /**
@@ -58,8 +60,11 @@ public class MybatisConfiguration extends Configuration {
     /*
      * Mapper 注册
      */
-    public final MybatisPulsMapperRegistry mybatisPulsMapperRegistry = new MybatisPulsMapperRegistry(this);
-
+    public final MybatisMapperRegistry mybatisMapperRegistry = new MybatisMapperRegistry(this);
+    /**
+     * 缓存注册标识
+     */
+    public static Set<String> MAPPER_REGISTRY_CACHE = new ConcurrentSkipListSet<String>();
     /*
      * 元对象字段填充控制器
      */
@@ -116,37 +121,34 @@ public class MybatisConfiguration extends Configuration {
         super.setDefaultScriptingLanguage(driver);
     }
 
-    /**
-     * Mapper注册
-     */
     @Override
     public MapperRegistry getMapperRegistry() {
-        return mybatisPulsMapperRegistry;
+        return mybatisMapperRegistry;
     }
 
     @Override
     public <T> void addMapper(Class<T> type) {
-        mybatisPulsMapperRegistry.addMapper(type);
+        mybatisMapperRegistry.addMapper(type);
     }
 
     @Override
     public void addMappers(String packageName, Class<?> superType) {
-        mybatisPulsMapperRegistry.addMappers(packageName, superType);
+        mybatisMapperRegistry.addMappers(packageName, superType);
     }
 
     @Override
     public void addMappers(String packageName) {
-        mybatisPulsMapperRegistry.addMappers(packageName);
+        mybatisMapperRegistry.addMappers(packageName);
     }
 
     @Override
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
-        return mybatisPulsMapperRegistry.getMapper(type, sqlSession);
+        return mybatisMapperRegistry.getMapper(type, sqlSession);
     }
 
     @Override
     public boolean hasMapper(Class<?> type) {
-        return mybatisPulsMapperRegistry.hasMapper(type);
+        return mybatisMapperRegistry.hasMapper(type);
     }
 
 }

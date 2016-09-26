@@ -1,17 +1,17 @@
 /**
- *    Copyright 2009-2016 the original author or authors.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Copyright 2009-2016 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.app.mybatisplus;
 
@@ -47,7 +47,6 @@ import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.builder.annotation.MapperAnnotationBuilder;
 import org.apache.ibatis.builder.annotation.MethodResolver;
 import org.apache.ibatis.builder.annotation.ProviderSqlSource;
-import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
@@ -91,11 +90,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * <p>
  * 继承 MapperAnnotationBuilder 没有XML配置文件注入基础CRUD方法
- *
+ * </p>
+ * 
  * @author Caratacus
+ * @Date 2016-09-26
  */
-public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
+public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
 
     private final Set<Class<? extends Annotation>> sqlAnnotationTypes = new HashSet<Class<? extends Annotation>>();
     private final Set<Class<? extends Annotation>> sqlProviderAnnotationTypes = new HashSet<Class<? extends Annotation>>();
@@ -104,18 +106,16 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
     private MapperBuilderAssistant assistant;
     private Class<?> type;
 
-    public MybatisPlusMapperBuilder(Configuration configuration, Class<?> type) {
+    public MybatisMapperAnnotationBuilder(Configuration configuration, Class<?> type) {
         super(configuration, type);
         String resource = type.getName().replace('.', '/') + ".java (best guess)";
         this.assistant = new MapperBuilderAssistant(configuration, resource);
         this.configuration = configuration;
         this.type = type;
-
         sqlAnnotationTypes.add(Select.class);
         sqlAnnotationTypes.add(Insert.class);
         sqlAnnotationTypes.add(Update.class);
         sqlAnnotationTypes.add(Delete.class);
-
         sqlProviderAnnotationTypes.add(SelectProvider.class);
         sqlProviderAnnotationTypes.add(InsertProvider.class);
         sqlProviderAnnotationTypes.add(UpdateProvider.class);
@@ -124,15 +124,15 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
 
     public void parse() {
         String resource = type.toString();
-
         if (!configuration.isResourceLoaded(resource)) {
-            loadXmlResource();
+            boolean existXml = loadXmlResource();
             configuration.addLoadedResource(resource);
             assistant.setCurrentNamespace(type.getName());
             parseCache();
             parseCacheRef();
             Method[] methods = type.getMethods();
-            inspectInject();
+            //TODO 注入存在 xxMapper.xml CURD (应该在注解之前注入)
+            inspectInject(existXml);
             for (Method method : methods) {
                 try {
                     // issue #237
@@ -143,16 +143,17 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
                     configuration.addIncompleteMethod(new MethodResolver(this, method));
                 }
             }
+
         }
         parsePendingMethods();
     }
 
     /*
-     * 注入 CURD 动态 SQL
+     * 注入 CURD 动态 SQL(XML不存在时注入)
      */
-    private void inspectInject() {
-        if (BaseMapper.class.isAssignableFrom(type)) {
-            com.app.mybatisplus.MybatisConfiguration.SQL_INJECTOR.inject(configuration, assistant, type);
+    private void inspectInject(boolean flag) {
+        if (!flag && BaseMapper.class.isAssignableFrom(type)) {
+            com.app.mybatisplus.MybatisConfiguration.SQL_INJECTOR.inspectInject(configuration, assistant, type);
         }
     }
 
@@ -171,10 +172,17 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
         }
     }
 
-    private void loadXmlResource() {
+    /**
+     * 是否存在XML(该方法并不能客观的判断resource的路径,只是Mybatis默认认为的xml路径)
+     *
+     * @return boolean ture存在,flase不存在
+     */
+    //TODO 该方法改为返回 boolean 判断是否存在 xxxMapper.xml
+    private boolean loadXmlResource() {
+        boolean flag = true;
         // Spring may not know the real resource name so we check a flag
         // to prevent loading again a resource twice
-        // this flag is set at XMLMapperBuilder#bindMapperForNamespace
+        // this flag is set at MybatisXMLMapperBuilder#bindMapperForNamespace
         if (!configuration.isResourceLoaded("namespace:" + type.getName())) {
             String xmlResource = type.getName().replace('.', '/') + ".xml";
             InputStream inputStream = null;
@@ -182,13 +190,15 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
                 inputStream = Resources.getResourceAsStream(type.getClassLoader(), xmlResource);
             } catch (IOException e) {
                 // ignore, resource is not required
+                flag = false;
             }
             if (inputStream != null) {
-                XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource,
+                MybatisXMLMapperBuilder xmlParser = new MybatisXMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource,
                         configuration.getSqlFragments(), type.getName());
                 xmlParser.parse();
             }
         }
+        return flag;
     }
 
     private void parseCache() {
@@ -294,7 +304,6 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
             boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
             boolean flushCache = !isSelect;
             boolean useCache = isSelect;
-
             KeyGenerator keyGenerator;
             String keyProperty = "id";
             String keyColumn = null;
@@ -316,7 +325,6 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
             } else {
                 keyGenerator = new NoKeyGenerator();
             }
-
             if (options != null) {
                 if (FlushCachePolicy.TRUE.equals(options.flushCache())) {
                     flushCache = true;
@@ -330,7 +338,6 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
                 statementType = options.statementType();
                 resultSetType = options.resultSetType();
             }
-
             String resultMapId = null;
             ResultMap resultMapAnnotation = method.getAnnotation(ResultMap.class);
             if (resultMapAnnotation != null) {
@@ -346,7 +353,6 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
             } else if (isSelect) {
                 resultMapId = parseResultMap(method);
             }
-
             assistant.addMappedStatement(mappedStatementId, sqlSource, statementType, sqlCommandType, fetchSize, timeout,
                     // ParameterMapID
                     null, parameterTypeClass, resultMapId, getReturnType(method), resultSetType, flushCache, useCache,
@@ -435,7 +441,6 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
                 }
             }
         }
-
         return returnType;
     }
 
@@ -472,14 +477,11 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
 
     private SqlCommandType getSqlCommandType(Method method) {
         Class<? extends Annotation> type = getSqlAnnotationType(method);
-
         if (type == null) {
             type = getSqlProviderAnnotationType(method);
-
             if (type == null) {
                 return SqlCommandType.UNKNOWN;
             }
-
             if (type == SelectProvider.class) {
                 type = Select.class;
             } else if (type == InsertProvider.class) {
@@ -490,7 +492,6 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
                 type = Delete.class;
             }
         }
-
         return SqlCommandType.valueOf(type.getSimpleName().toUpperCase(Locale.ENGLISH));
     }
 
@@ -596,7 +597,6 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
         String keyProperty = selectKeyAnnotation.keyProperty();
         String keyColumn = selectKeyAnnotation.keyColumn();
         boolean executeBefore = selectKeyAnnotation.before();
-
         // defaults
         boolean useCache = false;
         KeyGenerator keyGenerator = new NoKeyGenerator();
@@ -606,16 +606,12 @@ public class MybatisPlusMapperBuilder extends MapperAnnotationBuilder {
         String parameterMap = null;
         String resultMap = null;
         ResultSetType resultSetTypeEnum = null;
-
         SqlSource sqlSource = buildSqlSourceFromStrings(selectKeyAnnotation.statement(), parameterTypeClass, languageDriver);
         SqlCommandType sqlCommandType = SqlCommandType.SELECT;
-
         assistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap,
                 parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache, false, keyGenerator,
                 keyProperty, keyColumn, null, languageDriver, null);
-
         id = assistant.applyCurrentNamespace(id, false);
-
         MappedStatement keyStatement = configuration.getMappedStatement(id, false);
         SelectKeyGenerator answer = new SelectKeyGenerator(keyStatement, executeBefore);
         configuration.addKeyGenerator(id, answer);
