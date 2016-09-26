@@ -38,6 +38,7 @@ public class EntityWrapperTest {
 	 * User 查询包装器
 	 */
 	private EntityWrapper<User> ew = new EntityWrapper<User>();
+
 	// 初始化
 	static {
 		TableInfoHelper.initTableInfo(User.class);
@@ -227,6 +228,19 @@ public class EntityWrapperTest {
 		String sqlPart = ew.getSqlSegment();
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (test_type IN (111111111,222222222,333333333))", sqlPart);
+	}
+
+	/**
+	 * 测试BETWEEN AND
+	 */
+	@Test
+	public void testNul19() {
+		String val1 = "11";
+		String val2 = "33";
+		ew.between("test_type", val1, val2);
+		String sqlPart = ew.getSqlSegment();
+		System.out.println("sql ==> " + sqlPart);
+		Assert.assertEquals("WHERE (test_type BETWEEN 11 AND 33)", sqlPart);
 	}
 
 }

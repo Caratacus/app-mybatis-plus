@@ -15,14 +15,9 @@
  */
 package com.app.mybatisplus;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.executor.ErrorContext;
@@ -48,8 +43,10 @@ import org.apache.ibatis.session.LocalCacheScope;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.MybatisXMLMapperBuilder;
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Properties;
 
 /**
  * <p>
@@ -381,14 +378,14 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
 						ErrorContext.instance().resource(resource);
 						InputStream inputStream = Resources.getResourceAsStream(resource);
 						//TODO
-						MybatisXMLMapperBuilder mapperParser = new MybatisXMLMapperBuilder(inputStream, configuration, resource,
+						XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource,
 								configuration.getSqlFragments());
 						mapperParser.parse();
 					} else if (resource == null && url != null && mapperClass == null) {
 						ErrorContext.instance().resource(url);
 						InputStream inputStream = Resources.getUrlAsStream(url);
 						//TODO
-						MybatisXMLMapperBuilder mapperParser = new MybatisXMLMapperBuilder(inputStream, configuration, url,
+						XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url,
 								configuration.getSqlFragments());
 						mapperParser.parse();
 					} else if (resource == null && url == null && mapperClass != null) {

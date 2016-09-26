@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2020, hubin (jobob@qq.com).
+ * Copyright (c) 2011-2014, hubin (jobob@qq.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,29 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.app.mybatisplus.mapper;
+package com.app.mybatisplus.test.mysql;
 
-import org.apache.ibatis.reflection.MetaObject;
+import com.app.mybatisplus.mapper.AutoMapper;
+import com.app.mybatisplus.test.mysql.entity.User;
 
 /**
  * <p>
- * 元对象字段填充控制器抽象类，实现公共字段自动写入
+ * 继承 AutoMapper，就自动拥有CRUD方法
  * </p>
- *
- * @author hubin
- * @Date 2016-08-28
+ * 
+ * @author Caratacus
+ * @Date 2016-09-25
  */
-public interface IMetaObjectHandler {
-
-	/**
-	 * <p>
-	 * 插入元对象字段填充
-	 * </p>
-	 *
-	 * @param metaObject
-	 *            元对象
-	 * @return
-	 */
-	void insertFill(MetaObject metaObject);
+public interface TestMapper extends AutoMapper<User> {
 
 }

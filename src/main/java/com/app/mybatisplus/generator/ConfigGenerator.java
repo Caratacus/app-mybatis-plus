@@ -130,6 +130,9 @@ public class ConfigGenerator {
 
 	protected ConfigIdType configIdType = ConfigIdType.LONG;
 
+	protected ConfigBaseEntity configBaseEntity = null;
+
+
 	public String getSaveDir() {
 		return saveDir;
 	}
@@ -186,6 +189,14 @@ public class ConfigGenerator {
 			}
 		}
 		return superServiceImpl;
+	}
+
+	public ConfigBaseEntity getConfigBaseEntity() {
+		return configBaseEntity;
+	}
+
+	public void setConfigBaseEntity(ConfigBaseEntity configBaseEntity) {
+		this.configBaseEntity = configBaseEntity;
 	}
 
 	public void setSuperServiceImpl(String superServiceImpl) {

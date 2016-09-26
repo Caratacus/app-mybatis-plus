@@ -15,16 +15,16 @@
  */
 package com.app.mybatisplus.test.mysql;
 
-import com.app.mybatisplus.test.ConfigGeneratorTest;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.generator.AutoGenerator;
 import com.app.mybatisplus.generator.ConfigGenerator;
+import com.app.mybatisplus.test.ConfigGeneratorTest;
 
 /**
  * <p>
  * 自动生成映射工具类测试
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-04-25
  */
@@ -60,7 +60,7 @@ public class AutoGeneratorUser extends ConfigGeneratorTest {
 		 * 指定生成表名（默认，所有表）
 		 */
 		//cg.setTableNames(new String[]{"user"});
-		
+
 		AutoGenerator.run(cg);
 	}
 

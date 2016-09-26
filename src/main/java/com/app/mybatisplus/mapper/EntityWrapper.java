@@ -27,7 +27,7 @@ import java.util.List;
  * Entity 对象封装操作类，定义T-SQL语法
  * </p>
  *
- * @author hubin , yanghu , Dyang
+ * @author hubin , yanghu , Dyang , Caratacus
  * @Date 2016-03-15
  */
 @SuppressWarnings("serial")
@@ -299,6 +299,30 @@ public class EntityWrapper<T> implements Serializable {
 	}
 
 	/**
+	 * is not null 条件
+	 *
+	 * @param columns
+	 *            字段名称。多个字段以逗号分隔。
+	 * @return this
+	 */
+	public EntityWrapper<T> isNotNull(String columns) {
+		sql.IS_NOT_NULL(columns);
+		return this;
+	}
+
+	/**
+	 * is not null 条件
+	 *
+	 * @param columns
+	 *            字段名称。多个字段以逗号分隔。
+	 * @return this
+	 */
+	public EntityWrapper<T> isNull(String columns) {
+		sql.IS_NULL(columns);
+		return this;
+	}
+
+	/**
 	 * EXISTS 条件语句，目前适配mysql及oracle
 	 *
 	 * @param value
@@ -379,26 +403,16 @@ public class EntityWrapper<T> implements Serializable {
 	}
 
 	/**
-	 * is not null 条件
+	 * betwwee 条件语句
 	 *
-	 * @param columns
-	 *            字段名称。多个字段以逗号分隔。
+	 * @param column
+	 *            字段名称
+	 * @param val1
+	 * @param val2
 	 * @return this
 	 */
-	public EntityWrapper<T> isNotNull(String columns) {
-		sql.IS_NOT_NULL(columns);
-		return this;
-	}
-
-	/**
-	 * is not null 条件
-	 *
-	 * @param columns
-	 *            字段名称。多个字段以逗号分隔。
-	 * @return this
-	 */
-	public EntityWrapper<T> isNull(String columns) {
-		sql.IS_NULL(columns);
+	public EntityWrapper<T> between(String column, String val1, String val2) {
+		sql.BETWEEN_AND(column, val1, val2);
 		return this;
 	}
 
@@ -471,9 +485,12 @@ public class EntityWrapper<T> implements Serializable {
 	 * 根据需要格式化SQL
 	 * </p>
 	 *
-	 * @param need   是否需要格式化
-	 * @param sqlStr SQL语句部分
-	 * @param params 参数集
+	 * @param need
+	 *            是否需要格式化
+	 * @param sqlStr
+	 *            SQL语句部分
+	 * @param params
+	 *            参数集
 	 * @return this
 	 */
 	protected String formatSqlIfNeed(boolean need, String sqlStr, Object... params) {
@@ -492,13 +509,14 @@ public class EntityWrapper<T> implements Serializable {
 
 	/**
 	 * <p>
-	 * 处理Object类型的参数
-	 * 如果类型为String，自动添加单引号 'value'。当前字符串已经包含单引号，则不做修改
+	 * 处理Object类型的参数 如果类型为String，自动添加单引号 'value'。当前字符串已经包含单引号，则不做修改
 	 * 如果类型为Object，自动转换成String类型
 	 * </p>
 	 *
-	 * @param params 参数集
-	 * @param length 参数数量
+	 * @param params
+	 *            参数集
+	 * @param length
+	 *            参数数量
 	 */
 	protected void dealParams(Object[] params, int length) {
 		for (int i = 0; i < length; i++) {

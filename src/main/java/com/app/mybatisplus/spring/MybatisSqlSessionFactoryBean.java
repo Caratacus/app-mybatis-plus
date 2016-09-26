@@ -15,18 +15,14 @@
  */
 package com.app.mybatisplus.spring;
 
-import static org.springframework.util.Assert.notNull;
-import static org.springframework.util.Assert.state;
-import static org.springframework.util.ObjectUtils.isEmpty;
-import static org.springframework.util.StringUtils.hasLength;
-import static org.springframework.util.StringUtils.tokenizeToStringArray;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
+import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
+import com.app.mybatisplus.mapper.ISqlInjector;
+import com.app.mybatisplus.toolkit.PackageHelper;
+import org.apache.ibatis.builder.xml.XMLConfigBuilder;
+import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.VFS;
@@ -53,14 +49,16 @@ import org.springframework.core.NestedIOException;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.MybatisXMLConfigBuilder;
-import com.app.mybatisplus.MybatisXMLMapperBuilder;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.mapper.DBType;
-import com.app.mybatisplus.mapper.IMetaObjectHandler;
-import com.app.mybatisplus.mapper.ISqlInjector;
-import com.app.mybatisplus.toolkit.PackageHelper;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Properties;
+
+import static org.springframework.util.Assert.notNull;
+import static org.springframework.util.Assert.state;
+import static org.springframework.util.ObjectUtils.isEmpty;
+import static org.springframework.util.StringUtils.hasLength;
+import static org.springframework.util.StringUtils.tokenizeToStringArray;
 
 /**
  * <p>
@@ -439,8 +437,7 @@ public class MybatisSqlSessionFactoryBean
 
 		Configuration configuration;
 
-		// TODO 加载自定义 MybatisXmlConfigBuilder
-		MybatisXMLConfigBuilder xmlConfigBuilder = null;
+		XMLConfigBuilder xmlConfigBuilder = null;
 		if (this.configuration != null) {
 			configuration = this.configuration;
 			if (configuration.getVariables() == null) {
@@ -449,13 +446,11 @@ public class MybatisSqlSessionFactoryBean
 				configuration.getVariables().putAll(this.configurationProperties);
 			}
 		} else if (this.configLocation != null) {
-			xmlConfigBuilder = new MybatisXMLConfigBuilder(this.configLocation.getInputStream(), null,
-					this.configurationProperties);
+			xmlConfigBuilder = new XMLConfigBuilder(this.configLocation.getInputStream(), null, this.configurationProperties);
 			configuration = xmlConfigBuilder.getConfiguration();
 		} else {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(
-						"Property `configuration` or 'configLocation' not specified, using default MyBatis Configuration");
+				LOGGER.debug("Property `configuration` or 'configLocation' not specified, using default MyBatis Configuration");
 			}
 			// TODO 使用自定义配置
 			configuration = new MybatisConfiguration();
@@ -533,8 +528,7 @@ public class MybatisSqlSessionFactoryBean
 			}
 		}
 
-		if (this.databaseIdProvider != null) {// fix #64 set databaseId before
-			// parse mapper xmls
+		if (this.databaseIdProvider != null) {//fix #64 set databaseId before parse mapper xmls
 			try {
 				configuration.setDatabaseId(this.databaseIdProvider.getDatabaseId(this.dataSource));
 			} catch (SQLException e) {
@@ -573,10 +567,8 @@ public class MybatisSqlSessionFactoryBean
 				}
 
 				try {
-					// TODO
-					MybatisXMLMapperBuilder xmlMapperBuilder = new MybatisXMLMapperBuilder(
-							mapperLocation.getInputStream(), configuration, mapperLocation.toString(),
-							configuration.getSqlFragments());
+					XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(mapperLocation.getInputStream(),
+							configuration, mapperLocation.toString(), configuration.getSqlFragments());
 					xmlMapperBuilder.parse();
 				} catch (Exception e) {
 					throw new NestedIOException("Failed to parse mapping resource: '" + mapperLocation + "'", e);
