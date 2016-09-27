@@ -17,6 +17,7 @@ package com.app.mybatisplus.test.mysql.entity;
 
 import com.app.mybatisplus.annotations.Column;
 import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.annotations.Table;
 
 import java.io.Serializable;
@@ -36,7 +37,7 @@ public class Test implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** 主键 */
-	@Id
+	@Id(type= IdType.ID_WORKER)
 	private Long id;
 
 	private String type;

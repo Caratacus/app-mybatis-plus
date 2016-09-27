@@ -46,7 +46,8 @@ public class NoXMLTest {
 		 * 查询是否有结果
 		 */
 		TestMapper testMapper = sqlSession.getMapper(TestMapper.class);
-		testMapper.insert(new Test(IdWorker.getId(), "Caratacus"));
+        Test caratacus = new Test(IdWorker.getId(), "Caratacus");
+        testMapper.insert(caratacus);
 		List<Test> tests = testMapper.selectList(null);
 		if (null != tests) {
 			for (Test test : tests) {
