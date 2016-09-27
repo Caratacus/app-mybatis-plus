@@ -20,8 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.app.mybatisplus.annotations.FieldStrategy;
-
 /**
  * <p>
  * 表字段标识

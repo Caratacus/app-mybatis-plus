@@ -15,8 +15,6 @@
  */
 package com.app.mybatisplus.mapper;
 
-import java.io.Serializable;
-
 /**
  * <p>
  * Mapper 继承该接口后，无需编写 mapper.xml 文件，即可获得CRUD功能

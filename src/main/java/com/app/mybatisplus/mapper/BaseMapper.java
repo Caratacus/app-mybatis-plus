@@ -15,14 +15,12 @@
  */
 package com.app.mybatisplus.mapper;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
-import com.app.mybatisplus.mapper.EntityWrapper;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>

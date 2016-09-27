@@ -32,7 +32,8 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class EntityWrapper<T> implements Serializable {
-	public final static EntityWrapper DEFAULT = new EntityWrapper();
+
+	public final static EntityWrapper instance = new EntityWrapper();
 	/**
 	 * 数据库表映射实体类
 	 */
