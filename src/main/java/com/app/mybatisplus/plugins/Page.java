@@ -15,11 +15,10 @@
  */
 package com.app.mybatisplus.plugins;
 
+import com.app.mybatisplus.plugins.pagination.Pagination;
+
 import java.util.Collections;
 import java.util.List;
-
-import com.app.mybatisplus.plugins.pagination.Pagination;
-import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>

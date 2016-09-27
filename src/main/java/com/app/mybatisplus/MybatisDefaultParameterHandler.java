@@ -15,25 +15,23 @@
  */
 package com.app.mybatisplus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
+import com.app.mybatisplus.toolkit.IdWorker;
+import com.app.mybatisplus.toolkit.TableInfo;
+import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.mapper.IMetaObjectHandler;
-import com.app.mybatisplus.toolkit.IdWorker;
-import com.app.mybatisplus.toolkit.TableInfo;
-import com.app.mybatisplus.toolkit.TableInfoHelper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>
