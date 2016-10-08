@@ -491,7 +491,7 @@ public class AutoSqlInjector implements ISqlInjector {
      * @param table
      */
     protected void injectSelectListSql(SqlMethod sqlMethod, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
-        String where = getStringBuilder(table);
+        String where = sqlWhereEntityWrapper(table);
         String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, true), table.getTableName(), where);
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
         this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, modelClass, table);
@@ -507,7 +507,7 @@ public class AutoSqlInjector implements ISqlInjector {
      * @param table
      */
     protected void injectSelectCountByEWSql(SqlMethod sqlMethod, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
-        String where = getStringBuilder(table);
+        String where = sqlWhereEntityWrapper(table);
         String sql = String.format(sqlMethod.getSql(), table.getTableName(), where);
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
         this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, Integer.class, null);
@@ -519,7 +519,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * @param table
 	 * @return String
 	 */
-    private String getStringBuilder(TableInfo table) {
+    private String sqlWhereEntityWrapper(TableInfo table) {
         StringBuilder where = new StringBuilder("\n<if test=\"ew!=null\">");
         where.append("\n<if test=\"ew.entity!=null\">\n<where>");
         where.append("\n<if test=\"ew.entity.").append(table.getKeyProperty()).append("!=null\">\n");
