@@ -83,6 +83,10 @@ public class AutoSqlInjector implements ISqlInjector {
         this.builderAssistant = builderAssistant;
         this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
         this.dbType = MybatisConfiguration.DB_TYPE;
+        if (configuration.isMapUnderscoreToCamelCase()) {
+			/* 开启驼峰配置 */
+            MybatisConfiguration.DB_COLUMN_UNDERLINE = true;
+        }
         Class<?> modelClass = extractModelClass(mapperClass);
         TableInfo table = TableInfoHelper.initTableInfo(modelClass);
 
@@ -193,14 +197,14 @@ public class AutoSqlInjector implements ISqlInjector {
         List<TableFieldInfo> fieldList = table.getFieldList();
         for (TableFieldInfo fieldInfo : fieldList) {
             if (selective) {
-                fieldBuilder.append(convertIfTag(fieldInfo, false));
-                placeholderBuilder.append(convertIfTag(fieldInfo, false));
+                fieldBuilder.append(convertIfTagInsert(fieldInfo, false));
+                placeholderBuilder.append(convertIfTagInsert(fieldInfo, false));
             }
             fieldBuilder.append(fieldInfo.getColumn()).append(",");
             placeholderBuilder.append("#{").append(fieldInfo.getEl()).append("},");
             if (selective) {
-                fieldBuilder.append(convertIfTag(fieldInfo, true));
-                placeholderBuilder.append(convertIfTag(fieldInfo, true));
+                fieldBuilder.append(convertIfTagInsert(fieldInfo, true));
+                placeholderBuilder.append(convertIfTagInsert(fieldInfo, true));
             }
         }
         fieldBuilder.append("\n</trim>");
@@ -689,6 +693,8 @@ public class AutoSqlInjector implements ISqlInjector {
      * IF 条件转换方法
      * </p>
      *
+     * @param sqlCommandType
+     *            SQL 操作类型
      * @param fieldInfo
      *            字段信息
      * @param prefix
@@ -697,7 +703,8 @@ public class AutoSqlInjector implements ISqlInjector {
      *            是否闭合标签
      * @return
      */
-    protected String convertIfTag(TableFieldInfo fieldInfo, String prefix, boolean colse) {
+    protected String convertIfTag(SqlCommandType sqlCommandType, TableFieldInfo fieldInfo, String prefix,
+                                  boolean colse) {
 		/* 前缀处理 */
         String property = fieldInfo.getProperty();
         if (null != prefix) {
@@ -705,6 +712,9 @@ public class AutoSqlInjector implements ISqlInjector {
         }
 
 		/* 判断策略 */
+        if (sqlCommandType == SqlCommandType.INSERT && fieldInfo.getFieldStrategy() == FieldStrategy.FILL) {
+            return "";
+        }
         if (fieldInfo.getFieldStrategy() == FieldStrategy.NOT_NULL) {
             if (colse) {
                 return "</if>";
@@ -719,6 +729,14 @@ public class AutoSqlInjector implements ISqlInjector {
             }
         }
         return "";
+    }
+
+    protected String convertIfTagInsert(TableFieldInfo fieldInfo, boolean colse) {
+        return convertIfTag(SqlCommandType.INSERT, fieldInfo, null, colse);
+    }
+
+    protected String convertIfTag(TableFieldInfo fieldInfo, String prefix, boolean colse) {
+        return convertIfTag(SqlCommandType.UNKNOWN, fieldInfo, prefix, colse);
     }
 
     protected String convertIfTag(TableFieldInfo fieldInfo, boolean colse) {

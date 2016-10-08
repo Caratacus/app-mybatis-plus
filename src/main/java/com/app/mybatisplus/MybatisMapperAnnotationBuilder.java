@@ -153,7 +153,7 @@ public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
      */
     private void inspectInject(boolean flag) {
         if (!flag && BaseMapper.class.isAssignableFrom(type)) {
-            com.app.mybatisplus.MybatisConfiguration.SQL_INJECTOR.inspectInject(configuration, assistant, type);
+            MybatisConfiguration.SQL_INJECTOR.inspectInject(configuration, assistant, type);
         }
     }
 

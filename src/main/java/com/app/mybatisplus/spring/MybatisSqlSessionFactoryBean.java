@@ -18,6 +18,7 @@ package com.app.mybatisplus.spring;
 import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.MybatisXMLConfigBuilder;
 import com.app.mybatisplus.MybatisXMLMapperBuilder;
+import com.app.mybatisplus.annotations.FieldStrategy;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.DBType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
@@ -138,6 +139,10 @@ public class MybatisSqlSessionFactoryBean
 		MybatisConfiguration.META_OBJECT_HANDLER = metaObjectHandler;
 	}
 
+	// TODO 注入 元对象字段填充控制器
+	public void setFieldStrategy(int key) {
+		MybatisConfiguration.FIELD_STRATEGY = FieldStrategy.getFieldStrategy(key);
+	}
 	/**
 	 * Sets the ObjectFactory.
 	 *

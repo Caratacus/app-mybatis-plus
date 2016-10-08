@@ -15,6 +15,7 @@
  */
 package com.app.mybatisplus;
 
+import com.app.mybatisplus.annotations.FieldStrategy;
 import com.app.mybatisplus.mapper.AutoSqlInjector;
 import com.app.mybatisplus.mapper.DBType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
@@ -69,7 +70,10 @@ public class MybatisConfiguration extends Configuration {
      * 元对象字段填充控制器
      */
     public static IMetaObjectHandler META_OBJECT_HANDLER = null;
-
+    /*
+	 * 字段验证策略
+	 */
+    public static FieldStrategy FIELD_STRATEGY = FieldStrategy.NOT_NULL;
     /*
      * 是否刷新mapper
      */

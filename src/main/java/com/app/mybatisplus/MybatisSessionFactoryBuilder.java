@@ -15,18 +15,20 @@
  */
 package com.app.mybatisplus;
 
-import com.app.mybatisplus.mapper.DBType;
-import com.app.mybatisplus.mapper.IMetaObjectHandler;
-import com.app.mybatisplus.mapper.ISqlInjector;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Properties;
+
 import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Properties;
+import com.app.mybatisplus.annotations.FieldStrategy;
+import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
+import com.app.mybatisplus.mapper.ISqlInjector;
 
 /**
  * <p>
@@ -91,4 +93,10 @@ public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
 	public void setMetaObjectHandler(IMetaObjectHandler metaObjectHandler) {
 		MybatisConfiguration.META_OBJECT_HANDLER = metaObjectHandler;
 	}
+
+	// TODO 注入 元对象字段填充控制器
+	public void setFieldStrategy(int key) {
+		MybatisConfiguration.FIELD_STRATEGY = FieldStrategy.getFieldStrategy(key);
+	}
+
 }

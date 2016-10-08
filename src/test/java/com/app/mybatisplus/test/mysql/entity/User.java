@@ -15,13 +15,13 @@
  */
 package com.app.mybatisplus.test.mysql.entity;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-
 import com.app.mybatisplus.annotations.Column;
 import com.app.mybatisplus.annotations.FieldStrategy;
 import com.app.mybatisplus.annotations.Id;
 import com.app.mybatisplus.annotations.Table;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
 
 /**
  * <p>
@@ -49,8 +49,8 @@ public class User implements Serializable {
 
 	private Integer age;
 
-	/* 测试下划线字段命名类型 */
-	@Column(value = "test_type")
+	/* 测试下划线字段命名类型, 字段填充 */
+	@Column(value = "test_type", validate = FieldStrategy.FILL)
 	private Integer testType;
 
 	@Column(el = "role.id")
