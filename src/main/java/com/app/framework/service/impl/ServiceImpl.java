@@ -15,6 +15,7 @@
  */
 package com.app.framework.service.impl;
 
+import com.app.common.CollectionUtil;
 import com.app.framework.entity.AutoPrimaryKey;
 import com.app.framework.entity.IdWorkPrimaryKey;
 import com.app.framework.entity.InputPrimaryKey;
@@ -234,8 +235,17 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		return baseMapper.selectOne(entity);
 	}
 
+	public T selectOne(EntityWrapper<T> entityWrapper) {
+		List<T> list = baseMapper.selectList(entityWrapper);
+		return CollectionUtil.isNotEmpty(list) ? list.get(0) : null;
+	}
+
 	public int selectCount(T entity) {
 		return baseMapper.selectCount(entity);
+	}
+
+	public int selectCount(EntityWrapper<T> entityWrapper) {
+		return baseMapper.selectCountByEW(entityWrapper);
 	}
 
 	public List<T> selectList(EntityWrapper<T> entityWrapper) {

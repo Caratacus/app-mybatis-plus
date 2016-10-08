@@ -244,4 +244,14 @@ public interface BaseMapper<T, PK extends Serializable> {
 	 */
 	List<T> selectPage( RowBounds rowBounds, @Param("ew" ) EntityWrapper<T> entityWrapper);
 
+	/**
+	 * <p>
+	 * 根据 EntityWrapper 条件，查询总记录数
+	 * </p>
+	 * @param entityWrapper
+	 * 				实体对象
+	 * @return int
+	 */
+	int selectCountByEW(@Param("ew") EntityWrapper<T> entityWrapper);
+
 }
