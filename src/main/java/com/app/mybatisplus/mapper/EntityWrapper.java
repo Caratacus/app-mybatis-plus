@@ -410,7 +410,7 @@ public class EntityWrapper<T> implements Serializable {
 	 * @param column
 	 *            字段名称
 	 * @param value
-	 *            匹配值 List集合
+	 *            匹配值 object数组
 	 * @return this
 	 */
 	public EntityWrapper<T> in(String column, Object... value) {
@@ -424,7 +424,7 @@ public class EntityWrapper<T> implements Serializable {
 	 * @param column
 	 *            字段名称
 	 * @param value
-	 *            匹配值 List集合
+	 *            匹配值 object数组
 	 * @return this
 	 */
 	public EntityWrapper<T> notIn(String column, Object... value) {
