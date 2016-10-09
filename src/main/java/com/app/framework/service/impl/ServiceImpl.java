@@ -21,6 +21,7 @@ import com.app.framework.entity.IdWorkPrimaryKey;
 import com.app.framework.entity.InputPrimaryKey;
 import com.app.framework.entity.UuidPrimaryKey;
 import com.app.framework.service.IService;
+import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.EntityWrapper;
@@ -72,22 +73,28 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	 * @version 1.0
 	 */
 	private boolean saveOrUpdate(T entity, boolean isSelective) {
-		if (entity instanceof AutoPrimaryKey) {
-			AutoPrimaryKey auto = (AutoPrimaryKey) entity;
-			return saveOrUpdate(auto.getId(), entity, isSelective);
-		} else if (entity instanceof UuidPrimaryKey) {
-			UuidPrimaryKey uuid = (UuidPrimaryKey) entity;
-			return saveOrUpdate(uuid.getId(), entity, isSelective);
-		} else if (entity instanceof IdWorkPrimaryKey) {
-			IdWorkPrimaryKey idwork = (IdWorkPrimaryKey) entity;
-			return saveOrUpdate(idwork.getId(), entity, isSelective);
-		} else if (entity instanceof InputPrimaryKey) {
-			InputPrimaryKey input = (InputPrimaryKey) entity;
-			return saveOrUpdate(input.getId(), entity, isSelective);
-		} else {
-			throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
+		if (null != entity) {
+			Class<?> cls = entity.getClass();
+			TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
+			if (null != tableInfo) {
+				if (entity instanceof AutoPrimaryKey) {
+					AutoPrimaryKey auto = (AutoPrimaryKey) entity;
+					return saveOrUpdate(auto.getId(), entity, isSelective, tableInfo);
+				} else if (entity instanceof UuidPrimaryKey) {
+					UuidPrimaryKey uuid = (UuidPrimaryKey) entity;
+					return saveOrUpdate(uuid.getId(), entity, isSelective, tableInfo);
+				} else if (entity instanceof IdWorkPrimaryKey) {
+					IdWorkPrimaryKey idwork = (IdWorkPrimaryKey) entity;
+					return saveOrUpdate(idwork.getId(), entity, isSelective, tableInfo);
+				} else if (entity instanceof InputPrimaryKey) {
+					InputPrimaryKey input = (InputPrimaryKey) entity;
+					return saveOrUpdate(input.getId(), entity, isSelective, tableInfo);
+				}
+			} else {
+				throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
+			}
 		}
-
+		return false;
 	}
 
 	/**
@@ -101,10 +108,19 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	 * @date 2016/9/16 0027
 	 * @version 1.0
 	 */
-	private boolean saveOrUpdate(Serializable id, T entity, boolean isSelective) {
+	private boolean saveOrUpdate(Serializable id, T entity, boolean isSelective, TableInfo tableInfo) {
 		if (null != id) {
 			return isSelective ? updateSelectiveById(entity) : updateById(entity);
 		} else {
+			/* 特殊处理 INPUT 主键策略逻辑 */
+			if (IdType.INPUT == tableInfo.getIdType()) {
+				T entityValue = selectById((PK) id);
+				if (null != entityValue) {
+					return isSelective ? updateSelectiveById(entity) : updateById(entity);
+				} else {
+					return isSelective ? insertSelective(entity) : insert(entity);
+				}
+			}
 			return isSelective ? insertSelective(entity) : insert(entity);
 		}
 	}
@@ -138,7 +154,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 				try {
 					Method m = cls.getMethod(ReflectionKit.getMethodCapitalize(tableInfo.getKeyProperty()));
 					Serializable idVal = (Serializable) m.invoke(entity);
-					return saveOrUpdate(idVal, entity, isSelective);
+					return saveOrUpdate(idVal, entity, isSelective, tableInfo);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
