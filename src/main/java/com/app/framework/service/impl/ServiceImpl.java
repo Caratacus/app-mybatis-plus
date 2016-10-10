@@ -191,7 +191,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	}
 
 	@Override
-	public boolean deleteById(PK id) {
+	public boolean deleteById(Serializable id) {
 		return retBool(baseMapper.deleteById(id));
 	}
 
@@ -235,7 +235,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		return retBool(baseMapper.updateBatchById(entityList));
 	}
 
-	public T selectById(PK id) {
+	public T selectById(Serializable id) {
 		return baseMapper.selectById(id);
 	}
 
