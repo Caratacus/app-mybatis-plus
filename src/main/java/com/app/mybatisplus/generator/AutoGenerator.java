@@ -560,9 +560,6 @@ public class AutoGenerator {
 		bw.newLine();
 		int size = columns.size();
 		for (int i = 0; i < size; i++) {
-			bw.newLine();
-			bw.write("\t/** " + comments.get(i) + " */");
-			bw.newLine();
 			/*
 			 * 判断ID 添加注解 <br> isLine 是否包含下划线
 			 */
@@ -578,7 +575,6 @@ public class AutoGenerator {
 			if (idInfo != null || "id".equalsIgnoreCase(column)) {
 
 			} else if (isLine && !config.isDbColumnUnderline()) {
-				bw.newLine();
 				bw.write("\t/** " + comments.get(i) + " */");
 				bw.newLine();
 				bw.write("\t@Column(value = \"" + column + "\")");
@@ -684,20 +680,12 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.write("import " + config.getEntityPackage() + "." + beanName + ";");
 		bw.newLine();
-		if (config.getConfigIdType() == ConfigIdType.STRING) {
-			bw.write("import com.app.mybatisplus.mapper.CommonMapper;");
-		} else {
-			bw.write("import com.app.mybatisplus.mapper.AutoMapper;");
-		}
+        bw.write("import com.app.mybatisplus.mapper.BaseMapper;");
 		bw.newLine();
 
 		bw = buildClassComment(bw, beanName + " 表数据库控制层接口");
 		bw.newLine();
-		if (config.getConfigIdType() == ConfigIdType.STRING) {
-			bw.write("public interface " + mapperName + " extends CommonMapper<" + beanName + "> {");
-		} else {
-			bw.write("public interface " + mapperName + " extends AutoMapper<" + beanName + "> {");
-		}
+        bw.write("public interface " + mapperName + " extends BaseMapper<" + beanName + "> {");
 		bw.newLine();
 		bw.newLine();
 

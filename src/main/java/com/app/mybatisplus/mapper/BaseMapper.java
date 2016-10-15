@@ -33,7 +33,7 @@ import java.util.Map;
  * @author hubin
  * @Date 2016-01-23
  */
-public interface BaseMapper<T, PK extends Serializable> {
+public interface BaseMapper<T> {
 
 	/**
 	 * <p>
@@ -108,7 +108,7 @@ public interface BaseMapper<T, PK extends Serializable> {
 	 * 				主键ID列表
 	 * @return int
 	 */
-	int deleteBatchIds( List<PK> idList );
+	int deleteBatchIds( List<? extends Serializable> idList );
 
 
 	/**
@@ -186,7 +186,7 @@ public interface BaseMapper<T, PK extends Serializable> {
 	 * 				主键ID列表
 	 * @return List<T>
 	 */
-	List<T> selectBatchIds( List<PK> idList );
+	List<T> selectBatchIds( List<? extends Serializable> idList );
 
 
 	/**
@@ -221,6 +221,16 @@ public interface BaseMapper<T, PK extends Serializable> {
 	 */
 	int selectCount( @Param("ew" ) T entity);
 
+	/**
+	 * <p>
+	 * 根据 EntityWrapper 条件，查询总记录数
+	 * </p>
+	 *
+	 * @param entityWrapper
+	 * 				实体对象
+	 * @return int
+	 */
+	int selectCountByEw(@Param("ew") EntityWrapper<T> entityWrapper);
 
 	/**
 	 * <p>
@@ -243,15 +253,5 @@ public interface BaseMapper<T, PK extends Serializable> {
 	 * @return List<T>
 	 */
 	List<T> selectPage( RowBounds rowBounds, @Param("ew" ) EntityWrapper<T> entityWrapper);
-
-	/**
-	 * <p>
-	 * 根据 EntityWrapper 条件，查询总记录数
-	 * </p>
-	 * @param entityWrapper
-	 * 				实体对象
-	 * @return int
-	 */
-	int selectCountByEW(@Param("ew") EntityWrapper<T> entityWrapper);
 
 }

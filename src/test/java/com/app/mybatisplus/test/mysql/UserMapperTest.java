@@ -65,7 +65,7 @@ public class UserMapperTest {
 
 		/*
          * 此处采用 MybatisSessionFactoryBuilder 构建
-		 * SqlSessionFactory，目的是引入AutoMapper功能
+		 * SqlSessionFactory，目的是引入BaseMapper功能
 		 */
 		MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
 
@@ -203,7 +203,7 @@ public class UserMapperTest {
          * 修改
          * </p>
          *
-         * updateById 是从 AutoMapper 中继承而来的，UserMapper.xml中并没有申明改sql
+         * updateById 是从 BaseMapper 中继承而来的，UserMapper.xml中并没有申明改sql
          *
          */
 		rlt = userMapper.updateSelectiveById(new User(12L, "MybatisPlus"));

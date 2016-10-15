@@ -20,18 +20,18 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.session.RowBounds;
 
-import com.app.mybatisplus.mapper.AutoMapper;
+import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.test.mysql.entity.User;
 
 /**
  * <p>
- * 继承 AutoMapper，就自动拥有CRUD方法
+ * 继承 BaseMapper，就自动拥有CRUD方法
  * </p>
  * 
  * @author hubin
  * @Date 2016-01-23
  */
-public interface UserMapper extends AutoMapper<User> {
+public interface UserMapper extends BaseMapper<User> {
 
 	/**
 	 * 用户列表，分页显示

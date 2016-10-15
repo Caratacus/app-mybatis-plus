@@ -30,7 +30,7 @@ import java.util.Map;
  * @author hubin
  * @Date 2016-04-20
  */
-public interface IService<T, PK> {
+public interface IService<T> {
 
 	/**
 	 * <p>
@@ -107,7 +107,7 @@ public interface IService<T, PK> {
 	 *            主键ID列表
 	 * @return boolean
 	 */
-	boolean deleteBatchIds(List<PK> idList);
+	boolean deleteBatchIds(List<? extends Serializable> idList);
 
 	/**
 	 * <p>
@@ -231,7 +231,7 @@ public interface IService<T, PK> {
 	 *            主键ID列表
 	 * @return List<T>
 	 */
-	List<T> selectBatchIds(List<PK> idList);
+	List<T> selectBatchIds(List<? extends Serializable> idList);
 
 	/**
 	 * <p>
@@ -254,6 +254,17 @@ public interface IService<T, PK> {
 	 * @return T
 	 */
 	T selectOne(T entity);
+
+	/**
+	 * <p>
+	 * 根据 EntityWrapper，查询一条记录
+	 * </p>
+	 *
+	 * @param entityWrapper
+	 *            实体对象
+	 * @return T
+	 */
+	T selectOne(EntityWrapper<T> entityWrapper);
 
 	/**
 	 * <p>
@@ -287,17 +298,6 @@ public interface IService<T, PK> {
 	 * @return
 	 */
 	List<T> selectList(EntityWrapper<T> entityWrapper);
-
-	/**
-	 * <p>
-	 * 根据 EntityWrapper，查询一条记录
-	 * </p>
-	 *
-	 * @param entityWrapper
-	 *            实体对象
-	 * @return T
-	 */
-	T selectOne(EntityWrapper<T> entityWrapper);
 
 	/**
 	 * <p>

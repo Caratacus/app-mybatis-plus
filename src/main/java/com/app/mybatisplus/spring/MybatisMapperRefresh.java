@@ -15,8 +15,8 @@
  */
 package com.app.mybatisplus.spring;
 
+import com.app.common.SystemClock;
 import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.toolkit.SystemClock;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;

@@ -167,11 +167,7 @@ public class ConfigGenerator {
 
 	public String getSuperService() {
 		if (StringUtils.isEmpty(superService)) {
-			if (this.getConfigIdType() == ConfigIdType.STRING) {
-				return "com.app.framework.service.ICommonService";
-			} else {
-				return "com.app.framework.service.ISuperService";
-			}
+			return "com.app.framework.service.IService";
 		}
 		return superService;
 	}
@@ -182,11 +178,7 @@ public class ConfigGenerator {
 
 	public String getSuperServiceImpl() {
 		if (StringUtils.isEmpty(superServiceImpl)) {
-			if (this.getConfigIdType() == ConfigIdType.STRING) {
-				return "com.app.framework.service.impl.CommonServiceImpl";
-			} else {
-				return "com.app.framework.service.impl.SuperServiceImpl";
-			}
+			return "com.app.framework.service.impl.ServiceImpl";
 		}
 		return superServiceImpl;
 	}

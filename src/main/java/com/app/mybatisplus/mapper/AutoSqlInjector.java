@@ -118,7 +118,7 @@ public class AutoSqlInjector implements ISqlInjector {
             this.injectSelectByMapSql(mapperClass, modelClass, table);
             this.injectSelectOneSql(mapperClass, modelClass, table);
             this.injectSelectCountSql(mapperClass, modelClass, table);
-            this.injectSelectCountByEWSql(SqlMethod.SELECT_COUNT_EW, mapperClass, modelClass, table);
+            this.injectSelectCountByEwSql(SqlMethod.SELECT_COUNT_EW, mapperClass, modelClass, table);
             this.injectSelectListSql(SqlMethod.SELECT_LIST, mapperClass, modelClass, table);
             this.injectSelectListSql(SqlMethod.SELECT_PAGE, mapperClass, modelClass, table);
 
@@ -486,7 +486,7 @@ public class AutoSqlInjector implements ISqlInjector {
 
     /**
      * <p>
-     * 注入实体查询记录列表 SQL 语句
+     * 注入EntityWrapper方式查询记录列表 SQL 语句
      * </p>
      *
      * @param sqlMethod
@@ -495,8 +495,7 @@ public class AutoSqlInjector implements ISqlInjector {
      * @param table
      */
     protected void injectSelectListSql(SqlMethod sqlMethod, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
-        String where = sqlWhereEntityWrapper(table);
-        String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, true), table.getTableName(), where);
+        String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, true), table.getTableName(), sqlWhereEntityWrapper(table));
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
         this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, modelClass, table);
     }
@@ -510,20 +509,21 @@ public class AutoSqlInjector implements ISqlInjector {
      * @param modelClass
      * @param table
      */
-    protected void injectSelectCountByEWSql(SqlMethod sqlMethod, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
-        String where = sqlWhereEntityWrapper(table);
-        String sql = String.format(sqlMethod.getSql(), table.getTableName(), where);
+    protected void injectSelectCountByEwSql(SqlMethod sqlMethod, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
+        String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlWhereEntityWrapper(table));
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
         this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, Integer.class, null);
     }
 
-	/**
-	 * EntityWrapper方式获取select where
-	 * 
-	 * @param table
-	 * @return String
-	 */
-    private String sqlWhereEntityWrapper(TableInfo table) {
+    /**
+     * <p>
+     * EntityWrapper方式获取select where
+     * </p>
+     *
+     * @param table
+     * @return String
+     */
+    protected String sqlWhereEntityWrapper(TableInfo table) {
         StringBuilder where = new StringBuilder("\n<if test=\"ew!=null\">");
         where.append("\n<if test=\"ew.entity!=null\">\n<where>");
         where.append("\n<if test=\"ew.entity.").append(table.getKeyProperty()).append("!=null\">\n");
@@ -579,28 +579,6 @@ public class AutoSqlInjector implements ISqlInjector {
      * @return
      */
     protected String sqlSelectColumns(TableInfo table, boolean entityWrapper) {
-        // TODO by Caratacus
-		/*StringBuilder columns = new StringBuilder();
-		if (entityWrapper) {
-			columns.append("<choose><when test=\"ew.sqlSelect != null and ew.sqlSelect != ''\">${ew.sqlSelect}</when><otherwise>");
-		}
-		if (table.isKeyRelated()) {
-			columns.append(table.getKeyColumn()).append(" AS ").append(table.getKeyProperty());
-		} else {
-			columns.append(table.getKeyProperty());
-		}
-		List<TableFieldInfo> fieldList = table.getFieldList();
-		for (TableFieldInfo fieldInfo : fieldList) {
-			columns.append(",").append(fieldInfo.getColumn());
-			if (fieldInfo.isRelated()) {
-				columns.append(" AS ").append(fieldInfo.getProperty());
-			}
-		}
-		if (entityWrapper) {
-			columns.append("</otherwise></choose>");
-		}
-		return columns.toString();*/
-
         StringBuilder columns = new StringBuilder();
         if (null != table.getResultMap()) {
 			/*
@@ -715,20 +693,22 @@ public class AutoSqlInjector implements ISqlInjector {
         if (sqlCommandType == SqlCommandType.INSERT && fieldInfo.getFieldStrategy() == FieldStrategy.FILL) {
             return "";
         }
-        if (fieldInfo.getFieldStrategy() == FieldStrategy.NOT_NULL) {
-            if (colse) {
-                return "</if>";
-            } else {
-                return String.format("\n\t<if test=\"%s!=null\">", property);
-            }
+        if (fieldInfo.getFieldStrategy() == FieldStrategy.IGNORED) {
+            return "";
         } else if (fieldInfo.getFieldStrategy() == FieldStrategy.NOT_EMPTY) {
             if (colse) {
                 return "</if>";
             } else {
                 return String.format("\n\t<if test=\"%s!=null and %s!=''\">", property, property);
             }
+        } else {
+            //FieldStrategy.NOT_NULL
+            if (colse) {
+                return "</if>";
+            } else {
+                return String.format("\n\t<if test=\"%s!=null\">", property);
+            }
         }
-        return "";
     }
 
     protected String convertIfTagInsert(TableFieldInfo fieldInfo, boolean colse) {

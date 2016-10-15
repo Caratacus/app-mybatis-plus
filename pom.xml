@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.app</groupId>
     <artifactId>app-mybatis-plus</artifactId>
-    <version>1.5.5.RELEASE</version>
+    <version>1.5.6.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>app-mybatis-plus</name>
@@ -20,7 +20,7 @@
     <developers>
         <developer>
             <name>Caratacus</name>
-            <email>chenxing@wanxue.com</email>
+            <email>caratacus@sina.com</email>
         </developer>
     </developers>
 

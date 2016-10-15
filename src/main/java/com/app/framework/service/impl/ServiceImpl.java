@@ -29,10 +29,11 @@ import com.app.mybatisplus.plugins.Page;
 import com.app.mybatisplus.toolkit.ReflectionKit;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,11 @@ import java.util.Map;
  * @author hubin
  * @Date 2016-04-20
  */
-public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable> implements IService<T, PK> {
+public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
+	/**
+	 * 子类不用再定义logger对象
+	 */
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	protected M baseMapper;
@@ -114,7 +119,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		} else {
 			/* 特殊处理 INPUT 主键策略逻辑 */
 			if (IdType.INPUT == tableInfo.getIdType()) {
-				T entityValue = selectById((PK) id);
+				T entityValue = selectById((Serializable) id);
 				if (null != entityValue) {
 					return isSelective ? updateSelectiveById(entity) : updateById(entity);
 				} else {
@@ -151,12 +156,20 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 			Class<?> cls = entity.getClass();
 			TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
 			if (null != tableInfo) {
-				try {
-					Method m = cls.getMethod(ReflectionKit.getMethodCapitalize(tableInfo.getKeyProperty()));
-					Serializable idVal = (Serializable) m.invoke(entity);
-					return saveOrUpdate(idVal, entity, isSelective, tableInfo);
-				} catch (Exception e) {
-					e.printStackTrace();
+				Object idVal = ReflectionKit.getMethodValue(cls, entity, tableInfo.getKeyProperty());
+				if (null == idVal || "".equals(idVal)) {
+					return isSelective ? insertSelective(entity) : insert(entity);
+				} else {
+					/* 特殊处理 INPUT 主键策略逻辑 */
+					if (IdType.INPUT == tableInfo.getIdType()) {
+						T entityValue = selectById((Serializable) idVal);
+						if (null != entityValue) {
+							return isSelective ? updateSelectiveById(entity) : updateById(entity);
+						} else {
+							return isSelective ? insertSelective(entity) : insert(entity);
+						}
+					}
+					return isSelective ? updateSelectiveById(entity) : updateById(entity);
 				}
 			} else {
 				throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
@@ -165,72 +178,58 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		return false;
 	}
 
-	@Override
 	public boolean insertOrUpdate(T entity) {
 		return insertOrUpdate(entity, false);
 	}
 
-	@Override
 	public boolean insertOrUpdateSelective(T entity) {
 		return insertOrUpdate(entity, true);
 	}
 
-	@Override
 	public boolean insert(T entity) {
 		return retBool(baseMapper.insert(entity));
 	}
 
-	@Override
 	public boolean insertSelective(T entity) {
 		return retBool(baseMapper.insertSelective(entity));
 	}
 
-	@Override
 	public boolean insertBatch(List<T> entityList) {
 		return retBool(baseMapper.insertBatch(entityList));
 	}
 
-	@Override
 	public boolean deleteById(Serializable id) {
 		return retBool(baseMapper.deleteById(id));
 	}
 
-	@Override
 	public boolean deleteByMap(Map<String, Object> columnMap) {
 		return retBool(baseMapper.deleteByMap(columnMap));
 	}
 
-	@Override
 	public boolean deleteSelective(T entity) {
 		return retBool(baseMapper.deleteSelective(entity));
 	}
 
-	@Override
-	public boolean deleteBatchIds(List<PK> idList) {
+	public boolean deleteBatchIds(List<? extends Serializable> idList) {
 		return retBool(baseMapper.deleteBatchIds(idList));
 	}
 
-	@Override
 	public boolean updateById(T entity) {
 		return retBool(baseMapper.updateById(entity));
 	}
 
-	@Override
 	public boolean updateSelectiveById(T entity) {
 		return retBool(baseMapper.updateSelectiveById(entity));
 	}
 
-	@Override
 	public boolean update(T entity, T whereEntity) {
 		return retBool(baseMapper.update(entity, whereEntity));
 	}
 
-	@Override
 	public boolean updateSelective(T entity, T whereEntity) {
 		return retBool(baseMapper.updateSelective(entity, whereEntity));
 	}
 
-	@Override
 	public boolean updateBatchById(List<T> entityList) {
 		return retBool(baseMapper.updateBatchById(entityList));
 	}
@@ -239,7 +238,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 		return baseMapper.selectById(id);
 	}
 
-	public List<T> selectBatchIds(List<PK> idList) {
+	public List<T> selectBatchIds(List<? extends Serializable> idList) {
 		return baseMapper.selectBatchIds(idList);
 	}
 
@@ -253,7 +252,14 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 
 	public T selectOne(EntityWrapper<T> entityWrapper) {
 		List<T> list = baseMapper.selectList(entityWrapper);
-		return CollectionUtil.isNotEmpty(list) ? list.get(0) : null;
+		if (CollectionUtil.isNotEmpty(list)) {
+			int size = list.size();
+			if (size > 1) {
+				logger.warn("Warn: selectOne Method There are " + size + " results.");
+			}
+			return list.get(0);
+		}
+		return null;
 	}
 
 	public int selectCount(T entity) {
@@ -261,7 +267,7 @@ public class ServiceImpl<M extends BaseMapper<T, PK>, T, PK extends Serializable
 	}
 
 	public int selectCount(EntityWrapper<T> entityWrapper) {
-		return baseMapper.selectCountByEW(entityWrapper);
+		return baseMapper.selectCountByEw(entityWrapper);
 	}
 
 	public List<T> selectList(EntityWrapper<T> entityWrapper) {

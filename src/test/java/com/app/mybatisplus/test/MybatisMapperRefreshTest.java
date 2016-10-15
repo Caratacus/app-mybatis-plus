@@ -15,13 +15,13 @@
  */
 package com.app.mybatisplus.test;
 
+import com.app.common.SystemClock;
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.plugins.pagination.Pagination;
 import com.app.mybatisplus.spring.MybatisMapperRefresh;
 import com.app.mybatisplus.test.mysql.MySqlInjector;
 import com.app.mybatisplus.test.mysql.UserMapper;
 import com.app.mybatisplus.test.mysql.UserMapperTest;
-import com.app.mybatisplus.toolkit.SystemClock;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -36,7 +36,7 @@ import java.io.InputStream;
  * Mybatis 映射文件热加载（发生变动后自动重新加载）.<br>
  * 方便开发时使用，不用每次修改xml文件后都要去重启应用.<br>
  * </p>
- * 
+ *
  * @author nieqiurong
  * @Date 2016-08-25
  */
