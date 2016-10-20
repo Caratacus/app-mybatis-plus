@@ -17,7 +17,6 @@ package com.app.mybatisplus.generator;
 
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.toolkit.DBKeywordsProcessor;
 import com.app.mybatisplus.toolkit.StringUtils;
 
 import java.io.BufferedWriter;
@@ -223,9 +222,9 @@ public class AutoGenerator {
 				}
 				if (isOracle) {
 					/* ORACLE 主键ID 处理方式 */
-					String idSql = String.format(
-							"SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
-							table);
+					String idSql = String
+							.format("SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
+									table);
 					ResultSet rs = conn.prepareStatement(idSql).executeQuery();
 					while (rs.next() && !idExist) {
 						String field = rs.getString(config.getConfigDataSource().getFieldKey());
@@ -521,7 +520,7 @@ public class AutoGenerator {
 	 * @throws IOException
 	 */
 	protected void buildEntityBean(List<String> columns, List<String> types, List<String> comments, String tableComment,
-								   Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
+			Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
 		File beanFile = new File(PATH_ENTITY, beanName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(beanFile)));
 		bw.write("package " + config.getEntityPackage() + ";");
@@ -580,7 +579,7 @@ public class AutoGenerator {
 				bw.write("\t@Column(value = \"" + column + "\")");
 				bw.newLine();
 				bw.write("\tprivate " + processType(types.get(i)) + " " + field + ";");
-			}else {
+			} else {
 				bw.newLine();
 				bw.write("\t/** " + comments.get(i) + " */");
 				bw.newLine();
@@ -602,7 +601,7 @@ public class AutoGenerator {
 			String _tempType = processType(types.get(i));
 			String _tempField = processField(columns.get(i));
 			String _field = _tempField.substring(0, 1).toUpperCase() + _tempField.substring(1);
-			if(!"Id".equalsIgnoreCase(_field)) {
+			if (!"Id".equalsIgnoreCase(_field)) {
 				bw.newLine();
 				bw.write("\tpublic " + _tempType + " get" + _field + "() {");
 				bw.newLine();
@@ -639,7 +638,7 @@ public class AutoGenerator {
 	}
 
 	protected void buildEntityBeanColumnConstant(List<String> columns, List<String> types, List<String> comments,
-												 BufferedWriter bw, int size) throws IOException {
+			BufferedWriter bw, int size) throws IOException {
 		/*
 		 * 【实体】是否生成字段常量（默认 false）
 		 */
@@ -680,12 +679,12 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.write("import " + config.getEntityPackage() + "." + beanName + ";");
 		bw.newLine();
-        bw.write("import com.app.mybatisplus.mapper.BaseMapper;");
+		bw.write("import com.app.mybatisplus.mapper.BaseMapper;");
 		bw.newLine();
 
 		bw = buildClassComment(bw, beanName + " 表数据库控制层接口");
 		bw.newLine();
-        bw.write("public interface " + mapperName + " extends BaseMapper<" + beanName + "> {");
+		bw.write("public interface " + mapperName + " extends BaseMapper<" + beanName + "> {");
 		bw.newLine();
 		bw.newLine();
 
@@ -704,8 +703,8 @@ public class AutoGenerator {
 	 * @param comments
 	 * @throws IOException
 	 */
-	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
-								  Map<String, IdInfo> idMap, String mapperName,String mapperXMLName) throws IOException {
+	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments, Map<String, IdInfo> idMap,
+			String mapperName, String mapperXMLName) throws IOException {
 		File mapperXmlFile = new File(PATH_XML, mapperXMLName + ".xml");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -824,12 +823,12 @@ public class AutoGenerator {
 			String column = columns.get(i);
 			IdInfo idInfo = idMap.get(column);
 			if (idInfo != null) {
-				bw.write("\t\t " + DBKeywordsProcessor.convert(idInfo.getValue()));
+				bw.write("\t\t " + StringUtils.convert(idInfo.getValue()));
 				if (idInfo.getValue().contains("_")) {
 					bw.write(" AS " + processField(idInfo.getValue()));
 				}
 			} else {
-				bw.write(" " + DBKeywordsProcessor.convert(column));
+				bw.write(" " + StringUtils.convert(column));
 				if (column.contains("_")) {
 					bw.write(" AS " + processField(column));
 				}

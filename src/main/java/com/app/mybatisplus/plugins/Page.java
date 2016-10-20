@@ -37,12 +37,18 @@ public class Page<T> extends Pagination {
 	 */
 	private List<T> records = Collections.emptyList();
 
+
 	public Page() {
 		/* 注意，传入翻页参数 */
 	}
 
 	public Page(int current, int size) {
 		super(current, size);
+	}
+
+	public Page(int current, int size, String orderByField) {
+		super(current, size);
+		this.setOrderByField(orderByField);
 	}
 
 	public List<T> getRecords() {

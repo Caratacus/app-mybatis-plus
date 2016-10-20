@@ -15,12 +15,11 @@
  */
 package com.app.mybatisplus.plugins;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Properties;
-
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.plugins.pagination.DialectFactory;
+import com.app.mybatisplus.plugins.pagination.IDialect;
+import com.app.mybatisplus.plugins.pagination.Pagination;
+import com.app.mybatisplus.toolkit.StringUtils;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -35,11 +34,11 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.RowBounds;
 
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.plugins.pagination.DialectFactory;
-import com.app.mybatisplus.plugins.pagination.IDialect;
-import com.app.mybatisplus.plugins.pagination.Pagination;
-import com.app.mybatisplus.toolkit.StringUtils;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * <p>
@@ -67,12 +66,12 @@ public class PaginationInterceptor implements Interceptor {
 			StatementHandler statementHandler = (StatementHandler) target;
 			MetaObject metaStatementHandler = SystemMetaObject.forObject(statementHandler);
 			RowBounds rowBounds = (RowBounds) metaStatementHandler.getValue("delegate.rowBounds");
-			
+
 			/* 不需要分页的场合 */
 			if (rowBounds == null || rowBounds == RowBounds.DEFAULT) {
 				return invocation.proceed();
 			}
-			
+
 			/* 定义数据库方言 */
 			IDialect dialect = null;
 			if (StringUtils.isNotEmpty(dialectType)) {
@@ -89,7 +88,7 @@ public class PaginationInterceptor implements Interceptor {
 					}
 				}
 			}
-			
+
 			/* 未配置方言则抛出异常 */
 			if (dialect == null) {
 				throw new MybatisPlusException("The value of the dialect property in mybatis configuration.xml is not defined.");
@@ -120,14 +119,41 @@ public class PaginationInterceptor implements Interceptor {
 				MappedStatement mappedStatement = (MappedStatement) metaStatementHandler.getValue("delegate.mappedStatement");
 				Connection connection = (Connection) invocation.getArgs()[0];
 				Pagination page = (Pagination) rowBounds;
+				boolean orderBy = true;
 				if (page.isSearchCount()) {
-					page = this.count(originalSql, connection, mappedStatement, boundSql, page);
+					/*
+					 * COUNT 查询，去掉 ORDER BY 优化执行 SQL
+					 */
+					StringBuffer countSql = new StringBuffer("SELECT COUNT(1) AS TOTAL ");
+					String tempSql = originalSql.toUpperCase();
+					int formIndex = -1;
+					if (page.isOptimizeCount()) {
+						formIndex = tempSql.indexOf("FROM");
+					}
+					int orderByIndex = tempSql.lastIndexOf("ORDER BY");
+					if ( orderByIndex > -1 ) {
+						orderBy = false;
+						tempSql = originalSql.substring(0, orderByIndex);
+					}
+					if (page.isOptimizeCount() && formIndex > -1) {
+						countSql.append(tempSql.substring(formIndex));
+					} else {
+						countSql.append("FROM (").append(tempSql).append(") A");
+					}
+					page = this.count(countSql.toString(), connection, mappedStatement, boundSql, page);
 					/** 总数 0 跳出执行 */
 					if (page.getTotal() <= 0) {
 						return invocation.proceed();
 					}
 				}
-				originalSql = dialect.buildPaginationSql(originalSql, page.getOffsetCurrent(), page.getSize());
+
+				/* 执行 SQL */
+				StringBuffer buildSql = new StringBuffer(originalSql);
+				if (orderBy && null != page.getOrderByField()) {
+					buildSql.append(" ORDER BY ").append(page.getOrderByField());
+					buildSql.append(page.isAsc() ? " ASC " : " DESC ");
+				}
+				originalSql = dialect.buildPaginationSql(buildSql.toString(), page.getOffsetCurrent(), page.getSize());
 			}
 
 			/**
@@ -150,25 +176,11 @@ public class PaginationInterceptor implements Interceptor {
 	 */
 	public Pagination count(String sql, Connection connection, MappedStatement mappedStatement, BoundSql boundSql,
 							Pagination page) {
-		/*
-		 * 去掉 ORDER BY
-		 */
-		String sqlUse = sql;
-		int order_by = sql.toUpperCase().lastIndexOf("ORDER BY");
-		if ( order_by > -1 ) {
-			sqlUse = sql.substring(0, order_by);
-		}
-
-		/*
-		 * COUNT SQL
-		 */
-		StringBuffer countSql = new StringBuffer();
-		countSql.append("SELECT COUNT(1) AS TOTAL FROM (").append(sqlUse).append(") A");
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			pstmt = connection.prepareStatement(countSql.toString());
-			BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), countSql.toString(),
+			pstmt = connection.prepareStatement(sql);
+			BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(), sql,
 					boundSql.getParameterMappings(), boundSql.getParameterObject());
 			ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement,
 					boundSql.getParameterObject(), countBS);

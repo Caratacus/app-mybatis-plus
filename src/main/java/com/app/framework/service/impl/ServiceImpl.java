@@ -29,13 +29,12 @@ import com.app.mybatisplus.plugins.Page;
 import com.app.mybatisplus.toolkit.ReflectionKit;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -46,10 +45,8 @@ import java.util.Map;
  * @Date 2016-04-20
  */
 public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
-	/**
-	 * 子类不用再定义logger对象
-	 */
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+
+	protected static final Logger logger = Logger.getLogger("ServiceImpl");
 
 	@Autowired
 	protected M baseMapper;
@@ -255,7 +252,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		if (CollectionUtil.isNotEmpty(list)) {
 			int size = list.size();
 			if (size > 1) {
-				logger.warn("Warn: selectOne Method There are " + size + " results.");
+				logger.warning("Warn: selectOne Method There are " + size + " results.");
 			}
 			return list.get(0);
 		}
@@ -275,6 +272,9 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	}
 
 	public Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper) {
+		if (null != entityWrapper) {
+			entityWrapper.orderBy(page.getOrderByField(), page.isAsc());
+		}
 		page.setRecords(baseMapper.selectPage(page, entityWrapper));
 		return page;
 	}

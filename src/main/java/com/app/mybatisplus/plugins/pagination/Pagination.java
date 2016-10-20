@@ -15,9 +15,10 @@
  */
 package com.app.mybatisplus.plugins.pagination;
 
-import java.io.Serializable;
-
+import com.app.mybatisplus.toolkit.StringUtils;
 import org.apache.ibatis.session.RowBounds;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -25,7 +26,7 @@ import org.apache.ibatis.session.RowBounds;
  * </p>
  * 用户可以通过继承 org.apache.ibatis.session.RowBounds实现自己的分页模型<br>
  * 注意：插件仅支持RowBounds及其子类作为分页参数
- * 
+ *
  * @author hubin
  * @Date 2016-01-23
  */
@@ -48,6 +49,25 @@ public class Pagination extends RowBounds implements Serializable {
 	/* 查询总记录数（默认 true） */
 	private boolean searchCount = true;
 
+	/* 查询总数优化（默认 true） */
+	private boolean optimizeCount = true;
+
+	/**
+	 * <p>
+	 * SQL 排序 ORDER BY 字段，例如： id DESC（根据id倒序查询）
+	 * </p>
+	 * <p>
+	 * DESC 表示按倒序排序(即：从大到小排序)<br>
+	 * ASC 表示按正序排序(即：从小到大排序)
+	 * </p>
+	 */
+	private String orderByField;
+
+	/**
+	 * 是否为升序 ASC（ 默认： true ）
+	 */
+	private boolean isAsc = true;
+
 	public Pagination() {
 		super();
 	}
@@ -56,7 +76,7 @@ public class Pagination extends RowBounds implements Serializable {
 	 * <p>
 	 * 分页构造函数
 	 * </p>
-	 * 
+	 *
 	 * @param current
 	 *            当前页
 	 * @param size
@@ -130,6 +150,32 @@ public class Pagination extends RowBounds implements Serializable {
 
 	public void setSearchCount(boolean searchCount) {
 		this.searchCount = searchCount;
+	}
+
+	public boolean isOptimizeCount() {
+		return optimizeCount;
+	}
+
+	public void setOptimizeCount(boolean optimizeCount) {
+		this.optimizeCount = optimizeCount;
+	}
+
+	public String getOrderByField() {
+		return orderByField;
+	}
+
+	public void setOrderByField(String orderByField) {
+		if (StringUtils.isNotEmpty(orderByField)) {
+			this.orderByField = orderByField;
+		}
+	}
+
+	public boolean isAsc() {
+		return isAsc;
+	}
+
+	public void setAsc(boolean isAsc) {
+		this.isAsc = isAsc;
 	}
 
 	@Override
