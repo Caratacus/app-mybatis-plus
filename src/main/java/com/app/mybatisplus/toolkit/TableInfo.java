@@ -15,15 +15,16 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import java.util.List;
-
 import com.app.mybatisplus.annotations.IdType;
+import org.apache.ibatis.session.SqlSessionFactory;
+
+import java.util.List;
 
 /**
  * <p>
  * 数据库表反射信息
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-01-23
  */
@@ -61,7 +62,10 @@ public class TableInfo {
 	 * 表主键ID 字段名
 	 */
 	private String keyColumn;
-
+	/**
+	 * 缓存SqlSessionFactory
+	 */
+	private SqlSessionFactory sqlSessionFactory;
 	/**
 	 * 表字段信息列表
 	 */
@@ -123,4 +127,11 @@ public class TableInfo {
 		this.fieldList = fieldList;
 	}
 
+	public SqlSessionFactory getSqlSessionFactory() {
+		return sqlSessionFactory;
+	}
+
+	public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+		this.sqlSessionFactory = sqlSessionFactory;
+	}
 }

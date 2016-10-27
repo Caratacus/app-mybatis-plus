@@ -26,7 +26,7 @@ import com.app.mybatisplus.toolkit.TableInfo;
  * <p>
  * 测试自定义注入 SQL
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-07-23
  */
@@ -34,7 +34,7 @@ public class MySqlInjector extends AutoSqlInjector {
 
 	@Override
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
-					   Class<?> modelClass, TableInfo table) {
+			Class<?> modelClass, TableInfo table) {
 		/* 添加一个自定义方法 */
 		deleteAllUser(mapperClass, modelClass, table);
 	}

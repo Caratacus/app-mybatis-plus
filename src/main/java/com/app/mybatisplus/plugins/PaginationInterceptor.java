@@ -44,19 +44,19 @@ import java.util.Properties;
  * <p>
  * 分页拦截器
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-01-23
  */
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
 public class PaginationInterceptor implements Interceptor {
-
+	
 	/* 溢出总页数，设置第一页 */
 	private boolean overflowCurrent = false;
-
+	
 	/* 方言类型 */
 	private String dialectType;
-
+	
 	/* 方言实现类 */
 	private String dialectClazz;
 
@@ -66,12 +66,12 @@ public class PaginationInterceptor implements Interceptor {
 			StatementHandler statementHandler = (StatementHandler) target;
 			MetaObject metaStatementHandler = SystemMetaObject.forObject(statementHandler);
 			RowBounds rowBounds = (RowBounds) metaStatementHandler.getValue("delegate.rowBounds");
-
+			
 			/* 不需要分页的场合 */
 			if (rowBounds == null || rowBounds == RowBounds.DEFAULT) {
 				return invocation.proceed();
 			}
-
+			
 			/* 定义数据库方言 */
 			IDialect dialect = null;
 			if (StringUtils.isNotEmpty(dialectType)) {
@@ -88,7 +88,7 @@ public class PaginationInterceptor implements Interceptor {
 					}
 				}
 			}
-
+			
 			/* 未配置方言则抛出异常 */
 			if (dialect == null) {
 				throw new MybatisPlusException("The value of the dialect property in mybatis configuration.xml is not defined.");
@@ -167,7 +167,7 @@ public class PaginationInterceptor implements Interceptor {
 
 	/**
 	 * 查询总记录条数
-	 *
+	 * 
 	 * @param sql
 	 * @param connection
 	 * @param mappedStatement
@@ -175,7 +175,7 @@ public class PaginationInterceptor implements Interceptor {
 	 * @param page
 	 */
 	public Pagination count(String sql, Connection connection, MappedStatement mappedStatement, BoundSql boundSql,
-							Pagination page) {
+			Pagination page) {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
@@ -202,13 +202,13 @@ public class PaginationInterceptor implements Interceptor {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-			} catch (SQLException e) {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}

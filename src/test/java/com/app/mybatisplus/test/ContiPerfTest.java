@@ -22,12 +22,12 @@ import org.junit.Rule;
  * <p>
  * 并发测试
  * </p>
- *
+ * 
  * @author hubin
  * @date 2016-08-18
  */
 public class ContiPerfTest {
-
+	
 	@Rule
 	public ContiPerfRule i = new ContiPerfRule();
 

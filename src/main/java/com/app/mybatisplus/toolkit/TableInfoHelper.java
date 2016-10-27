@@ -16,12 +16,11 @@
 package com.app.mybatisplus.toolkit;
 
 import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.MybatisPlusHolder;
 import com.app.mybatisplus.annotations.Column;
 import com.app.mybatisplus.annotations.Id;
 import com.app.mybatisplus.annotations.Table;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -40,8 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Date 2016-09-09
  */
 public class TableInfoHelper {
-
-    private final static Logger logger = LoggerFactory.getLogger(TableInfoHelper.class);
 
 	/**
 	 * 缓存反射类表信息
@@ -114,7 +111,7 @@ public class TableInfoHelper {
 					continue;
 				} else {
 					/* 发现设置多个主键注解抛出异常 */
-					throw new MybatisPlusException("There must be only one, Discover multiple @Id annotation in " + clazz);
+					throw new MybatisPlusException("There must be only one, Discover multiple @TableId annotation in " + clazz);
 				}
 			}
 
@@ -148,7 +145,7 @@ public class TableInfoHelper {
 			}
 
 			/**
-			 * 字段, 使用 camelToUnderline 转换驼峰写法为下划线分割法, 如果已指定 Column , 便不会执行这里
+			 * 字段, 使用 camelToUnderline 转换驼峰写法为下划线分割法, 如果已指定 TableField , 便不会执行这里
 			 */
 			if (MybatisConfiguration.DB_COLUMN_UNDERLINE) {
 				/* 开启字段下划线申明 */
@@ -167,7 +164,8 @@ public class TableInfoHelper {
 		if (null == tableInfo.getKeyColumn()) {
 			return null;
 		}
-
+		// 缓存
+		tableInfo.setSqlSessionFactory(MybatisPlusHolder.getSqlSessionFactory());
 		/*
 		 * 注入
 		 */

@@ -26,7 +26,7 @@ import java.io.Serializable;
  * </p>
  * 用户可以通过继承 org.apache.ibatis.session.RowBounds实现自己的分页模型<br>
  * 注意：插件仅支持RowBounds及其子类作为分页参数
- *
+ * 
  * @author hubin
  * @Date 2016-01-23
  */
@@ -76,7 +76,7 @@ public class Pagination extends RowBounds implements Serializable {
 	 * <p>
 	 * 分页构造函数
 	 * </p>
-	 *
+	 * 
 	 * @param current
 	 *            当前页
 	 * @param size

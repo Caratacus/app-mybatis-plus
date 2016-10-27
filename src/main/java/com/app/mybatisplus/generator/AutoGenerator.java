@@ -17,6 +17,8 @@ package com.app.mybatisplus.generator;
 
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.toolkit.SqlReservedWords;
 import com.app.mybatisplus.toolkit.StringUtils;
 
 import java.io.BufferedWriter;
@@ -69,6 +71,7 @@ public class AutoGenerator {
 	protected static String PATH_XML = null;
 	protected static String PATH_SERVICE = null;
 	protected static String PATH_SERVICE_IMPL = null;
+	protected static String PATH_CONTROLLER_IMPL = null;
 
 	protected static boolean FILE_OVERRIDE = false;
 
@@ -102,6 +105,7 @@ public class AutoGenerator {
 		PATH_XML = getFilePath(saveDir, getPathFromPackageName(config.getXmlPackage()));
 		PATH_SERVICE = getFilePath(saveDir, getPathFromPackageName(config.getServicePackage()));
 		PATH_SERVICE_IMPL = getFilePath(saveDir, getPathFromPackageName(config.getServiceImplPackage()));
+		PATH_CONTROLLER_IMPL = getFilePath(saveDir, getPathFromPackageName(config.getControllerPackage()));
 
 		/**
 		 * 新生成的文件是否覆盖现有文件
@@ -222,9 +226,9 @@ public class AutoGenerator {
 				}
 				if (isOracle) {
 					/* ORACLE 主键ID 处理方式 */
-					String idSql = String
-							.format("SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
-									table);
+					String idSql = String.format(
+							"SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
+							table);
 					ResultSet rs = conn.prepareStatement(idSql).executeQuery();
 					while (rs.next() && !idExist) {
 						String field = rs.getString(config.getConfigDataSource().getFieldKey());
@@ -237,6 +241,7 @@ public class AutoGenerator {
 				String mapperXMLName = String.format(config.getMapperXMLName(), beanName);
 				String serviceName = String.format(config.getServiceName(), beanName);
 				String serviceImplName = String.format(config.getServiceImplName(), beanName);
+				String controllerName = String.format(config.getControllerName(), beanName);
 
 				/**
 				 * 根据文件覆盖标志决定是否生成映射文件
@@ -255,6 +260,9 @@ public class AutoGenerator {
 				}
 				if (valideFile(PATH_SERVICE_IMPL, serviceImplName, JAVA_SUFFIX)) {
 					buildServiceImpl(beanName, serviceImplName, serviceName, mapperName);
+				}
+				if (valideFile(PATH_CONTROLLER_IMPL, controllerName, JAVA_SUFFIX)) {
+					buildController(beanName, controllerName);
 				}
 			}
 		} catch (Exception e) {
@@ -365,13 +373,13 @@ public class AutoGenerator {
 	 */
 	protected String mysqlProcessType(String type) {
 		String t = type.toLowerCase();
-		if (t.contains("char")) {
+		if (t.contains("char") || t.contains("text")) {
 			return "String";
 		} else if (t.contains("bigint")) {
 			return "Long";
 		} else if (t.contains("int")) {
 			return "Integer";
-		} else if (t.contains("date") || t.contains("timestamp")) {
+		} else if (t.contains("date") || t.contains("time") || t.contains("year")) {
 			return "Date";
 		} else if (t.contains("text")) {
 			return "String";
@@ -385,7 +393,7 @@ public class AutoGenerator {
 			return "Float";
 		} else if (t.contains("double")) {
 			return "Double";
-		} else if (t.contains("json")) {
+		} else if (t.contains("json") || t.contains("enum")) {
 			return "String";
 		}
 		return null;
@@ -703,13 +711,14 @@ public class AutoGenerator {
 	 * @param comments
 	 * @throws IOException
 	 */
-	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments, Map<String, IdInfo> idMap,
-			String mapperName, String mapperXMLName) throws IOException {
+	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
+			Map<String, IdInfo> idMap, String mapperName,String mapperXMLName) throws IOException {
 		File mapperXmlFile = new File(PATH_XML, mapperXMLName + ".xml");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		bw.newLine();
-		bw.write("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
+		bw.write(
+				"<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
 		bw.newLine();
 		bw.write("<mapper namespace=\"" + config.getMapperPackage() + "." + mapperName + "\">");
 		bw.newLine();
@@ -770,7 +779,7 @@ public class AutoGenerator {
 			throws IOException {
 		File serviceFile = new File(PATH_SERVICE_IMPL, serviceImplName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(serviceFile), "utf-8"));
-		bw.write("package " + config.getServicePackage() + ".impl;");
+		bw.write("package " + config.getServiceImplPackage() + ";");
 		bw.newLine();
 		bw.newLine();
 		bw.write("import org.springframework.stereotype.Service;");
@@ -803,6 +812,35 @@ public class AutoGenerator {
 		bw.flush();
 		bw.close();
 	}
+	
+	/**
+	 * 构建Controller实现类文件
+	 *
+	 * @param beanName
+	 * @param controllerName
+	 * @throws IOException
+	 */
+	protected void buildController(String beanName, String controllerName) throws IOException {
+		File serviceFile = new File(PATH_CONTROLLER_IMPL, controllerName + ".java");
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(serviceFile), "utf-8"));
+		bw.write("package " + config.getServiceImplPackage() + ";");
+		bw.newLine();
+		bw.newLine();
+		bw.write("import org.springframework.stereotype.Controller;");
+		bw.newLine();
+		
+		bw = buildClassComment(bw, beanName + " 控制层");
+		bw.newLine();
+		bw.write("@Controller");
+		bw.newLine();
+		bw.write("public class " + controllerName + " {");
+		bw.newLine();
+		bw.newLine();
+		bw.newLine();
+		bw.write("}");
+		bw.flush();
+		bw.close();
+	}
 
 	/**
 	 * 通用返回参数
@@ -818,17 +856,32 @@ public class AutoGenerator {
 		bw.newLine();
 		bw.write("\t<sql id=\"Base_Column_List\">");
 		bw.newLine();
+		bw.write("\t\t");
 
+		/*
+		 * 数据库类型
+		 */
+		DBType dbType = DBType.ORACLE;
+		if (config.getConfigDataSource() == ConfigDataSource.MYSQL) {
+			dbType = DBType.MYSQL;
+		}
+
+		/**
+		 * 个性字段
+		 */
 		for (int i = 0; i < size; i++) {
 			String column = columns.get(i);
 			IdInfo idInfo = idMap.get(column);
 			if (idInfo != null) {
-				bw.write("\t\t " + StringUtils.convert(idInfo.getValue()));
+				bw.write(SqlReservedWords.convert(dbType, column));
 				if (idInfo.getValue().contains("_")) {
 					bw.write(" AS " + processField(idInfo.getValue()));
 				}
 			} else {
-				bw.write(" " + StringUtils.convert(column));
+				if (null == config.getConfigBaseEntity()) {
+					bw.write(" ");
+				}
+				bw.write(SqlReservedWords.convert(dbType, column));
 				if (column.contains("_")) {
 					bw.write(" AS " + processField(column));
 				}

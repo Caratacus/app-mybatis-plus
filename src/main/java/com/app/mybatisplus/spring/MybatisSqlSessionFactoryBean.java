@@ -16,6 +16,7 @@
 package com.app.mybatisplus.spring;
 
 import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.MybatisPlusHolder;
 import com.app.mybatisplus.MybatisXMLConfigBuilder;
 import com.app.mybatisplus.MybatisXMLMapperBuilder;
 import com.app.mybatisplus.annotations.FieldStrategy;
@@ -70,8 +71,8 @@ import static org.springframework.util.StringUtils.tokenizeToStringArray;
  * @author hubin
  * @Date 2016-01-23
  */
-public class MybatisSqlSessionFactoryBean
-		implements FactoryBean<SqlSessionFactory>, InitializingBean, ApplicationListener<ApplicationEvent> {
+public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>, InitializingBean,
+		ApplicationListener<ApplicationEvent> {
 
 	private static final Log LOGGER = LogFactory.getLog(MybatisSqlSessionFactoryBean.class);
 
@@ -143,6 +144,7 @@ public class MybatisSqlSessionFactoryBean
 	public void setFieldStrategy(int key) {
 		MybatisConfiguration.FIELD_STRATEGY = FieldStrategy.getFieldStrategy(key);
 	}
+
 	/**
 	 * Sets the ObjectFactory.
 	 *
@@ -457,8 +459,7 @@ public class MybatisSqlSessionFactoryBean
 			configuration = xmlConfigBuilder.getConfiguration();
 		} else {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(
-						"Property `configuration` or 'configLocation' not specified, using default MyBatis Configuration");
+				LOGGER.debug("Property `configuration` or 'configLocation' not specified, using default MyBatis Configuration");
 			}
 			// TODO 使用自定义配置
 			configuration = new MybatisConfiguration();
@@ -577,9 +578,8 @@ public class MybatisSqlSessionFactoryBean
 
 				try {
 					// TODO
-					MybatisXMLMapperBuilder xmlMapperBuilder = new MybatisXMLMapperBuilder(
-							mapperLocation.getInputStream(), configuration, mapperLocation.toString(),
-							configuration.getSqlFragments());
+					MybatisXMLMapperBuilder xmlMapperBuilder = new MybatisXMLMapperBuilder(mapperLocation.getInputStream(),
+							configuration, mapperLocation.toString(), configuration.getSqlFragments());
 					xmlMapperBuilder.parse();
 				} catch (Exception e) {
 					throw new NestedIOException("Failed to parse mapping resource: '" + mapperLocation + "'", e);
@@ -596,8 +596,10 @@ public class MybatisSqlSessionFactoryBean
 				LOGGER.debug("Property 'mapperLocations' was not specified or no matching resources found");
 			}
 		}
-
-		return this.sqlSessionFactoryBuilder.build(configuration);
+		SqlSessionFactory sqlSessionFactory = this.sqlSessionFactoryBuilder.build(configuration);
+		// TODO 缓存 sqlSessionFactory
+		MybatisPlusHolder.setSqlSessionFactory(sqlSessionFactory);
+		return sqlSessionFactory;
 	}
 
 	/**
@@ -607,7 +609,6 @@ public class MybatisSqlSessionFactoryBean
 		if (this.sqlSessionFactory == null) {
 			afterPropertiesSet();
 		}
-
 		return this.sqlSessionFactory;
 	}
 

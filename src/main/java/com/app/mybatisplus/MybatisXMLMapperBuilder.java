@@ -70,32 +70,32 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
 
 	@Deprecated
 	public MybatisXMLMapperBuilder(Reader reader, Configuration configuration, String resource,
-                                   Map<String, XNode> sqlFragments, String namespace) {
+								   Map<String, XNode> sqlFragments, String namespace) {
 		this(reader, configuration, resource, sqlFragments);
 		this.builderAssistant.setCurrentNamespace(namespace);
 	}
 
 	@Deprecated
 	public MybatisXMLMapperBuilder(Reader reader, Configuration configuration, String resource,
-                                   Map<String, XNode> sqlFragments) {
+			Map<String, XNode> sqlFragments) {
 		this(new XPathParser(reader, true, configuration.getVariables(), new XMLMapperEntityResolver()), configuration,
 				resource, sqlFragments);
 	}
 
 	public MybatisXMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource,
-                                   Map<String, XNode> sqlFragments, String namespace) {
+			Map<String, XNode> sqlFragments, String namespace) {
 		this(inputStream, configuration, resource, sqlFragments);
 		this.builderAssistant.setCurrentNamespace(namespace);
 	}
 
 	public MybatisXMLMapperBuilder(InputStream inputStream, Configuration configuration, String resource,
-                                   Map<String, XNode> sqlFragments) {
+			Map<String, XNode> sqlFragments) {
 		this(new XPathParser(inputStream, true, configuration.getVariables(), new XMLMapperEntityResolver()),
 				configuration, resource, sqlFragments);
 	}
 
 	private MybatisXMLMapperBuilder(XPathParser parser, Configuration configuration, String resource,
-                                    Map<String, XNode> sqlFragments) {
+			Map<String, XNode> sqlFragments) {
 		super(configuration);
 		this.builderAssistant = new MapperBuilderAssistant(configuration, resource);
 		this.parser = parser;

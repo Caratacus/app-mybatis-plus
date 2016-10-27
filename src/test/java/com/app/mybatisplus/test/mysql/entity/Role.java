@@ -15,11 +15,11 @@
  */
 package com.app.mybatisplus.test.mysql.entity;
 
-import java.io.Serializable;
-
 import com.app.mybatisplus.annotations.Column;
 import com.app.mybatisplus.annotations.Id;
 import com.app.mybatisplus.annotations.Table;
+
+import java.io.Serializable;
 
 
 /**
@@ -83,7 +83,7 @@ public class Role implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Role{" + "id=" + id + ", name='" + name + '\'' + ", sort=" + sort 
+		return "Role{" + "id=" + id + ", name='" + name + '\'' + ", sort=" + sort
 				+ ", description='" + description + '\'' + '}';
 	}
 }

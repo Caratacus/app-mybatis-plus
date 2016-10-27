@@ -1,17 +1,15 @@
 /*
- Navicat Premium Data Transfer
+ Navicat MySQL Data Transfer
 
- Source Server         : mysql-admin
- Source Server Type    : MySQL
- Source Server Version : 50621
+ Source Server         : localhost
+ Source Server Version : 50714
  Source Host           : localhost
  Source Database       : mybatis-plus
 
- Target Server Type    : MySQL
- Target Server Version : 50621
+ Target Server Version : 50714
  File Encoding         : utf-8
 
- Date: 09/09/2016 16:38:46 PM
+ Date: 10/24/2016 11:17:44 AM
 */
 
 SET NAMES utf8;
@@ -30,21 +28,7 @@ CREATE TABLE `role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `user`
--- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `test_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `name` varchar(30) COLLATE utf8_bin DEFAULT NULL COMMENT '名称',
-  `age` int(11) DEFAULT NULL COMMENT '年龄',
-  `test_type` int(11) DEFAULT '0' COMMENT '测试下划线字段命名类型',
-  `role` bigint(20) DEFAULT NULL,
-  `phone` varchar(64) COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`test_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=774164658700161025 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户表';
-
--- ----------------------------
--- Table structure for test
+--  Table structure for `test`
 -- ----------------------------
 DROP TABLE IF EXISTS `test`;
 CREATE TABLE `test` (
@@ -54,9 +38,25 @@ CREATE TABLE `test` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Records of test
+--  Records of `test`
 -- ----------------------------
-INSERT INTO `test` VALUES ('1', '11');
-INSERT INTO `test` VALUES ('2', '22');
+BEGIN;
+INSERT INTO `test` VALUES ('1', '11'), ('2', '22');
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `user`
+-- ----------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `test_id` bigint(20) NOT NULL COMMENT '主键ID',
+  `name` varchar(30) COLLATE utf8_bin DEFAULT NULL COMMENT '名称',
+  `age` int(11) DEFAULT NULL COMMENT '年龄',
+  `test_type` int(11) DEFAULT '0' COMMENT '测试下划线字段命名类型',
+  `role` bigint(20) DEFAULT NULL,
+  `phone` varchar(64) COLLATE utf8_bin DEFAULT NULL,
+  `desc` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`test_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户表';
 
 SET FOREIGN_KEY_CHECKS = 1;

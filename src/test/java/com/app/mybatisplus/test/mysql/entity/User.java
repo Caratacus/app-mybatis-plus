@@ -56,8 +56,9 @@ public class User implements Serializable {
 	@Column(el = "role.id")
 	private Role role;
 
-	//或@TableField(el = "role,jdbcType=BIGINT)
-	@Column(el = "phone, typeHandler=com.app.mybatisplus.test.mysql.typehandler.PhoneTypeHandler")
+	private String desc = "默认描述";
+
+	// 或@TableField(el = "role,jdbcType=BIGINT)
 	private PhoneNumber phone;
 
 	public User() {
@@ -93,7 +94,7 @@ public class User implements Serializable {
 		this.age = age;
 		this.testType = testType;
 	}
-	
+
 	public User(String name, Integer age, Integer testType) {
 		this.name = name;
 		this.age = age;
@@ -148,16 +149,18 @@ public class User implements Serializable {
 		this.phone = phone;
 	}
 
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
 	@Override
 	public String toString() {
-		return "User{" +
-				"id=" + id +
-				", name='" + name + '\'' +
-				", age=" + age +
-				", testType=" + testType +
-				", role=" + role +
-				", phone=" + phone +
-				'}';
+		return "User{" + "id=" + id + ", name='" + name + '\'' + ", age=" + age + ", testType=" + testType + ", role="
+				+ role + ", phone=" + phone + ", desc=" + desc + '}';
 	}
 
 	/**

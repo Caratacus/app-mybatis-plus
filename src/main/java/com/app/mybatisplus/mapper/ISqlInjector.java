@@ -22,7 +22,7 @@ import org.apache.ibatis.session.Configuration;
  * <p>
  * SQL 自动注入器接口
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-07-24
  */
@@ -30,7 +30,7 @@ public interface ISqlInjector {
 
 	/**
 	 * 根据mapperClass注入SQL
-	 *
+	 * 
 	 * @param configuration
 	 * @param builderAssistant
 	 * @param mapperClass
@@ -39,18 +39,11 @@ public interface ISqlInjector {
 
 	/**
 	 * 检查SQL是否注入(已经注入过不再注入)
-	 *
+	 * 
 	 * @param configuration
 	 * @param builderAssistant
 	 * @param mapperClass
 	 */
 	void inspectInject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass);
-
-	/**
-	 * 注入全局CRUD SQL
-	 *
-	 * @param configuration
-	 */
-	void injectOfSql(Configuration configuration);
 
 }

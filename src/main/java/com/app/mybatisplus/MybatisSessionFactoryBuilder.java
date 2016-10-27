@@ -15,26 +15,25 @@
  */
 package com.app.mybatisplus;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Properties;
-
+import com.app.mybatisplus.annotations.FieldStrategy;
+import com.app.mybatisplus.mapper.DBType;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
+import com.app.mybatisplus.mapper.ISqlInjector;
 import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import com.app.mybatisplus.annotations.FieldStrategy;
-import com.app.mybatisplus.mapper.DBType;
-import com.app.mybatisplus.mapper.IMetaObjectHandler;
-import com.app.mybatisplus.mapper.ISqlInjector;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Properties;
 
 /**
  * <p>
  * replace default SqlSessionFactoryBuilder class
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-01-23
  */

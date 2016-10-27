@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * 分布式高效有序ID生产黑科技(sequence) <br>
  * 优化开源项目：http://git.oschina.net/yu120/sequence
  * </p>
- *
+ * 
  * @author hubin
  * @date 2016-08-18
  */
@@ -81,7 +81,7 @@ public class Sequence {
 
 	/**
 	 * 获取下一个ID
-	 *
+	 * 
 	 * @return
 	 */
 	public synchronized long nextId() {

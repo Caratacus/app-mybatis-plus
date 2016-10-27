@@ -15,12 +15,12 @@
  */
 package com.app.mybatisplus.test.oracle;
 
-import com.app.mybatisplus.test.ConfigGeneratorTest;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.generator.AutoGenerator;
 import com.app.mybatisplus.generator.ConfigDataSource;
 import com.app.mybatisplus.generator.ConfigGenerator;
 import com.app.mybatisplus.generator.ConfigIdType;
+import com.app.mybatisplus.test.ConfigGeneratorTest;
 
 /**
  * <p>

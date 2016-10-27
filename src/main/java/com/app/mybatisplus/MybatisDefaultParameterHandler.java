@@ -37,7 +37,7 @@ import java.util.UUID;
  * <p>
  * 自定义 ParameterHandler 重装构造函数，填充插入方法主键 ID
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-03-11
  */
@@ -51,7 +51,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 	 * <p>
 	 * 批量（填充主键 ID）
 	 * </p>
-	 *
+	 * 
 	 * @param ms
 	 * @param parameterObject
 	 *            插入数据库对象
@@ -84,7 +84,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 		}
 		return parameterObject;
 	}
-
+	
 	/**
 	 * <p>
 	 * 处理正常批量插入逻辑
@@ -93,7 +93,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 	 * org.apache.ibatis.session.defaults.DefaultSqlSession$StrictMap 该类方法
 	 * wrapCollection 实现 StrictMap 封装逻辑
 	 * </p>
-	 *
+	 * 
 	 * @param parameter
 	 *            插入数据库对象
 	 * @return
@@ -120,7 +120,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 	 * <p>
 	 * 填充主键 ID
 	 * </p>
-	 *
+	 * 
 	 * @param tableInfo
 	 * @param ms
 	 * @param parameterObject

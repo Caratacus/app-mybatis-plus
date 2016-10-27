@@ -30,10 +30,10 @@ import com.app.mybatisplus.test.mysql.entity.Test;
  */
 public interface TestMapper extends BaseMapper<Test> {
 
-    /**
-     * 注解插入【测试】
-     */
-    @Insert("insert into test(id,type) values(#{id},#{type})")
-    int insertInjector(Test test);
+	/**
+	 * 注解插入【测试】
+	 */
+	@Insert("insert into test(id,type) values(#{id},#{type})")
+	int insertInjector(Test test);
 
 }

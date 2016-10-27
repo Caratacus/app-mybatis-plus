@@ -15,16 +15,15 @@
  */
 package com.app.mybatisplus.test.mysql;
 
-import java.io.InputStream;
-
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.test.mysql.entity.PhoneNumber;
 import com.app.mybatisplus.test.mysql.entity.Role;
 import com.app.mybatisplus.test.mysql.entity.User;
 import com.app.mybatisplus.toolkit.IdWorker;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+
+import java.io.InputStream;
 
 /**
  * <p>
@@ -40,7 +39,7 @@ public class URPTest {
 		// 加载配置文件
 		InputStream in = UserMapperTest.class.getClassLoader().getResourceAsStream("mysql-config.xml");
 		MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
-		mf.setSqlInjector(new com.app.mybatisplus.test.mysql.MySqlInjector());
+		mf.setSqlInjector(new MySqlInjector());
 		mf.setMetaObjectHandler(new MyMetaObjectHandler());
 		SqlSessionFactory sessionFactory = mf.build(in);
 		SqlSession session = sessionFactory.openSession();

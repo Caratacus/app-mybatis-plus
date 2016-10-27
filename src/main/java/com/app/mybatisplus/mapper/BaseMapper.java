@@ -44,7 +44,7 @@ public interface BaseMapper<T> {
 	 * @return int
 	 */
 	int insert( T entity );
-
+	
 	/**
 	 * <p>
 	 * 插入一条记录（选择字段， null 字段不插入）
@@ -87,8 +87,8 @@ public interface BaseMapper<T> {
 	 * @return int
 	 */
 	int deleteByMap( @Param("cm" ) Map<String, Object> columnMap);
-
-
+	
+	
 	/**
 	 * <p>
 	 * 根据 entity 条件，删除记录
@@ -187,8 +187,8 @@ public interface BaseMapper<T> {
 	 * @return List<T>
 	 */
 	List<T> selectBatchIds( List<? extends Serializable> idList );
-
-
+	
+	
 	/**
 	 * <p>
 	 * 查询（根据 columnMap 条件）
@@ -209,8 +209,8 @@ public interface BaseMapper<T> {
 	 * @return T
 	 */
 	T selectOne( @Param("ew" ) T entity);
-
-
+	
+	
 	/**
 	 * <p>
 	 * 根据 entity 条件，查询总记录数
@@ -225,7 +225,7 @@ public interface BaseMapper<T> {
 	 * <p>
 	 * 根据 EntityWrapper 条件，查询总记录数
 	 * </p>
-	 *
+	 * 
 	 * @param entityWrapper
 	 * 				实体对象
 	 * @return int

@@ -1,11 +1,11 @@
 package com.app.mybatisplus.test.oracle.entity;
 
-import java.io.Serializable;
-
-import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.annotations.Column;
 import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.annotations.Table;
+
+import java.io.Serializable;
 
 /**
  *
@@ -39,15 +39,15 @@ public class TestUser implements Serializable {
 		this.age = age;
 		this.testType = testType;
 	}
-	
-	
+
+
 	public TestUser( String name, Integer age, Integer testType ) {
 		this.name = name;
 		this.age = age;
 		this.testType = testType;
 	}
-	
-	
+
+
 	public TestUser( Integer testType ) {
 		this.testType = testType;
 	}

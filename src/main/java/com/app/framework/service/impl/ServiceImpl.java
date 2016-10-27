@@ -29,6 +29,8 @@ import com.app.mybatisplus.plugins.Page;
 import com.app.mybatisplus.toolkit.ReflectionKit;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
@@ -192,7 +194,75 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	}
 
 	public boolean insertBatch(List<T> entityList) {
+		if (null == entityList) {
+			throw new IllegalArgumentException("entityList must not be empty");
+		}
 		return retBool(baseMapper.insertBatch(entityList));
+	}
+
+	public boolean insertBatchSelective(List<T> entityList, int batchSize) {
+		return insertBatch(entityList, batchSize, true);
+	}
+
+	public boolean insertBatch(List<T> entityList, int batchSize) {
+		return insertBatch(entityList, batchSize, false);
+	}
+
+	/**
+	 * 批量插入
+	 *
+	 * @param entityList
+	 * @param batchSize
+	 * @param isSelective
+	 * @return
+	 */
+	protected boolean insertBatch(List<T> entityList, int batchSize, boolean isSelective) {
+		if (null == entityList) {
+			throw new IllegalArgumentException("entityList must not be empty");
+		}
+		TableInfo tableInfo = TableInfoHelper.getTableInfo(currentModleClass());
+		if (null == tableInfo) {
+			throw new MybatisPlusException("Error: insertBatch Fail, ClassGenricType not found .");
+		}
+		SqlSession batchSqlSession = tableInfo.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
+		try {
+			int size = entityList.size();
+			for (int i = 0; i < size; i++) {
+				if (isSelective) {
+					baseMapper.insertSelective(entityList.get(i));
+				} else {
+					baseMapper.insert(entityList.get(i));
+				}
+				if (i % batchSize == 0) {
+					batchSqlSession.flushStatements();
+				}
+			}
+			batchSqlSession.flushStatements();
+		} catch (Exception e) {
+			logger.warning("Warn: Method insertBatch Fail. Cause:" + e);
+			return false;
+		}
+		return true;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Class<T> currentModleClass() {
+		return ReflectionKit.getSuperClassGenricType(getClass(), 1);
+	}
+
+	public boolean insertBatchSelective(List<T> entityList) {
+		if (null == entityList) {
+			throw new IllegalArgumentException("entityList must not be empty");
+		}
+		int result = 0;
+		for (T t : entityList) {
+			result = baseMapper.insertSelective(t);
+			if (result <= 0) {
+				break;
+			}
+		}
+		return retBool(result);
 	}
 
 	public boolean deleteById(Serializable id) {

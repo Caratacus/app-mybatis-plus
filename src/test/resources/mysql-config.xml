@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>  
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <!--
@@ -7,12 +7,12 @@
      | 加载配置文件 resource="jdbc.properties" 
      | 可以在本配置文件中使用 ${name} 来使用属性值
      | -->
-    <!--
-<properties resource="jdbc.properties">
-     | 可通过以下方式定义属性, 加载配置文件中的属性会覆盖掉此处定义的同名属性
-     | <property name="" value=""/>
-</properties>
-     | -->
+        <!-- 
+    <properties resource="jdbc.properties">
+         | 可通过以下方式定义属性, 加载配置文件中的属性会覆盖掉此处定义的同名属性
+         | <property name="" value=""/>
+    </properties>
+         | -->
 
     <!-- 
      | 全局配置设置
@@ -50,7 +50,7 @@
     <typeAliases>
         <package name="com.app.mybatisplus.test.mysql.entity" />
     </typeAliases>
-
+    
     <!-- 插件配置 -->
     <plugins>
         <!--
@@ -68,7 +68,7 @@
         <plugin interceptor="com.app.mybatisplus.plugins.PerformanceInterceptor">
             <property name="maxTime" value="100" />
         </plugin>
-        <!-- SQL 执行分析拦截器 stopProceed 发现全表执行 delete update 是否停止运行 -->
+         <!-- SQL 执行分析拦截器 stopProceed 发现全表执行 delete update 是否停止运行 -->
         <plugin interceptor="com.app.mybatisplus.plugins.SqlExplainInterceptor">
             <property name="stopProceed" value="false" />
         </plugin>
@@ -105,7 +105,6 @@
      | package  指向可以找到Mapper接口的包名
      | -->
     <mappers>
-
         <mapper resource="mysql/RoleMapper.xml"/>
         <mapper class="com.app.mybatisplus.test.mysql.UserMapper" />
         <mapper resource="mysql/UserMapper.xml"/>

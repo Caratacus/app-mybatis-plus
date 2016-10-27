@@ -15,12 +15,7 @@
  */
 package com.app.mybatisplus.plugins;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Properties;
-import java.util.logging.Logger;
-
+import com.app.mybatisplus.exceptions.MybatisPlusException;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -34,25 +29,29 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.Configuration;
 
-import com.app.mybatisplus.exceptions.MybatisPlusException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * <p>
  * SQL 执行分析拦截器【 目前只支持 MYSQL-5.6.3 以上版本 】
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-08-16
  */
 @Intercepts({@Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class SqlExplainInterceptor implements Interceptor {
 	protected final Logger logger = Logger.getLogger("SqlExplainInterceptor");
-
+	
 	/**
 	 * 发现执行全表 delete update 语句是否停止执行
 	 */
 	private boolean stopProceed = false;
-
+	
 	public Object intercept(Invocation invocation) throws Throwable {
 		/**
 		 * 处理 DELETE UPDATE 语句
@@ -86,7 +85,7 @@ public class SqlExplainInterceptor implements Interceptor {
 	 * @throws Exception
 	 */
 	protected void sqlExplain( Configuration configuration, MappedStatement mappedStatement, BoundSql boundSql,
-							   Connection connection, Object parameter ) throws Exception {
+			Connection connection, Object parameter ) throws Exception {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
@@ -113,7 +112,7 @@ public class SqlExplainInterceptor implements Interceptor {
 			}
 
 		} catch ( Exception e ) {
-			throw new MybatisPlusException(e);
+			throw new MybatisPlusException(e); 
 		} finally {
 			if ( rs != null ) {
 				rs.close();

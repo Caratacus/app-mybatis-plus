@@ -19,12 +19,12 @@ package com.app.mybatisplus.generator;
  * <p>
  * 数据源配置
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-04-25
  */
 public enum ConfigDataSource {
-	MYSQL("mysql", "show tables", "show table status", "show full fields from %s", "NAME", "COMMENT" ,"FIELD","TYPE","COMMENT","KEY"),
+	MYSQL("mysql", "show tables", "show table status", "show full fields from %s", "NAME", "COMMENT" ,"FIELD","TYPE","COMMENT","KEY"), 
 	ORACLE("oracle", "SELECT * FROM USER_TABLES", "SELECT * FROM USER_TAB_COMMENTS",
 			"SELECT A.COLUMN_NAME, CASE WHEN A.DATA_TYPE='NUMBER' THEN (CASE WHEN A.DATA_PRECISION IS NULL THEN A.DATA_TYPE WHEN NVL(A.DATA_SCALE, 0) > 0 THEN A.DATA_TYPE||'('||A.DATA_PRECISION||','||A.DATA_SCALE||')' ELSE A.DATA_TYPE||'('||A.DATA_PRECISION||')' END) ELSE A.DATA_TYPE END DATA_TYPE, B.COMMENTS  FROM USER_TAB_COLUMNS A, USER_COL_COMMENTS B WHERE A.TABLE_NAME=B.TABLE_NAME AND A.COLUMN_NAME = B.COLUMN_NAME AND A.TABLE_NAME='%s'",
 			"TABLE_NAME", "COMMENTS" ,"COLUMN_NAME","DATA_TYPE","COMMENTS","COLUMN_NAME");
@@ -41,8 +41,8 @@ public enum ConfigDataSource {
 	private final String fieldKey;
 
 	ConfigDataSource(final String db, final String tablesSql, final String tableCommentsSql,
-					 final String tableFieldsSql, final String tableName, final String tableComment, final String fieldName,
-					 final String fieldType, final String fieldComment, final String fieldKey) {
+			final String tableFieldsSql, final String tableName, final String tableComment, final String fieldName,
+			final String fieldType, final String fieldComment, final String fieldKey) {
 		this.db = db;
 		this.tablesSql = tablesSql;
 		this.tableCommentsSql = tableCommentsSql;
@@ -59,7 +59,7 @@ public enum ConfigDataSource {
 	 * <p>
 	 * 获取数据库类型（默认 MySql）
 	 * </p>
-	 *
+	 * 
 	 * @param dbType
 	 *            数据库类型字符串
 	 * @return

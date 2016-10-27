@@ -15,19 +15,18 @@
  */
 package com.app.mybatisplus.test.mysql;
 
-import java.util.List;
-
+import com.app.mybatisplus.mapper.BaseMapper;
+import com.app.mybatisplus.test.mysql.entity.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.session.RowBounds;
 
-import com.app.mybatisplus.mapper.BaseMapper;
-import com.app.mybatisplus.test.mysql.entity.User;
+import java.util.List;
 
 /**
  * <p>
  * 继承 BaseMapper，就自动拥有CRUD方法
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-01-23
  */
@@ -35,17 +34,17 @@ public interface UserMapper extends BaseMapper<User> {
 
 	/**
 	 * 用户列表，分页显示
-	 * 
+	 *
 	 * @param pagination
 	 *            传递参数包含该属性，即自动分页
 	 * @return
 	 */
 	List<User> selectListRow(RowBounds pagination);
-	
+
 	/**
 	 * 注解插入【测试】
 	 */
-	@Insert("insert into user(test_id,name,age) values(#{id},#{name},#{age})")  
+	@Insert("insert into user(test_id,name,age) values(#{id},#{name},#{age})")
 	int insertInjector(User user);
 
 	/**

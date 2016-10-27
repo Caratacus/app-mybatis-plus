@@ -15,9 +15,6 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.mapper.DBType;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -161,8 +158,8 @@ public class StringUtils {
 	 */
 	public static String quotaMark(Object obj) {
 		String srcStr = String.valueOf(obj);
-		// fix #79
 		if (obj instanceof String) {
+			// fix #79
 			return StringEscape.escapeString(srcStr);
 		}
 		return srcStr;
@@ -207,19 +204,4 @@ public class StringUtils {
 		return concatCapitalize(null, str);
 	}
 
-	/**
-	 * <p>
-	 * 数据库字段转义
-	 * </p>
-	 *
-	 * @param str
-	 *            数据库字段
-	 * @return
-	 */
-	public static String convert(String str) {
-		if (MybatisConfiguration.DB_TYPE.equals(DBType.MYSQL)) {
-			return String.format("`%s`", str);
-		}
-		return str;
-	}
 }

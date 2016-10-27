@@ -24,7 +24,7 @@ import com.app.mybatisplus.test.ConfigGeneratorTest;
  * <p>
  * 自动生成映射工具类测试
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-04-25
  */

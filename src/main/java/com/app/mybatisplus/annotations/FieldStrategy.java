@@ -54,4 +54,5 @@ public enum FieldStrategy {
 		}
 		return FieldStrategy.NOT_NULL;
 	}
+
 }

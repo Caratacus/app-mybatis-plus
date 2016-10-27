@@ -11,7 +11,7 @@ package com.app.mybatisplus.toolkit;
 public class StringEscape {
 	/**
 	 * 字符串是否需要转义
-	 * 
+	 *
 	 * @param x
 	 * @param stringLength
 	 * @return
@@ -24,38 +24,38 @@ public class StringEscape {
 			char c = x.charAt(i);
 
 			switch (c) {
-			case 0: /* Must be escaped for 'mysql' */
+				case 0: /* Must be escaped for 'mysql' */
 
-				needsHexEscape = true;
-				break;
+					needsHexEscape = true;
+					break;
 
-			case '\n': /* Must be escaped for logs */
-				needsHexEscape = true;
+				case '\n': /* Must be escaped for logs */
+					needsHexEscape = true;
 
-				break;
+					break;
 
-			case '\r':
-				needsHexEscape = true;
-				break;
+				case '\r':
+					needsHexEscape = true;
+					break;
 
-			case '\\':
-				needsHexEscape = true;
+				case '\\':
+					needsHexEscape = true;
 
-				break;
+					break;
 
-			case '\'':
-				needsHexEscape = true;
+				case '\'':
+					needsHexEscape = true;
 
-				break;
+					break;
 
-			case '"': /* Better safe than sorry */
-				needsHexEscape = true;
+				case '"': /* Better safe than sorry */
+					needsHexEscape = true;
 
-				break;
+					break;
 
-			case '\032': /* This gives problems on Win32 */
-				needsHexEscape = true;
-				break;
+				case '\032': /* This gives problems on Win32 */
+					needsHexEscape = true;
+					break;
 			}
 
 			if (needsHexEscape) {
@@ -67,7 +67,7 @@ public class StringEscape {
 
 	/**
 	 * 转义字符串
-	 * 
+	 *
 	 * @param x
 	 * @return
 	 */
@@ -93,50 +93,50 @@ public class StringEscape {
 				char c = x.charAt(i);
 
 				switch (c) {
-				case 0: /* Must be escaped for 'mysql' */
-					buf.append('\\');
-					buf.append('0');
+					case 0: /* Must be escaped for 'mysql' */
+						buf.append('\\');
+						buf.append('0');
 
-					break;
+						break;
 
-				case '\n': /* Must be escaped for logs */
-					buf.append('\\');
-					buf.append('n');
+					case '\n': /* Must be escaped for logs */
+						buf.append('\\');
+						buf.append('n');
 
-					break;
+						break;
 
-				case '\r':
-					buf.append('\\');
-					buf.append('r');
+					case '\r':
+						buf.append('\\');
+						buf.append('r');
 
-					break;
+						break;
 
-				case '\\':
-					buf.append('\\');
-					buf.append('\\');
+					case '\\':
+						buf.append('\\');
+						buf.append('\\');
 
-					break;
+						break;
 
-				case '\'':
-					buf.append('\\');
-					buf.append('\'');
+					case '\'':
+						buf.append('\\');
+						buf.append('\'');
 
-					break;
+						break;
 
-				case '"': /* Better safe than sorry */
-					buf.append('\\');
-					buf.append('"');
+					case '"': /* Better safe than sorry */
+						buf.append('\\');
+						buf.append('"');
 
-					break;
+						break;
 
-				case '\032': /* This gives problems on Win32 */
-					buf.append('\\');
-					buf.append('Z');
+					case '\032': /* This gives problems on Win32 */
+						buf.append('\\');
+						buf.append('Z');
 
-					break;
+						break;
 
-				default:
-					buf.append(c);
+					default:
+						buf.append(c);
 				}
 			}
 

@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * <p>
@@ -204,7 +206,7 @@ public class EntityWrapperTest {
 	 * 测试NOT IN
 	 */
 	@Test
-	public void testNul17() {
+	public void test17() {
 		List<String> list = new ArrayList<String>();
 		list.add("'1'");
 		list.add("'2'");
@@ -229,6 +231,20 @@ public class EntityWrapperTest {
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (test_type IN (111111111,222222222,333333333))", sqlPart);
 	}
+	/**
+	 * 测试IN
+	 */
+	@Test
+	public void test18() {
+		Set<Long> list = new TreeSet<Long>();
+		list.add(111111111L);
+		list.add(222222222L);
+		list.add(333333333L);
+		ew.in("test_type", list);
+		String sqlPart = ew.getSqlSegment();
+		System.out.println("sql ==> " + sqlPart);
+		Assert.assertEquals("WHERE (test_type IN (111111111,222222222,333333333))", sqlPart);
+	}
 
 	/**
 	 * 测试BETWEEN AND
@@ -242,6 +258,7 @@ public class EntityWrapperTest {
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (test_type BETWEEN '11' AND '33')", sqlPart);
 	}
+
 	/**
 	 * 测试Escape
 	 */
@@ -254,5 +271,4 @@ public class EntityWrapperTest {
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (test_type BETWEEN '\\'' AND '\\\\')", sqlPart);
 	}
-
 }
