@@ -253,7 +253,7 @@ public class AutoGenerator {
 					buildMapper(beanName, mapperName);
 				}
 				if (valideFile(PATH_XML, mapperXMLName, XML_SUFFIX)) {
-					buildMapperXml(columns, types, comments, idMap, mapperName, mapperXMLName);
+					buildMapperXml(beanName, columns, types, comments, idMap, mapperName, mapperXMLName);
 				}
 				if (valideFile(PATH_SERVICE, serviceName, JAVA_SUFFIX)) {
 					buildService(beanName, serviceName);
@@ -439,7 +439,7 @@ public class AutoGenerator {
 	protected boolean isDate(List<String> types) {
 		for (String type : types) {
 			String t = type.toLowerCase();
-			if (t.contains("date") || t.contains("timestamp")) {
+			if (t.contains("date") || t.contains("time")) {
 				return true;
 			}
 		}
@@ -528,7 +528,7 @@ public class AutoGenerator {
 	 * @throws IOException
 	 */
 	protected void buildEntityBean(List<String> columns, List<String> types, List<String> comments, String tableComment,
-			Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
+								   Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
 		File beanFile = new File(PATH_ENTITY, beanName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(beanFile)));
 		bw.write("package " + config.getEntityPackage() + ";");
@@ -646,7 +646,7 @@ public class AutoGenerator {
 	}
 
 	protected void buildEntityBeanColumnConstant(List<String> columns, List<String> types, List<String> comments,
-			BufferedWriter bw, int size) throws IOException {
+												 BufferedWriter bw, int size) throws IOException {
 		/*
 		 * 【实体】是否生成字段常量（默认 false）
 		 */
@@ -706,13 +706,14 @@ public class AutoGenerator {
 	/**
 	 * 构建实体类映射XML文件
 	 *
+	 * @param beanName
 	 * @param columns
 	 * @param types
 	 * @param comments
 	 * @throws IOException
 	 */
-	protected void buildMapperXml(List<String> columns, List<String> types, List<String> comments,
-			Map<String, IdInfo> idMap, String mapperName,String mapperXMLName) throws IOException {
+	protected void buildMapperXml(String beanName, List<String> columns, List<String> types, List<String> comments,
+								  Map<String, IdInfo> idMap, String mapperName,String mapperXMLName) throws IOException {
 		File mapperXmlFile = new File(PATH_XML, mapperXMLName + ".xml");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -727,7 +728,11 @@ public class AutoGenerator {
 		/*
 		 * 下面开始写SqlMapper中的方法
 		 */
-		buildSQL(bw, idMap, columns);
+		if (config.isResultMap()) {
+			buildResultMap(bw, beanName, idMap, columns);
+		} else {
+			buildSQL(bw, idMap, columns);
+		}
 
 		bw.write("</mapper>");
 		bw.flush();
@@ -812,7 +817,7 @@ public class AutoGenerator {
 		bw.flush();
 		bw.close();
 	}
-	
+
 	/**
 	 * 构建Controller实现类文件
 	 *
@@ -823,12 +828,12 @@ public class AutoGenerator {
 	protected void buildController(String beanName, String controllerName) throws IOException {
 		File serviceFile = new File(PATH_CONTROLLER_IMPL, controllerName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(serviceFile), "utf-8"));
-		bw.write("package " + config.getServiceImplPackage() + ";");
+		bw.write("package " + config.getControllerPackage() + ";");
 		bw.newLine();
 		bw.newLine();
 		bw.write("import org.springframework.stereotype.Controller;");
 		bw.newLine();
-		
+
 		bw = buildClassComment(bw, beanName + " 控制层");
 		bw.newLine();
 		bw.write("@Controller");
@@ -892,6 +897,66 @@ public class AutoGenerator {
 		}
 		bw.newLine();
 		bw.write("\t</sql>");
+		bw.newLine();
+		bw.newLine();
+	}
+
+	/**
+	 * 通用 ResultMap 返回参数
+	 *
+	 * @param bw
+	 * @param beanName
+	 * @param idMap
+	 * @param columns
+	 * @throws IOException
+	 */
+	protected void buildResultMap(BufferedWriter bw, String beanName ,Map<String, IdInfo> idMap, List<String> columns) throws IOException {
+		int size = columns.size();
+		bw.write("\t<!-- 通用查询结果列-->");
+		bw.newLine();
+		bw.write("\t<resultMap id=\"" + beanName + "ResultMap\" type=\"" + config.getEntityPackage() + "." + beanName + "\">");
+		bw.newLine();
+		
+		/*
+		 * 数据库类型
+		 */
+		DBType dbType = DBType.ORACLE;
+		if (config.getConfigDataSource() == ConfigDataSource.MYSQL) {
+			dbType = DBType.MYSQL;
+		}
+		
+		/*
+		 * 公共字段
+		 */
+		if (null != config.getConfigBaseEntity()) {
+			for (String column : config.getConfigBaseEntity().getColumns()) {
+				bw.write("\t\t<result column=\"" + SqlReservedWords.convert(dbType, column) + "\" property=\""
+						+ processField(column) + "\" />");
+				bw.newLine();
+			}
+		}
+		/**
+		 * 个性字段
+		 */
+		for (int i = 0; i < size; i++) {
+			String column = columns.get(i);
+			IdInfo idInfo = idMap.get(column);
+			if (idInfo != null) {
+				bw.write("\t\t<id column=\"" + SqlReservedWords.convert(dbType, column) + "\" property=\""
+						+ processField(idInfo.getValue()) + "\" />");
+			} else {
+				if (null == config.getConfigBaseEntity()) {
+					bw.write(" ");
+				}
+				bw.write("\t\t<result column=\"" + SqlReservedWords.convert(dbType, column) + "\" property=\""
+						+ processField(column) + "\" />");
+			}
+			if (i != size - 1) {
+				bw.newLine();
+			}
+		}
+		bw.newLine();
+		bw.write("\t</resultMap>");
 		bw.newLine();
 		bw.newLine();
 	}

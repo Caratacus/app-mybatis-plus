@@ -101,10 +101,7 @@ public class EntityWrapper<T> implements Serializable {
 		 */
 		sqlWhere = ReflectionKit.checkFieldValueNotNull(entity) ? sqlWhere.replaceFirst("WHERE", "AND") : sqlWhere;
 
-		/*
-		 * 使用防SQL注入处理后返回
-		 */
-		return stripSqlInjection(sqlWhere);
+		return sqlWhere;
 	}
 
 	/**
