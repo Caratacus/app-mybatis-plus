@@ -15,10 +15,10 @@
  */
 package com.app.mybatisplus.test.mysql.entity;
 
-import com.app.mybatisplus.annotations.Column;
-import com.app.mybatisplus.annotations.Id;
-import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.annotations.Table;
+import com.app.mybatisplus.activerecord.Model;
+import com.app.mybatisplus.annotations.TableField;
+import com.app.mybatisplus.annotations.TableId;
+import com.app.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 
@@ -30,14 +30,14 @@ import java.io.Serializable;
  * @author Caratacu
  * @Date 2016-09-25
  */
-@Table("test")
-public class Test implements Serializable {
+@TableName("test")
+public class Test extends Model<Test> {
 
-	@Column(exist = false)
+	@TableField(exist = false)
 	private static final long serialVersionUID = 1L;
 
 	/** 主键 */
-	@Id(type= IdType.ID_WORKER)
+	@TableId
 	private Long id;
 
 	private String type;
@@ -65,5 +65,14 @@ public class Test implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	protected Serializable getPrimaryKey() {
+		return id;
+	}
+
+	public String toString() {
+		return "{id=" + id + ",type=" + type + "}";
 	}
 }

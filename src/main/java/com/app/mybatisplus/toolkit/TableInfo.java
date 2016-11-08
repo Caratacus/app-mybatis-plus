@@ -16,6 +16,7 @@
 package com.app.mybatisplus.toolkit;
 
 import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.mapper.SqlMethod;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.util.List;
@@ -62,14 +63,37 @@ public class TableInfo {
 	 * 表主键ID 字段名
 	 */
 	private String keyColumn;
-	/**
-	 * 缓存SqlSessionFactory
-	 */
-	private SqlSessionFactory sqlSessionFactory;
+
 	/**
 	 * 表字段信息列表
 	 */
 	private List<TableFieldInfo> fieldList;
+
+	/**
+	 * 命名空间
+	 */
+	private String currentNamespace;
+	/**
+	 * 缓存SqlSessionFactory
+	 */
+	private SqlSessionFactory sqlSessionFactory;
+
+	/**
+	 * <p>
+	 * 获得注入的 SQL Statement
+	 * </p>
+	 * 
+	 * @param sqlMethod
+	 *            MybatisPlus 支持 SQL 方法
+	 * @return
+	 */
+	public String getSqlStatement(SqlMethod sqlMethod) {
+		StringBuffer statement = new StringBuffer();
+		statement.append(currentNamespace);
+		statement.append(".");
+		statement.append(sqlMethod.getMethod());
+		return statement.toString();
+	}
 
 	public IdType getIdType() {
 		return idType;
@@ -125,6 +149,14 @@ public class TableInfo {
 
 	public void setFieldList(List<TableFieldInfo> fieldList) {
 		this.fieldList = fieldList;
+	}
+
+	public String getCurrentNamespace() {
+		return currentNamespace;
+	}
+
+	public void setCurrentNamespace(String currentNamespace) {
+		this.currentNamespace = currentNamespace;
 	}
 
 	public SqlSessionFactory getSqlSessionFactory() {

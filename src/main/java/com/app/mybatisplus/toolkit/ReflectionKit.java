@@ -119,13 +119,14 @@ public class ReflectionKit {
 
 	/**
 	 * 反射对象获取泛型
-	 *
+	 * 
 	 * @param clazz
 	 *            对象
 	 * @param index
 	 *            泛型所在位置
 	 * @return Class
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Class getSuperClassGenricType(final Class clazz, final int index) {
 
 		Type genType = clazz.getGenericSuperclass();

@@ -15,10 +15,10 @@
  */
 package com.app.mybatisplus.test.mysql.entity;
 
-import com.app.mybatisplus.annotations.Column;
 import com.app.mybatisplus.annotations.FieldStrategy;
-import com.app.mybatisplus.annotations.Id;
-import com.app.mybatisplus.annotations.Table;
+import com.app.mybatisplus.annotations.TableField;
+import com.app.mybatisplus.annotations.TableId;
+import com.app.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -32,33 +32,33 @@ import java.lang.reflect.Field;
  * @Date 2016-09-09
  */
 /* 表名 value 注解【 驼峰命名可无 】, resultMap 注解测试【 映射 xml 的 resultMap 内容 】 */
-@Table(resultMap = "userMap")
+@TableName(resultMap = "userMap")
 public class User implements Serializable {
 
 	/* 表字段注解，false 表中不存在的字段，可无该注解 默认 true */
-	@Column(exist = false)
+	@TableField(exist = false)
 	private static final long serialVersionUID = 1L;
 
 	/* 主键ID 注解，value 字段名，type 用户输入ID */
-	@Id(value = "test_id")
+	@TableId(value = "test_id")
 	private Long id;
 
 	/* 测试忽略验证 */
-	@Column(validate = FieldStrategy.IGNORED)
 	private String name;
 
 	private Integer age;
 
 	/* 测试下划线字段命名类型, 字段填充 */
-	@Column(value = "test_type", validate = FieldStrategy.FILL)
+	@TableField(value = "test_type", validate = FieldStrategy.FILL)
 	private Integer testType;
 
-	@Column(el = "role.id")
+	@TableField(el = "role.id")
 	private Role role;
 
 	private String desc = "默认描述";
 
 	// 或@TableField(el = "role,jdbcType=BIGINT)
+	@TableField(el = "phone, typeHandler=com.app.mybatisplus.test.mysql.typehandler.PhoneTypeHandler")
 	private PhoneNumber phone;
 
 	public User() {

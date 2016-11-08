@@ -22,28 +22,27 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * 表主键标识
+ * 数据库表相关
  * </p>
  * 
  * @author hubin
  * @Date 2016-01-23
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Id {
+@Target(ElementType.TYPE)
+public @interface TableName {
 
 	/*
 	 * <p>
-	 * 字段值（驼峰命名方式，该值可无）
+	 * 实体对应的表名
 	 * </p>
 	 */
 	String value() default "";
 
 	/*
 	 * <p>
-	 * 主键ID，默认 ID 自增
+	 * 实体映射结果集
 	 * </p>
-	 * {@link IdType}
 	 */
-	IdType type() default IdType.AUTO;
+	String resultMap() default "";
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, hubin (jobob@qq.com).
+ * Copyright (c) 2011-2020, hubin (jobob@qq.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,36 +13,34 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.app.mybatisplus.annotations;
+package com.app.mybatisplus.mapper;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 /**
  * <p>
- * 数据库表相关
+ * 纯 SQL Provider
  * </p>
- *
+ * 
  * @author hubin
- * @Date 2016-01-23
+ * @Date 2016-11-06
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Table {
+public class PureSqlProvider {
 
-	/*
+	/**
 	 * <p>
-	 * 实体对应的表名
+	 * 执行 SQL 语句
 	 * </p>
+	 * 
+	 * @param sql
+	 *            SQL语句
+	 * @return
 	 */
-	String value() default "";
+	public String sql(String sql) {
+		if (null == sql) {
+			throw new MybatisPlusException("sql is null.");
+		}
+		return sql;
+	}
 
-	/*
-	 * <p>
-	 * 实体映射结果集
-	 * </p>
-	 */
-	String resultMap() default "";
 }

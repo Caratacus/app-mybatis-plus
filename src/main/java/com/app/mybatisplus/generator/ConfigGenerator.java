@@ -91,19 +91,24 @@ public class ConfigGenerator {
 	 * 指定生成表名
 	 */
 	protected String[] tableNames = null;
-
+	
 	/*
-	 * 【实体】是否生成字段常量（默认 false）<br> -----------------------------------<br> public
-	 * static final String ID = "test_id";
+	 * 【实体】是否生成字段常量（默认 false）<br>
+	 * -----------------------------------<br>
+	 * public static final String ID = "test_id";
 	 */
 	protected boolean columnConstant = false;
 
 	/*
-	 * 【实体】是否为构建者模型（默认 false）<br> -----------------------------------<br> public
-	 * User setName(String name) { this.name = name; return this; }
+	 * 【实体】是否为构建者模型（默认 false）<br>
+	 * -----------------------------------<br>
+	 * 	public User setName(String name) {
+	 * 		this.name = name;
+	 * 		return this;
+	 * 	}
 	 */
 	protected boolean buliderModel = false;
-
+	
 	/*
 	 * 是否覆盖当前路径下已有文件（默认 true）
 	 */
@@ -137,6 +142,7 @@ public class ConfigGenerator {
 	protected ConfigIdType configIdType = ConfigIdType.LONG;
 
 	protected ConfigBaseEntity configBaseEntity = null;
+
 
 	public String getSaveDir() {
 		return saveDir;

@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2011-2014, hubin (jobob@qq.com).
- *
+ * Copyright (c) 2011-2020, hubin (jobob@qq.com).
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -17,14 +17,18 @@ package com.app.mybatisplus.toolkit;
 
 import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.MybatisPlusHolder;
-import com.app.mybatisplus.annotations.Column;
-import com.app.mybatisplus.annotations.Id;
-import com.app.mybatisplus.annotations.Table;
+import com.app.mybatisplus.annotations.FieldStrategy;
+import com.app.mybatisplus.annotations.TableField;
+import com.app.mybatisplus.annotations.TableId;
+import com.app.mybatisplus.annotations.TableName;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
+import org.apache.ibatis.builder.MapperBuilderAssistant;
+import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +47,7 @@ public class TableInfoHelper {
 	/**
 	 * 缓存反射类表信息
 	 */
-	private static Map<String, TableInfo> tableInfoCache = new ConcurrentHashMap<String, TableInfo>();
+	private static final Map<String, TableInfo> tableInfoCache = new ConcurrentHashMap<String, TableInfo>();
 
 	/**
 	 * <p>
@@ -67,39 +71,42 @@ public class TableInfoHelper {
 	 *            反射实体类
 	 * @return
 	 */
-	public synchronized static TableInfo initTableInfo(Class<?> clazz) {
+	public synchronized static TableInfo initTableInfo(MapperBuilderAssistant builderAssistant, Class<?> clazz) {
 		TableInfo ti = tableInfoCache.get(clazz.getName());
 		if (ti != null) {
 			return ti;
 		}
 		TableInfo tableInfo = new TableInfo();
 
-		/* 表名 */
-		Table table = clazz.getAnnotation(Table.class);
-		if (table != null && StringUtils.isNotEmpty(table.value())) {
-			tableInfo.setTableName(table.value());
-		} else {
-			tableInfo.setTableName(StringUtils.camelToUnderline(clazz.getSimpleName()));
+		if (null != builderAssistant) {
+			tableInfo.setCurrentNamespace(builderAssistant.getCurrentNamespace());
 		}
-
+		/* 表名 */
+		TableName table = clazz.getAnnotation(TableName.class);
+		String tableName;
+		if (table != null && StringUtils.isNotEmpty(table.value())) {
+			tableName = table.value();
+		} else {
+			tableName = StringUtils.camelToUnderline(clazz.getSimpleName());
+		}
+		tableInfo.setTableName(tableName);
 		/* 表结果集映射 */
 		if (table != null && StringUtils.isNotEmpty(table.resultMap())) {
 			tableInfo.setResultMap(table.resultMap());
 		}
-
 		List<TableFieldInfo> fieldList = new ArrayList<TableFieldInfo>();
 		List<Field> list = getAllFields(clazz);
 		for (Field field : list) {
 			/**
 			 * 主键ID
 			 */
-			Id id = field.getAnnotation(Id.class);
-			if (id != null) {
+			TableId tableId = field.getAnnotation(TableId.class);
+			if (tableId != null) {
 				if (tableInfo.getKeyColumn() == null) {
-					tableInfo.setIdType(id.type());
-					if (StringUtils.isNotEmpty(id.value())) {
+					tableInfo.setIdType(tableId.type());
+					if (StringUtils.isNotEmpty(tableId.value())) {
 						/* 自定义字段 */
-						tableInfo.setKeyColumn(id.value());
+						tableInfo.setKeyColumn(tableId.value());
 						tableInfo.setKeyRelated(true);
 					} else if (MybatisConfiguration.DB_COLUMN_UNDERLINE) {
 						/* 开启字段下划线申明 */
@@ -116,56 +123,57 @@ public class TableInfoHelper {
 			}
 
 			/* 获取注解属性，自定义字段 */
-			Column column = field.getAnnotation(Column.class);
-			if (column != null) {
+			TableField tableField = field.getAnnotation(TableField.class);
+			if (tableField != null) {
 				String columnName = field.getName();
-				if (StringUtils.isNotEmpty(column.value())) {
-					columnName = column.value();
+				if (StringUtils.isNotEmpty(tableField.value())) {
+					columnName = tableField.value();
 				}
 
 				/*
 				 * el 语法支持，可以传入多个参数以逗号分开
 				 */
 				String el = field.getName();
-				if (StringUtils.isNotEmpty(column.el())) {
-					el = column.el();
+				if (StringUtils.isNotEmpty(tableField.el())) {
+					el = tableField.el();
 				}
 				String[] columns = columnName.split(";");
 				String[] els = el.split(";");
 				if (null != columns && null != els && columns.length == els.length) {
 					for (int i = 0; i < columns.length; i++) {
-						fieldList.add(new TableFieldInfo(true, columns[i], field.getName(), els[i], column.validate()));
+						fieldList.add(new TableFieldInfo(columns[i], field.getName(), els[i], tableField.validate()));
 					}
 				} else {
 					String errorMsg = "Class: %s, Field: %s, 'value' 'el' Length must be consistent.";
 					throw new MybatisPlusException(String.format(errorMsg, clazz.getName(), field.getName()));
 				}
-
 				continue;
 			}
-
 			/**
 			 * 字段, 使用 camelToUnderline 转换驼峰写法为下划线分割法, 如果已指定 TableField , 便不会执行这里
 			 */
-			if (MybatisConfiguration.DB_COLUMN_UNDERLINE) {
-				/* 开启字段下划线申明 */
-				fieldList.add(new TableFieldInfo(true, StringUtils.camelToUnderline(field.getName()), field.getName()));
-			} else {
-				fieldList.add(new TableFieldInfo(field.getName()));
+			TableFieldInfo tfi = new TableFieldInfo(field.getName());
+			/* 处理日期类型，不支持空比较 */
+			if (Date.class.isAssignableFrom(field.getType())) {
+				tfi.setFieldStrategy(FieldStrategy.NOT_NULL);
 			}
+			fieldList.add(tfi);
 		}
 
 		/* 字段列表 */
 		tableInfo.setFieldList(fieldList);
-
+		/**
+		 * SqlSessionFactory
+		 */
+		if (null != MybatisPlusHolder.getSqlSessionFactory()) {
+			tableInfo.setSqlSessionFactory(MybatisPlusHolder.getSqlSessionFactory());
+		}
 		/*
 		 * 未发现主键注解，跳过注入
 		 */
 		if (null == tableInfo.getKeyColumn()) {
 			return null;
 		}
-		// 缓存
-		tableInfo.setSqlSessionFactory(MybatisPlusHolder.getSqlSessionFactory());
 		/*
 		 * 注入
 		 */
@@ -191,8 +199,8 @@ public class TableInfoHelper {
 			}
 
 			/* 过滤注解非表字段属性 */
-			Column Column = field.getAnnotation(Column.class);
-			if (Column == null || Column.exist()) {
+			TableField tableField = field.getAnnotation(TableField.class);
+			if (tableField == null || tableField.exist()) {
 				result.add(field);
 			}
 		}
@@ -204,6 +212,20 @@ public class TableInfoHelper {
 		}
 		result.addAll(getAllFields(superClass));
 		return result;
+	}
+
+	/**
+	 * 初始化sqlMapper (供Mybatis原生调用)
+	 * 
+	 * @param sqlSessionFactory
+	 * @return
+	 */
+	public static void initSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+		for (TableInfo tableInfo : tableInfoCache.values()) {
+			if (null == tableInfo.getSqlSessionFactory()) {
+				tableInfo.setSqlSessionFactory(sqlSessionFactory);
+			}
+		}
 	}
 
 }

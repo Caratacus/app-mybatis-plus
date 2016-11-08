@@ -22,15 +22,15 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * 表字段标识
+ * 表主键标识
  * </p>
- *
- * @author hubin sjy
- * @Date 2016-09-09
+ * 
+ * @author hubin
+ * @Date 2016-01-23
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Column {
+public @interface TableId {
 
 	/*
 	 * <p>
@@ -41,29 +41,9 @@ public @interface Column {
 
 	/*
 	 * <p>
-	 * 当该Field为类对象时, 可使用#{对象.属性}来映射到数据表.
+	 * 主键ID，默认 ID 自增
 	 * </p>
+	 * {@link IdType}
 	 */
-	String el() default "";
-
-	/*
-	 * <p>
-	 * 是否为数据库表字段
-	 * </p>
-	 * <p>
-	 * 默认 true 存在，false 不存在
-	 * </p>
-	 */
-	boolean exist() default true;
-
-	/*
-	 * <p>
-	 * 字段验证
-	 * </p>
-	 * <p>
-	 * 默认 非 null 判断
-	 * </p>
-	 */
-	FieldStrategy validate() default FieldStrategy.NOT_NULL;
-
+	IdType type() default IdType.ID_WORKER;
 }

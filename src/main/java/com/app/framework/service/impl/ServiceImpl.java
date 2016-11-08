@@ -24,11 +24,13 @@ import com.app.framework.service.IService;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
-import com.app.mybatisplus.mapper.EntityWrapper;
+import com.app.mybatisplus.mapper.Wrapper;
 import com.app.mybatisplus.plugins.Page;
 import com.app.mybatisplus.toolkit.ReflectionKit;
+import com.app.mybatisplus.toolkit.StringUtils;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
+import org.apache.ibatis.jdbc.SQL;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +70,6 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 * 根据对象主键属性正确的调用保存或修改方法
 	 *
 	 * @param entity
-	 * @param isSelective
 	 * @return boolean
 	 * @throws MybatisPlusException
 	 *             entity need @Id
@@ -76,23 +77,24 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 * @date 2016/8/27 0027
 	 * @version 1.0
 	 */
-	private boolean saveOrUpdate(T entity, boolean isSelective) {
+	@Override
+	public boolean saveOrUpdate(T entity) {
 		if (null != entity) {
 			Class<?> cls = entity.getClass();
 			TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
 			if (null != tableInfo) {
 				if (entity instanceof AutoPrimaryKey) {
 					AutoPrimaryKey auto = (AutoPrimaryKey) entity;
-					return saveOrUpdate(auto.getId(), entity, isSelective, tableInfo);
+					return saveOrUpdate(auto.getId(), entity, tableInfo);
 				} else if (entity instanceof UuidPrimaryKey) {
 					UuidPrimaryKey uuid = (UuidPrimaryKey) entity;
-					return saveOrUpdate(uuid.getId(), entity, isSelective, tableInfo);
+					return saveOrUpdate(uuid.getId(), entity, tableInfo);
 				} else if (entity instanceof IdWorkPrimaryKey) {
 					IdWorkPrimaryKey idwork = (IdWorkPrimaryKey) entity;
-					return saveOrUpdate(idwork.getId(), entity, isSelective, tableInfo);
+					return saveOrUpdate(idwork.getId(), entity, tableInfo);
 				} else if (entity instanceof InputPrimaryKey) {
 					InputPrimaryKey input = (InputPrimaryKey) entity;
-					return saveOrUpdate(input.getId(), entity, isSelective, tableInfo);
+					return saveOrUpdate(input.getId(), entity, tableInfo);
 				}
 			} else {
 				throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
@@ -106,37 +108,43 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 *
 	 * @param id
 	 * @param entity
-	 * @param isSelective
 	 * @return boolean
 	 * @author Caratacus
 	 * @date 2016/9/16 0027
 	 * @version 1.0
 	 */
-	private boolean saveOrUpdate(Serializable id, T entity, boolean isSelective, TableInfo tableInfo) {
+	private boolean saveOrUpdate(Serializable id, T entity, TableInfo tableInfo) {
 		if (null != id) {
-			return isSelective ? updateSelectiveById(entity) : updateById(entity);
+			return updateById(entity);
 		} else {
 			/* 特殊处理 INPUT 主键策略逻辑 */
 			if (IdType.INPUT == tableInfo.getIdType()) {
 				T entityValue = selectById((Serializable) id);
 				if (null != entityValue) {
-					return isSelective ? updateSelectiveById(entity) : updateById(entity);
+					return  updateById(entity);
 				} else {
-					return isSelective ? insertSelective(entity) : insert(entity);
+					return  insert(entity);
 				}
 			}
-			return isSelective ? insertSelective(entity) : insert(entity);
+			return  insert(entity);
 		}
 	}
-
-	@Override
-	public boolean saveOrUpdate(T entity) {
-		return saveOrUpdate(entity, false);
-	}
-
-	@Override
-	public boolean saveOrUpdateSelective(T entity) {
-		return saveOrUpdate(entity, true);
+	/**
+	 * <p>
+	 * SQL 构建方法
+	 * </p>
+	 * 
+	 * @param sql
+	 *            SQL 语句
+	 * @param args
+	 *            执行参数
+	 * @return
+	 */
+	protected String sqlBuilder(SQL sql, Object... args) {
+		if (null == sql) {
+			throw new IllegalArgumentException("Error: sql Can not be empty.");
+		}
+		return StringUtils.sqlArgsFill(sql.toString(), args);
 	}
 
 	/**
@@ -146,66 +154,44 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 *
 	 * @param entity
 	 *            实体对象
-	 * @param isSelective
-	 *            true 选择字段 false 不选择字段
 	 * @return boolean
 	 */
-	public boolean insertOrUpdate(T entity, boolean isSelective) {
+	public boolean insertOrUpdate(T entity) {
 		if (null != entity) {
 			Class<?> cls = entity.getClass();
 			TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
 			if (null != tableInfo) {
 				Object idVal = ReflectionKit.getMethodValue(cls, entity, tableInfo.getKeyProperty());
 				if (null == idVal || "".equals(idVal)) {
-					return isSelective ? insertSelective(entity) : insert(entity);
+					return insert(entity);
 				} else {
 					/* 特殊处理 INPUT 主键策略逻辑 */
 					if (IdType.INPUT == tableInfo.getIdType()) {
 						T entityValue = selectById((Serializable) idVal);
 						if (null != entityValue) {
-							return isSelective ? updateSelectiveById(entity) : updateById(entity);
+							return updateById(entity);
 						} else {
-							return isSelective ? insertSelective(entity) : insert(entity);
+							return insert(entity);
 						}
 					}
-					return isSelective ? updateSelectiveById(entity) : updateById(entity);
+					return updateById(entity);
 				}
 			} else {
-				throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
+				throw new MybatisPlusException("Error:  Can not execute. Could not find @TableId.");
 			}
 		}
 		return false;
-	}
-
-	public boolean insertOrUpdate(T entity) {
-		return insertOrUpdate(entity, false);
-	}
-
-	public boolean insertOrUpdateSelective(T entity) {
-		return insertOrUpdate(entity, true);
 	}
 
 	public boolean insert(T entity) {
 		return retBool(baseMapper.insert(entity));
 	}
 
-	public boolean insertSelective(T entity) {
-		return retBool(baseMapper.insertSelective(entity));
-	}
-
 	public boolean insertBatch(List<T> entityList) {
-		if (null == entityList) {
+		if (CollectionUtil.isEmpty(entityList)) {
 			throw new IllegalArgumentException("Error: entityList must not be empty");
 		}
 		return retBool(baseMapper.insertBatch(entityList));
-	}
-
-	public boolean insertBatchSelective(List<T> entityList, int batchSize) {
-		return insertBatch(entityList, batchSize, true);
-	}
-
-	public boolean insertBatch(List<T> entityList, int batchSize) {
-		return insertBatch(entityList, batchSize, false);
 	}
 
 	/**
@@ -213,26 +199,22 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 *
 	 * @param entityList
 	 * @param batchSize
-	 * @param isSelective
 	 * @return
 	 */
-	protected boolean insertBatch(List<T> entityList, int batchSize, boolean isSelective) {
-		if (null == entityList) {
+	public boolean insertBatch(List<T> entityList, int batchSize) {
+		if (CollectionUtil.isEmpty(entityList)) {
 			throw new IllegalArgumentException("Error: entityList must not be empty");
 		}
 		TableInfo tableInfo = TableInfoHelper.getTableInfo(currentModleClass());
 		if (null == tableInfo) {
 			throw new MybatisPlusException("Error: Cannot execute insertBatch Method, ClassGenricType not found .");
 		}
-		SqlSession batchSqlSession = tableInfo.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
+		SqlSession batchSqlSession = tableInfo.getSqlSessionFactory().openSession(ExecutorType.BATCH,
+				false);
 		try {
 			int size = entityList.size();
 			for (int i = 0; i < size; i++) {
-				if (isSelective) {
-					baseMapper.insertSelective(entityList.get(i));
-				} else {
-					baseMapper.insert(entityList.get(i));
-				}
+				baseMapper.insert(entityList.get(i));
 				if (i % batchSize == 0) {
 					batchSqlSession.flushStatements();
 				}
@@ -251,20 +233,6 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return ReflectionKit.getSuperClassGenricType(getClass(), 1);
 	}
 
-	public boolean insertBatchSelective(List<T> entityList) {
-		if (null == entityList) {
-			throw new IllegalArgumentException("Error: entityList must not be empty");
-		}
-		int result = 0;
-		for (T t : entityList) {
-			result = baseMapper.insertSelective(t);
-			if (result <= 0) {
-				break;
-			}
-		}
-		return retBool(result);
-	}
-
 	public boolean deleteById(Serializable id) {
 		return retBool(baseMapper.deleteById(id));
 	}
@@ -273,8 +241,8 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return retBool(baseMapper.deleteByMap(columnMap));
 	}
 
-	public boolean deleteSelective(T entity) {
-		return retBool(baseMapper.deleteSelective(entity));
+	public boolean delete(Wrapper<T> wrapper) {
+		return retBool(baseMapper.delete(wrapper));
 	}
 
 	public boolean deleteBatchIds(List<? extends Serializable> idList) {
@@ -285,16 +253,8 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return retBool(baseMapper.updateById(entity));
 	}
 
-	public boolean updateSelectiveById(T entity) {
-		return retBool(baseMapper.updateSelectiveById(entity));
-	}
-
-	public boolean update(T entity, T whereEntity) {
-		return retBool(baseMapper.update(entity, whereEntity));
-	}
-
-	public boolean updateSelective(T entity, T whereEntity) {
-		return retBool(baseMapper.updateSelective(entity, whereEntity));
+	public boolean update(T entity, Wrapper<T> wrapper) {
+		return retBool(baseMapper.update(entity, wrapper));
 	}
 
 	public boolean updateBatchById(List<T> entityList) {
@@ -313,12 +273,8 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return baseMapper.selectByMap(columnMap);
 	}
 
-	public T selectOne(T entity) {
-		return baseMapper.selectOne(entity);
-	}
-
-	public T selectOne(EntityWrapper<T> entityWrapper) {
-		List<T> list = baseMapper.selectList(entityWrapper);
+	public T selectOne(Wrapper<T> wrapper) {
+		List<T> list = baseMapper.selectList(wrapper);
 		if (CollectionUtil.isNotEmpty(list)) {
 			int size = list.size();
 			if (size > 1) {
@@ -329,23 +285,24 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return null;
 	}
 
-	public int selectCount(T entity) {
-		return baseMapper.selectCount(entity);
+	public int selectCount(Wrapper<T> wrapper) {
+		return baseMapper.selectCount(wrapper);
 	}
 
-	public int selectCount(EntityWrapper<T> entityWrapper) {
-		return baseMapper.selectCountByEw(entityWrapper);
+	public List<T> selectList(Wrapper<T> wrapper) {
+		return baseMapper.selectList(wrapper);
 	}
 
-	public List<T> selectList(EntityWrapper<T> entityWrapper) {
-		return baseMapper.selectList(entityWrapper);
+	public Page<T> selectPage(Page<T> page) {
+		page.setRecords(baseMapper.selectPage(page, null));
+		return page;
 	}
 
-	public Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper) {
-		if (null != entityWrapper) {
-			entityWrapper.orderBy(page.getOrderByField(), page.isAsc());
+	public Page<T> selectPage(Page<T> page, Wrapper<T> wrapper) {
+		if (null != wrapper) {
+			wrapper.orderBy(page.getOrderByField(), page.isAsc());
 		}
-		page.setRecords(baseMapper.selectPage(page, entityWrapper));
+		page.setRecords(baseMapper.selectPage(page, wrapper));
 		return page;
 	}
 

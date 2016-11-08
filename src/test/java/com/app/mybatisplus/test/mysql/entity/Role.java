@@ -15,9 +15,9 @@
  */
 package com.app.mybatisplus.test.mysql.entity;
 
-import com.app.mybatisplus.annotations.Column;
-import com.app.mybatisplus.annotations.Id;
-import com.app.mybatisplus.annotations.Table;
+import com.app.mybatisplus.annotations.TableField;
+import com.app.mybatisplus.annotations.TableId;
+import com.app.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 
@@ -29,14 +29,14 @@ import java.io.Serializable;
  * @author sjy
  * @Date 2016-09-09
  */
-@Table(resultMap = "RoleMap")
+@TableName(resultMap = "RoleMap")
 public class Role implements Serializable {
 
-	@Column(exist = false)
+	@TableField(exist = false)
 	private static final long serialVersionUID = 1L;
 
 	/** 主键 */
-	@Id
+	@TableId
 	private Long id;
 
 	/** 角色 */

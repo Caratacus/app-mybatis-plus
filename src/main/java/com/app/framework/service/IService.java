@@ -15,7 +15,7 @@
  */
 package com.app.framework.service;
 
-import com.app.mybatisplus.mapper.EntityWrapper;
+import com.app.mybatisplus.mapper.Wrapper;
 import com.app.mybatisplus.plugins.Page;
 
 import java.io.Serializable;
@@ -45,17 +45,6 @@ public interface IService<T> {
 
 	/**
 	 * <p>
-	 * 插入一条记录（选择字段， null 字段不插入）
-	 * </p>
-	 *
-	 * @param entity
-	 *            实体对象
-	 * @return boolean
-	 */
-	boolean insertSelective(T entity);
-
-	/**
-	 * <p>
 	 * 插入（批量），该方法不适合 Oracle
 	 * </p>
 	 *
@@ -64,19 +53,6 @@ public interface IService<T> {
 	 * @return boolean
 	 */
 	boolean insertBatch(List<T> entityList);
-
-	/**
-	 * <p>
-	 * 插入（批量）（选择字段， null 字段不插入）
-	 * </p>
-	 *
-	 * @param entityList
-	 *            实体对象列表
-	 * @param batchSize
-	 *
-	 * @return boolean
-	 */
-	boolean insertBatchSelective(List<T> entityList, int batchSize);
 
 	/**
 	 * <p>
@@ -90,17 +66,6 @@ public interface IService<T> {
 	 * @return boolean
 	 */
 	boolean insertBatch(List<T> entityList, int batchSize);
-
-	/**
-	 * <p>
-	 * 插入（批量）（选择字段， null 字段不插入）
-	 * </p>
-	 *
-	 * @param entityList
-	 *            实体对象列表
-	 * @return boolean
-	 */
-	boolean insertBatchSelective(List<T> entityList);
 
 	/**
 	 * <p>
@@ -129,11 +94,11 @@ public interface IService<T> {
 	 * 根据 entity 条件，删除记录
 	 * </p>
 	 *
-	 * @param entity
-	 *            实体对象
+	 * @param wrapper
+	 *            实体包装类 {@link Wrapper}
 	 * @return boolean
 	 */
-	boolean deleteSelective(T entity);
+	boolean delete(Wrapper<T> wrapper);
 
 	/**
 	 * <p>
@@ -156,18 +121,6 @@ public interface IService<T> {
 	 * @return boolean
 	 */
 	boolean updateById(T entity);
-
-	/**
-	 * <p>
-	 * 根据 ID 选择修改
-	 * </p>
-	 *
-	 * @param entity
-	 *            实体对象
-	 * @return boolean
-	 */
-	boolean updateSelectiveById(T entity);
-
 	/**
 	 * <p>
 	 * 保存修改方法
@@ -178,18 +131,6 @@ public interface IService<T> {
 	 * @return boolean
 	 */
 	boolean saveOrUpdate(T entity);
-
-	/**
-	 * <p>
-	 * 保存修改方法
-	 * </p>
-	 *
-	 * @param entity
-	 *            实体对象
-	 * @return boolean
-	 */
-	boolean saveOrUpdateSelective(T entity);
-
 	/**
 	 * <p>
 	 * 根据 whereEntity 条件，更新记录
@@ -197,24 +138,11 @@ public interface IService<T> {
 	 *
 	 * @param entity
 	 *            实体对象
-	 * @param whereEntity
-	 *            实体查询条件（可以为 null）
+	 * @param wrapper
+	 *            实体包装类 {@link Wrapper}
 	 * @return boolean
 	 */
-	boolean update(T entity, T whereEntity);
-
-	/**
-	 * <p>
-	 * 根据 whereEntity 条件，选择更新记录
-	 * </p>
-	 *
-	 * @param entity
-	 *            实体对象
-	 * @param whereEntity
-	 *            实体查询条件（可以为 null）
-	 * @return boolean
-	 */
-	boolean updateSelective(T entity, T whereEntity);
+	boolean update(T entity, Wrapper<T> wrapper);
 
 	/**
 	 * <p>
@@ -237,17 +165,6 @@ public interface IService<T> {
 	 * @return boolean
 	 */
 	boolean insertOrUpdate(T entity);
-
-	/**
-	 * <p>
-	 * TableId 注解存在更新记录，否插入一条记录 （选择字段， null 字段不插入）
-	 * </p>
-	 *
-	 * @param entity
-	 *            实体对象
-	 * @return boolean
-	 */
-	boolean insertOrUpdateSelective(T entity);
 
 	/**
 	 * <p>
@@ -284,58 +201,36 @@ public interface IService<T> {
 
 	/**
 	 * <p>
-	 * 根据 entity 条件，查询一条记录
+	 * 根据 Wrapper，查询一条记录
 	 * </p>
 	 *
-	 * @param entity
+	 * @param wrapper
 	 *            实体对象
 	 * @return T
 	 */
-	T selectOne(T entity);
+	T selectOne(Wrapper<T> wrapper);
 
 	/**
 	 * <p>
-	 * 根据 EntityWrapper，查询一条记录
+	 * 根据 Wrapper 条件，查询总记录数
 	 * </p>
 	 *
-	 * @param entityWrapper
-	 *            实体对象
-	 * @return T
-	 */
-	T selectOne(EntityWrapper<T> entityWrapper);
-
-	/**
-	 * <p>
-	 * 根据 entity 条件，查询总记录数
-	 * </p>
-	 *
-	 * @param entity
+	 * @param wrapper
 	 *            实体对象
 	 * @return int
 	 */
-	int selectCount(T entity);
-
-	/**
-	 * <p>
-	 * 根据 EntityWrapper 条件，查询总记录数
-	 * </p>
-	 *
-	 * @param entityWrapper
-	 *            实体对象
-	 * @return int
-	 */
-	int selectCount(EntityWrapper<T> entityWrapper);
+	int selectCount(Wrapper<T> wrapper);
 
 	/**
 	 * <p>
 	 * 查询列表
 	 * </p>
 	 *
-	 * @param entityWrapper
-	 *            实体包装类 {@link EntityWrapper}
+	 * @param wrapper
+	 *            实体包装类 {@link Wrapper}
 	 * @return
 	 */
-	List<T> selectList(EntityWrapper<T> entityWrapper);
+	List<T> selectList(Wrapper<T> wrapper);
 
 	/**
 	 * <p>
@@ -344,10 +239,21 @@ public interface IService<T> {
 	 *
 	 * @param page
 	 *            翻页对象
-	 * @param entityWrapper
-	 *            实体包装类 {@link EntityWrapper}
 	 * @return
 	 */
-	Page<T> selectPage(Page<T> page, EntityWrapper<T> entityWrapper);
+	Page<T> selectPage(Page<T> page);
+
+	/**
+	 * <p>
+	 * 翻页查询
+	 * </p>
+	 *
+	 * @param page
+	 *            翻页对象
+	 * @param wrapper
+	 *            实体包装类 {@link Wrapper}
+	 * @return
+	 */
+	Page<T> selectPage(Page<T> page, Wrapper<T> wrapper);
 
 }

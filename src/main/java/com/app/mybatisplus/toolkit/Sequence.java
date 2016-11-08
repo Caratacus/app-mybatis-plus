@@ -15,20 +15,20 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import com.app.common.SystemClock;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.logging.Logger;
+
+import com.app.common.SystemClock;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 /**
  * <p>
  * 分布式高效有序ID生产黑科技(sequence) <br>
  * 优化开源项目：http://git.oschina.net/yu120/sequence
  * </p>
- * 
+ *
  * @author hubin
  * @date 2016-08-18
  */
@@ -81,7 +81,7 @@ public class Sequence {
 
 	/**
 	 * 获取下一个ID
-	 * 
+	 *
 	 * @return
 	 */
 	public synchronized long nextId() {

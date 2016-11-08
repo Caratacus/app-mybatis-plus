@@ -208,6 +208,12 @@ public class AutoGenerator {
 				ResultSet results = conn.prepareStatement(tableFieldsSql).executeQuery();
 				while (results.next()) {
 					String field = results.getString(config.getConfigDataSource().getFieldName());
+
+					/* 开启 baseEntity 跳过公共字段 */
+					if (null != config.getConfigBaseEntity() && config.getConfigBaseEntity().includeColumns(field)) {
+						continue;
+					}
+
 					columns.add(field);
 					types.add(results.getString(config.getConfigDataSource().getFieldType()));
 					comments.add(results.getString(config.getConfigDataSource().getFieldComment()));
@@ -226,9 +232,9 @@ public class AutoGenerator {
 				}
 				if (isOracle) {
 					/* ORACLE 主键ID 处理方式 */
-					String idSql = String.format(
-							"SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
-							table);
+					String idSql = String
+							.format("SELECT A.COLUMN_NAME FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND B.CONSTRAINT_TYPE = 'P' AND A.TABLE_NAME = '%s'",
+									table);
 					ResultSet rs = conn.prepareStatement(idSql).executeQuery();
 					while (rs.next() && !idExist) {
 						String field = rs.getString(config.getConfigDataSource().getFieldKey());
@@ -528,7 +534,7 @@ public class AutoGenerator {
 	 * @throws IOException
 	 */
 	protected void buildEntityBean(List<String> columns, List<String> types, List<String> comments, String tableComment,
-								   Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
+			Map<String, IdInfo> idMap, String table, String beanName) throws IOException {
 		File beanFile = new File(PATH_ENTITY, beanName + ".java");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(beanFile)));
 		bw.write("package " + config.getEntityPackage() + ";");
@@ -543,30 +549,51 @@ public class AutoGenerator {
 			bw.newLine();
 		}
 		bw.newLine();
-		bw.write("import com.app.mybatisplus.annotations.Column;");
+		/*
+		 * 开启 BaseEntity 导入自定义包
+		 */
+		if (null != config.getConfigBaseEntity() && null != config.getConfigBaseEntity().getPackageName()
+				&& !config.getEntityPackage().equals(config.getConfigBaseEntity().getPackageName())) {
+			bw.write("import " + config.getConfigBaseEntity().getPackageName() + ";");
+			bw.newLine();
+		}
+		bw.write("import com.app.mybatisplus.annotations.TableField;");
 		bw.newLine();
-		bw.write("import com.app.mybatisplus.annotations.Id;");
-		bw.newLine();
+		if (null == config.getConfigBaseEntity()) {
+			bw.write("import com.app.mybatisplus.annotations.TableId;");
+			bw.newLine();
+		}
 		if (table.contains("_")) {
-			bw.write("import com.app.mybatisplus.annotations.Table;");
+			bw.write("import com.app.mybatisplus.annotations.TableName;");
 			bw.newLine();
 		}
 		bw = buildClassComment(bw, tableComment);
 		bw.newLine();
 		/* 包含下划线注解 */
 		if (table.contains("_")) {
-			bw.write("@Table(\"" + table + "\")");
+			bw.write("@TableName(\"" + table + "\")");
 			bw.newLine();
 		}
-		bw.write("public class " + beanName + " extends BaseModel {");
+
+		/**
+		 * 实体类名处理，开启 BaseEntity 继承父类
+		 */
+		if (null != config.getConfigBaseEntity()) {
+			bw.write("public class " + beanName + " extends " + config.getConfigBaseEntity().getClassName() + " {");
+		} else {
+			bw.write("public class " + beanName + " extends IdWorkBaseModel {");
+		}
 		bw.newLine();
 		bw.newLine();
-		bw.write("\t@Column(exist = false)");
+		bw.write("\t@TableField(exist = false)");
 		bw.newLine();
 		bw.write("\tprivate static final long serialVersionUID = " + Math.abs(new Random().nextLong()) + "L;");
 		bw.newLine();
 		int size = columns.size();
 		for (int i = 0; i < size; i++) {
+			bw.newLine();
+			bw.write("\t/** " + comments.get(i) + " */");
+			bw.newLine();
 			/*
 			 * 判断ID 添加注解 <br> isLine 是否包含下划线
 			 */
@@ -574,7 +601,6 @@ public class AutoGenerator {
 			String field = processField(column);
 			boolean isLine = column.contains("_");
 			IdInfo idInfo = idMap.get(column);
-
 			/*
 			 * 判断ID 添加注解 <br> isLine 是否包含下划线
 			 */
@@ -584,7 +610,7 @@ public class AutoGenerator {
 			} else if (isLine && !config.isDbColumnUnderline()) {
 				bw.write("\t/** " + comments.get(i) + " */");
 				bw.newLine();
-				bw.write("\t@Column(value = \"" + column + "\")");
+				bw.write("\t@TableField(value = \"" + column + "\")");
 				bw.newLine();
 				bw.write("\tprivate " + processType(types.get(i)) + " " + field + ";");
 			} else {
@@ -646,7 +672,7 @@ public class AutoGenerator {
 	}
 
 	protected void buildEntityBeanColumnConstant(List<String> columns, List<String> types, List<String> comments,
-												 BufferedWriter bw, int size) throws IOException {
+			BufferedWriter bw, int size) throws IOException {
 		/*
 		 * 【实体】是否生成字段常量（默认 false）
 		 */
@@ -718,8 +744,7 @@ public class AutoGenerator {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mapperXmlFile)));
 		bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		bw.newLine();
-		bw.write(
-				"<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
+		bw.write("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
 		bw.newLine();
 		bw.write("<mapper namespace=\"" + config.getMapperPackage() + "." + mapperName + "\">");
 		bw.newLine();
@@ -871,6 +896,18 @@ public class AutoGenerator {
 			dbType = DBType.MYSQL;
 		}
 
+		/*
+		 * 公共字段
+		 */
+		if (null != config.getConfigBaseEntity()) {
+			for (String column : config.getConfigBaseEntity().getColumns()) {
+				bw.write(SqlReservedWords.convert(dbType, column));
+				if (column.contains("_")) {
+					bw.write(" AS " + processField(column));
+				}
+				bw.write(", ");
+			}
+		}
 		/**
 		 * 个性字段
 		 */
@@ -910,13 +947,14 @@ public class AutoGenerator {
 	 * @param columns
 	 * @throws IOException
 	 */
-	protected void buildResultMap(BufferedWriter bw, String beanName ,Map<String, IdInfo> idMap, List<String> columns) throws IOException {
+	protected void buildResultMap(BufferedWriter bw, String beanName, Map<String, IdInfo> idMap, List<String> columns)
+			throws IOException {
 		int size = columns.size();
 		bw.write("\t<!-- 通用查询结果列-->");
 		bw.newLine();
 		bw.write("\t<resultMap id=\"" + beanName + "ResultMap\" type=\"" + config.getEntityPackage() + "." + beanName + "\">");
 		bw.newLine();
-		
+
 		/*
 		 * 数据库类型
 		 */
@@ -924,7 +962,7 @@ public class AutoGenerator {
 		if (config.getConfigDataSource() == ConfigDataSource.MYSQL) {
 			dbType = DBType.MYSQL;
 		}
-		
+
 		/*
 		 * 公共字段
 		 */

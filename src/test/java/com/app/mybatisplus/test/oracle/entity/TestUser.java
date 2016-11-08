@@ -1,9 +1,9 @@
 package com.app.mybatisplus.test.oracle.entity;
 
-import com.app.mybatisplus.annotations.Column;
-import com.app.mybatisplus.annotations.Id;
 import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.annotations.Table;
+import com.app.mybatisplus.annotations.TableField;
+import com.app.mybatisplus.annotations.TableId;
+import com.app.mybatisplus.annotations.TableName;
 
 import java.io.Serializable;
 
@@ -12,14 +12,14 @@ import java.io.Serializable;
  * 用户表
  *
  */
-@Table("TEST_USER")
+@TableName("TEST_USER")
 public class TestUser implements Serializable {
 
-	@Column(exist = false)
+	@TableField(exist = false)
 	private static final long serialVersionUID = 1L;
 
 	/** 主键ID */
-	@Id(value = "TEST_ID", type = IdType.UUID)
+	@TableId(value = "TEST_ID", type = IdType.UUID)
 	private String testId;
 
 	/** 名称 */
@@ -29,7 +29,7 @@ public class TestUser implements Serializable {
 	private Integer age;
 
 	/** 测试下划线字段命名类型 */
-	@Column(value = "TEST_TYPE")
+	@TableField(value = "TEST_TYPE")
 	private Integer testType;
 
 
@@ -39,15 +39,15 @@ public class TestUser implements Serializable {
 		this.age = age;
 		this.testType = testType;
 	}
-
-
+	
+	
 	public TestUser( String name, Integer age, Integer testType ) {
 		this.name = name;
 		this.age = age;
 		this.testType = testType;
 	}
-
-
+	
+	
 	public TestUser( Integer testType ) {
 		this.testType = testType;
 	}

@@ -16,6 +16,7 @@
 package com.app.mybatisplus.test.mysql;
 
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
+import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.test.mysql.entity.PhoneNumber;
 import com.app.mybatisplus.test.mysql.entity.Role;
 import com.app.mybatisplus.test.mysql.entity.User;
@@ -84,7 +85,7 @@ public class URPTest {
 		whereUser = userMapper.selectOne(userA);
 		System.err.println("--------- select user --------- " + whereUser.toString());
 
-		userMapper.deleteSelective(userA);
+		userMapper.delete(new EntityWrapper<User>(userA));
 		System.err.println("--------- delete user --------- " + rlt);
 
 	}
