@@ -1,11 +1,14 @@
 package com.app.framework.entity;
 
-import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.activerecord.Model;
 import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.annotations.TableId;
 
-public class InputPrimaryKey {
+import java.io.Serializable;
 
-	@Id(type = IdType.INPUT)
+public class InputPrimaryKey extends Model {
+
+	@TableId(type = IdType.INPUT)
 	protected Long id;
 
 	public Long getId() {
@@ -16,4 +19,8 @@ public class InputPrimaryKey {
 		this.id = id;
 	}
 
+	@Override
+	protected Serializable getPrimaryKey() {
+		return id;
+	}
 }

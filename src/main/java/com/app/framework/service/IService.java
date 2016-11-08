@@ -17,6 +17,7 @@ package com.app.framework.service;
 
 import com.app.mybatisplus.mapper.Wrapper;
 import com.app.mybatisplus.plugins.Page;
+import org.apache.ibatis.jdbc.SQL;
 
 import java.io.Serializable;
 import java.util.List;
@@ -121,6 +122,7 @@ public interface IService<T> {
 	 * @return boolean
 	 */
 	boolean updateById(T entity);
+
 	/**
 	 * <p>
 	 * 保存修改方法
@@ -131,6 +133,7 @@ public interface IService<T> {
 	 * @return boolean
 	 */
 	boolean saveOrUpdate(T entity);
+
 	/**
 	 * <p>
 	 * 根据 whereEntity 条件，更新记录
@@ -256,4 +259,59 @@ public interface IService<T> {
 	 */
 	Page<T> selectPage(Page<T> page, Wrapper<T> wrapper);
 
+	// ------------------------------------------执行SQL部分-------------------------------------------//
+
+	/**
+	 * 执行INSERT
+	 * 
+	 * @param sql
+	 * @param args
+	 * @return
+	 */
+	public boolean insertSql(SQL sql, Object... args);
+
+	/**
+	 * 执行DELETE
+	 * 
+	 * @param sql
+	 * @param args
+	 * @return
+	 */
+	public boolean deleteSql(SQL sql, Object... args);
+
+	/**
+	 * 执行UPDATE
+	 * 
+	 * @param sql
+	 * @param args
+	 * @return
+	 */
+	public boolean updateSql(SQL sql, Object... args);
+
+	/**
+	 * 执行SELETE
+	 * 
+	 * @param sql
+	 * @param args
+	 * @return
+	 */
+	public List<Map<String, Object>> selectListSql(SQL sql, Object... args);
+
+	/**
+	 * 执行SELETE
+	 * 
+	 * @param sql
+	 * @param args
+	 * @return
+	 */
+	public <V> List<V> selectListSql(SQL sql, Class<V> clazz, Object... args);
+
+	/**
+	 * 执行SELETE
+	 * 
+	 * @param sql
+	 * @param args
+	 * @return
+	 */
+	public Page selectPageSql(Page page, SQL sql, Object... args);
 }

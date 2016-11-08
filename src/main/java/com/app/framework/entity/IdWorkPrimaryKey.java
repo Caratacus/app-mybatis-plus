@@ -1,13 +1,16 @@
 package com.app.framework.entity;
 
-import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.activerecord.Model;
 import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.annotations.TableId;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
-public class IdWorkPrimaryKey {
+import java.io.Serializable;
 
-	@Id(type = IdType.ID_WORKER)
+public class IdWorkPrimaryKey extends Model {
+
+	@TableId(type = IdType.ID_WORKER)
 	@JsonSerialize(using = ToStringSerializer.class)
 	protected Long id;
 
@@ -19,4 +22,8 @@ public class IdWorkPrimaryKey {
 		this.id = id;
 	}
 
+	@Override
+	protected Serializable getPrimaryKey() {
+		return id;
+	}
 }

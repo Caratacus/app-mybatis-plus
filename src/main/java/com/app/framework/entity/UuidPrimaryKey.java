@@ -1,11 +1,14 @@
 package com.app.framework.entity;
 
-import com.app.mybatisplus.annotations.Id;
+import com.app.mybatisplus.activerecord.Model;
 import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.annotations.TableId;
 
-public class UuidPrimaryKey {
+import java.io.Serializable;
 
-	@Id(value = "ID", type = IdType.UUID)
+public class UuidPrimaryKey extends Model {
+
+	@TableId(value = "ID", type = IdType.UUID)
 	protected String id;
 
 	public String getId() {
@@ -16,4 +19,8 @@ public class UuidPrimaryKey {
 		this.id = id;
 	}
 
+	@Override
+	protected Serializable getPrimaryKey() {
+		return id;
+	}
 }

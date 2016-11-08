@@ -16,6 +16,7 @@
 package com.app.framework.service.impl;
 
 import com.app.common.CollectionUtil;
+import com.app.common.MapUtils;
 import com.app.framework.entity.AutoPrimaryKey;
 import com.app.framework.entity.IdWorkPrimaryKey;
 import com.app.framework.entity.InputPrimaryKey;
@@ -121,14 +122,15 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 			if (IdType.INPUT == tableInfo.getIdType()) {
 				T entityValue = selectById((Serializable) id);
 				if (null != entityValue) {
-					return  updateById(entity);
+					return updateById(entity);
 				} else {
-					return  insert(entity);
+					return insert(entity);
 				}
 			}
-			return  insert(entity);
+			return insert(entity);
 		}
 	}
+
 	/**
 	 * <p>
 	 * SQL 构建方法
@@ -209,8 +211,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		if (null == tableInfo) {
 			throw new MybatisPlusException("Error: Cannot execute insertBatch Method, ClassGenricType not found .");
 		}
-		SqlSession batchSqlSession = tableInfo.getSqlSessionFactory().openSession(ExecutorType.BATCH,
-				false);
+		SqlSession batchSqlSession = tableInfo.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
 		try {
 			int size = entityList.size();
 			for (int i = 0; i < size; i++) {
@@ -306,4 +307,42 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return page;
 	}
 
+	// ------------------------------------------执行SQL部分-------------------------------------------//
+	@Override
+	public boolean insertSql(SQL sql, Object... args) {
+		return retBool(baseMapper.insertSql(sqlBuilder(sql, args)));
+	}
+
+	@Override
+	public boolean deleteSql(SQL sql, Object... args) {
+		return retBool(baseMapper.deleteSql(sqlBuilder(sql, args)));
+	}
+
+	@Override
+	public boolean updateSql(SQL sql, Object... args) {
+		return retBool(baseMapper.updateSql(sqlBuilder(sql, args)));
+	}
+
+	@Override
+	public List<Map<String, Object>> selectListSql(SQL sql, Object... args) {
+		return baseMapper.selectListSql(sqlBuilder(sql, args));
+	}
+
+	@Override
+	public <V> List<V> selectListSql(SQL sql, Class<V> clazz, Object... args) {
+		List<Map<String, Object>> maps = baseMapper.selectListSql(sqlBuilder(sql, args));
+		List<V> list = null;
+		try {
+			list = MapUtils.mapsToBeans(maps, clazz);
+		} catch (Exception e) {
+			logger.warning("Warn: Unexpected exception on selectListSql.  Cause:" + e);
+		}
+		return list;
+	}
+
+	@Override
+	public Page selectPageSql(Page page, SQL sql, Object... args) {
+		page.setRecords(baseMapper.selectPageSql(page, sqlBuilder(sql, args)));
+		return page;
+	}
 }
