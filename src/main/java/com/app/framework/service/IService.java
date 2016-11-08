@@ -307,7 +307,7 @@ public interface IService<T> {
 	public <V> List<V> selectListSql(SQL sql, Class<V> clazz, Object... args);
 
 	/**
-	 * 执行SELETE
+	 * 执行SELETE Page
 	 * 
 	 * @param sql
 	 * @param args
