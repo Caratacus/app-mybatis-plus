@@ -61,9 +61,12 @@ public class TableFieldInfo {
 			/* 开启字段下划线申明 */
 			this.related = true;
 			this.setColumn(StringUtils.camelToUnderline(column));
-		} else {
-			//TODO 临时修复bug
+		   /* 没有开启下划线申明 但是column与property不等的情况下设置related为true */
+		} else if (!column.equals(property)){
 			this.related = true;
+			this.setColumn(column);
+		}else{
+			this.related = false;
 			this.setColumn(column);
 		}
 		this.property = property;
@@ -84,8 +87,7 @@ public class TableFieldInfo {
 			this.related = true;
 			this.setColumn(StringUtils.camelToUnderline(column));
 		} else {
-			//TODO 临时修复bug
-			this.related = true;
+			this.related = false;
 			this.setColumn(column);
 		}
 		this.property = column;
