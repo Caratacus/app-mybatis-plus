@@ -34,7 +34,7 @@ import java.util.Map;
  * <p>
  * ActiveRecord 模式 CRUD
  * </p>
- * 
+ *
  * @author hubin
  * @param <T>
  * @Date 2016-11-06
@@ -70,7 +70,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 根据 ID 删除
 	 * </p>
-	 * 
+	 *
 	 * @param id
 	 *            主键ID
 	 * @return
@@ -80,8 +80,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 根据主键删除
-	 * 
+	 * </p>
+	 *
 	 * @return
 	 */
 	public boolean deleteById() {
@@ -92,7 +94,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 删除记录
 	 * </p>
-	 * 
+	 *
 	 * @param whereClause
 	 *            查询条件
 	 * @param args
@@ -112,8 +114,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 更新
-	 * 
+	 * </p>
+	 *
 	 * @return
 	 */
 	public boolean updateById() {
@@ -128,7 +132,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 执行 SQL 更新
 	 * </p>
-	 * 
+	 *
 	 * @param whereClause
 	 *            查询条件
 	 * @param args
@@ -148,8 +152,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 查询所有
-	 * 
+	 * </p>
+	 *
 	 * @return
 	 */
 	public List<T> selectAll() {
@@ -160,7 +166,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 根据 ID 查询
 	 * </p>
-	 * 
+	 *
 	 * @param id
 	 *            主键ID
 	 * @return
@@ -170,8 +176,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 根据主键查询
-	 * 
+	 * </p>
+	 *
 	 * @return
 	 */
 	public T selectById() {
@@ -182,7 +190,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 查询总记录数
 	 * </p>
-	 * 
+	 *
 	 * @param columns
 	 *            查询字段
 	 * @param whereClause
@@ -205,7 +213,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 执行 SQL 查询
 	 * </p>
-	 * 
+	 *
 	 * @param sql
 	 *            SQL 语句
 	 * @return
@@ -215,8 +223,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 查询所有
-	 * 
+	 * </p>
+	 *
 	 * @param whereClause
 	 * @param args
 	 * @return
@@ -226,8 +236,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 查询一条记录
-	 * 
+	 * </p>
+	 *
 	 * @param columns
 	 * @param whereClause
 	 * @param args
@@ -242,8 +254,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 查询一条记录
-	 * 
+	 * </p>
+	 *
 	 * @param whereClause
 	 * @param args
 	 * @return
@@ -256,7 +270,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 翻页查询
 	 * </p>
-	 * 
+	 *
 	 * @param page
 	 *            翻页查询条件
 	 * @param columns
@@ -280,8 +294,10 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 查询所有(分页)
-	 * 
+	 * </p>
+	 *
 	 * @param page
 	 * @param whereClause
 	 * @param args
@@ -292,9 +308,12 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 查询所有(分页)
-	 * 
+	 * </p>
+	 *
 	 * @param page
+	 *            翻页对象
 	 * @return
 	 */
 	public Page<T> selectPage(Page<T> page) {
@@ -305,7 +324,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 查询总数
 	 * </p>
-	 * 
+	 *
 	 * @param whereClause
 	 *            查询条件
 	 * @param args
@@ -324,7 +343,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 查询总数
 	 * </p>
-	 * 
+	 *
 	 * @return
 	 */
 	public int selectCount() {
@@ -345,13 +364,15 @@ public abstract class Model<T extends Model> implements Serializable {
 	}
 
 	/**
+	 * <p>
 	 * 获取Session
-	 * 
+	 * </p>
+	 *
 	 * @param autoCommit
 	 *            true自动提交false则相反
 	 * @return SqlSession
 	 */
-	private SqlSession sqlSession(boolean autoCommit) {
+	public SqlSession sqlSession(boolean autoCommit) {
 		return table().getSqlSessionFactory().openSession(autoCommit);
 	}
 
@@ -369,7 +390,7 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * 获取SqlStatement
-	 * 
+	 *
 	 * @param sqlMethod
 	 * @return
 	 */
@@ -379,7 +400,7 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * 获取TableInfo
-	 * 
+	 *
 	 * @return TableInfo
 	 */
 	private TableInfo table() {
