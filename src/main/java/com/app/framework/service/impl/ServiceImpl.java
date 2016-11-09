@@ -31,7 +31,6 @@ import com.app.mybatisplus.toolkit.ReflectionKit;
 import com.app.mybatisplus.toolkit.StringUtils;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
-import org.apache.ibatis.jdbc.SQL;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,11 +141,11 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 *            执行参数
 	 * @return
 	 */
-	protected String sqlBuilder(SQL sql, Object... args) {
+	protected String sqlBuilder(String sql, Object... args) {
 		if (null == sql) {
 			throw new IllegalArgumentException("Error: sql Can not be empty.");
 		}
-		return StringUtils.sqlArgsFill(sql.toString(), args);
+		return StringUtils.sqlArgsFill(sql, args);
 	}
 
 	/**
@@ -309,27 +308,27 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 
 	// ------------------------------------------执行SQL部分-------------------------------------------//
 	@Override
-	public boolean insertSql(SQL sql, Object... args) {
+	public boolean insertSql(String sql, Object... args) {
 		return retBool(baseMapper.insertSql(sqlBuilder(sql, args)));
 	}
 
 	@Override
-	public boolean deleteSql(SQL sql, Object... args) {
+	public boolean deleteSql(String sql, Object... args) {
 		return retBool(baseMapper.deleteSql(sqlBuilder(sql, args)));
 	}
 
 	@Override
-	public boolean updateSql(SQL sql, Object... args) {
+	public boolean updateSql(String sql, Object... args) {
 		return retBool(baseMapper.updateSql(sqlBuilder(sql, args)));
 	}
 
 	@Override
-	public List<Map<String, Object>> selectListSql(SQL sql, Object... args) {
+	public List<Map<String, Object>> selectListSql(String sql, Object... args) {
 		return baseMapper.selectListSql(sqlBuilder(sql, args));
 	}
 
 	@Override
-	public <V> List<V> selectListSql(SQL sql, Class<V> clazz, Object... args) {
+	public <V> List<V> selectListSql(String sql, Class<V> clazz, Object... args) {
 		List<Map<String, Object>> maps = baseMapper.selectListSql(sqlBuilder(sql, args));
 		List<V> list = null;
 		try {
@@ -341,7 +340,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	}
 
 	@Override
-	public Page selectPageSql(Page page, SQL sql, Object... args) {
+	public Page selectPageSql(Page page, String sql, Object... args) {
 		page.setRecords(baseMapper.selectPageSql(page, sqlBuilder(sql, args)));
 		return page;
 	}

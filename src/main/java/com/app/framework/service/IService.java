@@ -17,7 +17,6 @@ package com.app.framework.service;
 
 import com.app.mybatisplus.mapper.Wrapper;
 import com.app.mybatisplus.plugins.Page;
-import org.apache.ibatis.jdbc.SQL;
 
 import java.io.Serializable;
 import java.util.List;
@@ -268,7 +267,7 @@ public interface IService<T> {
 	 * @param args
 	 * @return
 	 */
-	public boolean insertSql(SQL sql, Object... args);
+	public boolean insertSql(String sql, Object... args);
 
 	/**
 	 * 执行DELETE
@@ -277,7 +276,7 @@ public interface IService<T> {
 	 * @param args
 	 * @return
 	 */
-	public boolean deleteSql(SQL sql, Object... args);
+	public boolean deleteSql(String sql, Object... args);
 
 	/**
 	 * 执行UPDATE
@@ -286,7 +285,7 @@ public interface IService<T> {
 	 * @param args
 	 * @return
 	 */
-	public boolean updateSql(SQL sql, Object... args);
+	public boolean updateSql(String sql, Object... args);
 
 	/**
 	 * 执行SELETE
@@ -295,7 +294,7 @@ public interface IService<T> {
 	 * @param args
 	 * @return
 	 */
-	public List<Map<String, Object>> selectListSql(SQL sql, Object... args);
+	public List<Map<String, Object>> selectListSql(String sql, Object... args);
 
 	/**
 	 * 执行SELETE
@@ -304,7 +303,7 @@ public interface IService<T> {
 	 * @param args
 	 * @return
 	 */
-	public <V> List<V> selectListSql(SQL sql, Class<V> clazz, Object... args);
+	public <V> List<V> selectListSql(String sql, Class<V> clazz, Object... args);
 
 	/**
 	 * 执行SELETE Page
@@ -313,5 +312,5 @@ public interface IService<T> {
 	 * @param args
 	 * @return
 	 */
-	public Page selectPageSql(Page page, SQL sql, Object... args);
+	public Page selectPageSql(Page page, String sql, Object... args);
 }
