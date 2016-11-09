@@ -62,7 +62,7 @@ public class TableFieldInfo {
 			this.related = true;
 			this.setColumn(StringUtils.camelToUnderline(column));
 		} else {
-			this.related = false;
+			this.related = true;
 			this.setColumn(column);
 		}
 		this.property = property;
