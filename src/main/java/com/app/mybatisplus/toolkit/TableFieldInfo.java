@@ -62,6 +62,7 @@ public class TableFieldInfo {
 			this.related = true;
 			this.setColumn(StringUtils.camelToUnderline(column));
 		} else {
+			//TODO 临时修复bug
 			this.related = true;
 			this.setColumn(column);
 		}
@@ -83,7 +84,8 @@ public class TableFieldInfo {
 			this.related = true;
 			this.setColumn(StringUtils.camelToUnderline(column));
 		} else {
-			this.related = false;
+			//TODO 临时修复bug
+			this.related = true;
 			this.setColumn(column);
 		}
 		this.property = column;
