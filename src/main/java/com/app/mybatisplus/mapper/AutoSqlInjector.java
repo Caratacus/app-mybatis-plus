@@ -18,6 +18,7 @@ package com.app.mybatisplus.mapper;
 import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.annotations.FieldStrategy;
 import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.toolkit.SqlReservedWords;
 import com.app.mybatisplus.toolkit.TableFieldInfo;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
@@ -561,15 +562,15 @@ public class AutoSqlInjector implements ISqlInjector {
 				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
 			}
 			if (table.isKeyRelated()) {
-				columns.append(table.getKeyColumn()).append(" AS ").append(table.getKeyProperty());
+				columns.append(table.getKeyColumn()).append(" AS ").append(SqlReservedWords.convert(table.getKeyProperty()));
 			} else {
-				columns.append(table.getKeyProperty());
+				columns.append(SqlReservedWords.convert(table.getKeyProperty()));
 			}
 			List<TableFieldInfo> fieldList = table.getFieldList();
 			for (TableFieldInfo fieldInfo : fieldList) {
 				columns.append(",").append(fieldInfo.getColumn());
 				if (fieldInfo.isRelated()) {
-					columns.append(" AS ").append(fieldInfo.getProperty());
+					columns.append(" AS ").append(SqlReservedWords.convert(fieldInfo.getProperty()));
 				}
 			}
 			if (entityWrapper) {
