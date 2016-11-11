@@ -145,7 +145,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		if (null == sql) {
 			throw new IllegalArgumentException("Error: sql Can not be empty.");
 		}
-		return StringUtils.sqlArgsFill(sql.toString(), args);
+		return StringUtils.sqlArgsFill(sql, args);
 	}
 
 	/**
