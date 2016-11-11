@@ -15,8 +15,17 @@
  */
 package com.app.mybatisplus.spring;
 
-import com.app.common.SystemClock;
-import com.app.mybatisplus.MybatisConfiguration;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
@@ -33,16 +42,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
+import com.app.common.SystemClock;
+import com.app.mybatisplus.MybatisConfiguration;
 
 /**
  * <p>

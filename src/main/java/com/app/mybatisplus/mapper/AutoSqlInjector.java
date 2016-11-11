@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+
 /**
  * <p>
  * SQL 自动注入器
@@ -135,7 +136,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 自定义方法，注入点（子类需重写该方法）
 	 */
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
-			Class<?> modelClass, TableInfo table) {
+					   Class<?> modelClass, TableInfo table) {
 		// to do nothing
 	}
 
@@ -696,7 +697,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 查询
 	 */
 	public MappedStatement addSelectMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource, Class<?> resultType,
-			TableInfo table) {
+													TableInfo table) {
 		if (null != table) {
 			String resultMap = table.getResultMap();
 			if (null != resultMap) {
@@ -715,7 +716,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 插入
 	 */
 	public MappedStatement addInsertMappedStatement(Class<?> mapperClass, Class<?> modelClass, String id, SqlSource sqlSource,
-			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+													KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.INSERT, modelClass, null, Integer.class,
 				keyGenerator, keyProperty, keyColumn);
 	}
@@ -737,8 +738,8 @@ public class AutoSqlInjector implements ISqlInjector {
 	}
 
 	public MappedStatement addMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource,
-			SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
-			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+											  SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
+											  KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		String statementName = mapperClass.getName() + "." + id;
 		if (configuration.hasStatement(statementName)) {
 			System.err.println("{" + statementName

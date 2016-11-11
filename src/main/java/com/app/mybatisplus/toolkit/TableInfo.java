@@ -16,7 +16,6 @@
 package com.app.mybatisplus.toolkit;
 
 import com.app.mybatisplus.annotations.IdType;
-import com.app.mybatisplus.mapper.SqlMethod;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.util.List;
@@ -87,11 +86,11 @@ public class TableInfo {
 	 *            MybatisPlus 支持 SQL 方法
 	 * @return
 	 */
-	public String getSqlStatement(SqlMethod sqlMethod) {
+	public String getSqlStatement(String sqlMethod) {
 		StringBuffer statement = new StringBuffer();
 		statement.append(currentNamespace);
 		statement.append(".");
-		statement.append(sqlMethod.getMethod());
+		statement.append(sqlMethod);
 		return statement.toString();
 	}
 

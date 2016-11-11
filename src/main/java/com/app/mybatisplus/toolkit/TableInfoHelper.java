@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -44,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Date 2016-09-09
  */
 public class TableInfoHelper {
+	protected static final Logger logger = Logger.getLogger("TableInfoHelper");
 
 	/**
 	 * 缓存反射类表信息
@@ -145,6 +147,7 @@ public class TableInfoHelper {
 		 * 未发现主键注解，跳过注入
 		 */
 		if (null == tableInfo.getKeyColumn()) {
+			logger.warning(String.format("Warn: Could not find @TableId in Class: %s, initTableInfo Method Fail.", clazz.getName()));
 			return null;
 		}
 		/*
@@ -158,7 +161,7 @@ public class TableInfoHelper {
 	 * <p>
 	 * 判断主键注解是否存在
 	 * </p>
-	 *
+	 * 
 	 * @param list
 	 *            字段列表
 	 * @return
@@ -179,7 +182,7 @@ public class TableInfoHelper {
 	 * <p>
 	 * 主键属性初始化
 	 * </p>
-	 *
+	 * 
 	 * @param tableInfo
 	 * @param field
 	 * @param clazz
@@ -213,7 +216,7 @@ public class TableInfoHelper {
 	 * <p>
 	 * 主键属性初始化
 	 * </p>
-	 *
+	 * 
 	 * @param tableInfo
 	 * @param field
 	 * @param clazz
@@ -249,7 +252,7 @@ public class TableInfoHelper {
 	 * <p>
 	 * 字段属性初始化
 	 * </p>
-	 *
+	 * 
 	 * @param fieldList
 	 * @param clazz
 	 * @return true 继续下一个属性判断，返回 continue;
@@ -327,7 +330,7 @@ public class TableInfoHelper {
 
 	/**
 	 * 初始化sqlMapper (供Mybatis原生调用)
-	 *
+	 * 
 	 * @param sqlSessionFactory
 	 * @return
 	 */

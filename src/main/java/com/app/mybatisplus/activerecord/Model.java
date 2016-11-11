@@ -21,8 +21,6 @@ import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.mapper.SqlMethod;
 import com.app.mybatisplus.plugins.Page;
 import com.app.mybatisplus.toolkit.StringUtils;
-import com.app.mybatisplus.toolkit.TableInfo;
-import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.Serializable;
@@ -34,7 +32,7 @@ import java.util.Map;
  * <p>
  * ActiveRecord 模式 CRUD
  * </p>
- *
+ * 
  * @author hubin
  * @param <T>
  * @Date 2016-11-06
@@ -57,7 +55,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * </p>
 	 */
 	public boolean insertOrUpdate() {
-		if (null != getPrimaryKey()) {
+		if (null != this.getPrimaryKey()) {
 			// update
 			return retBool(sqlSession().update(sqlStatement(SqlMethod.UPDATE_BY_ID), this));
 		} else {
@@ -68,9 +66,22 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * <p>
+	 * 执行 SQL 插件
+	 * </p>
+	 * 
+	 * @param sql
+	 *            SQL语句
+	 * @return
+	 */
+	public boolean insertSql(String sql) {
+		return retBool(sqlSession().delete(sqlStatement("insertSql"), sql));
+	}
+
+	/**
+	 * <p>
 	 * 根据 ID 删除
 	 * </p>
-	 *
+	 * 
 	 * @param id
 	 *            主键ID
 	 * @return
@@ -83,18 +94,18 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 根据主键删除
 	 * </p>
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean deleteById() {
-		return deleteById(getPrimaryKey());
+		return deleteById(this.getPrimaryKey());
 	}
 
 	/**
 	 * <p>
 	 * 删除记录
 	 * </p>
-	 *
+	 * 
 	 * @param whereClause
 	 *            查询条件
 	 * @param args
@@ -115,13 +126,26 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * <p>
+	 * 执行 SQL 删除
+	 * </p>
+	 * 
+	 * @param sql
+	 *            SQL语句
+	 * @return
+	 */
+	public boolean deleteSql(String sql) {
+		return retBool(sqlSession().delete(sqlStatement("deleteSql"), sql));
+	}
+
+	/**
+	 * <p>
 	 * 更新
 	 * </p>
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean updateById() {
-		if (null == getPrimaryKey()) {
+		if (null == this.getPrimaryKey()) {
 			throw new MybatisPlusException("primaryKey is null.");
 		}
 		// updateById
@@ -132,7 +156,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 执行 SQL 更新
 	 * </p>
-	 *
+	 * 
 	 * @param whereClause
 	 *            查询条件
 	 * @param args
@@ -153,9 +177,22 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * <p>
+	 * 执行 SQL 更新
+	 * </p>
+	 * 
+	 * @param sql
+	 *            SQL语句
+	 * @return
+	 */
+	public boolean updateSql(String sql) {
+		return retBool(sqlSession().update(sqlStatement("updateSql"), sql));
+	}
+
+	/**
+	 * <p>
 	 * 查询所有
 	 * </p>
-	 *
+	 * 
 	 * @return
 	 */
 	public List<T> selectAll() {
@@ -166,7 +203,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 根据 ID 查询
 	 * </p>
-	 *
+	 * 
 	 * @param id
 	 *            主键ID
 	 * @return
@@ -179,18 +216,18 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 根据主键查询
 	 * </p>
-	 *
+	 * 
 	 * @return
 	 */
 	public T selectById() {
-		return selectById(getPrimaryKey());
+		return selectById(this.getPrimaryKey());
 	}
 
 	/**
 	 * <p>
 	 * 查询总记录数
 	 * </p>
-	 *
+	 * 
 	 * @param columns
 	 *            查询字段
 	 * @param whereClause
@@ -200,33 +237,20 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * @return
 	 */
 	public List<T> selectList(String columns, String whereClause, Object... args) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		EntityWrapper<T> ew = new EntityWrapper<T>(null, columns);
 		if (StringUtils.isNotEmpty(whereClause)) {
 			ew.addFilter(whereClause, args);
 		}
-		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ew", ew);
 		return sqlSession().selectList(sqlStatement(SqlMethod.SELECT_LIST), map);
 	}
 
 	/**
 	 * <p>
-	 * 执行 SQL 查询
-	 * </p>
-	 *
-	 * @param sql
-	 *            SQL 语句
-	 * @return
-	 */
-	public List<Map<String, Object>> selectList(String sql) {
-		return sqlSession().selectList(table().getCurrentNamespace() + ".selectListSql", sql);
-	}
-
-	/**
-	 * <p>
 	 * 查询所有
 	 * </p>
-	 *
+	 * 
 	 * @param whereClause
 	 * @param args
 	 * @return
@@ -237,9 +261,22 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * <p>
+	 * 执行 SQL 查询
+	 * </p>
+	 * 
+	 * @param sql
+	 *            SQL 语句
+	 * @return
+	 */
+	public List<Map<String, Object>> selectListSql(String sql) {
+		return sqlSession().selectList(sqlStatement("selectListSql"), sql);
+	}
+
+	/**
+	 * <p>
 	 * 查询一条记录
 	 * </p>
-	 *
+	 * 
 	 * @param columns
 	 * @param whereClause
 	 * @param args
@@ -257,7 +294,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 查询一条记录
 	 * </p>
-	 *
+	 * 
 	 * @param whereClause
 	 * @param args
 	 * @return
@@ -270,7 +307,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 翻页查询
 	 * </p>
-	 *
+	 * 
 	 * @param page
 	 *            翻页查询条件
 	 * @param columns
@@ -282,11 +319,11 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * @return
 	 */
 	public Page<T> selectPage(Page<T> page, String columns, String whereClause, Object... args) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		EntityWrapper<T> ew = new EntityWrapper<T>(null, columns);
 		if (StringUtils.isNotEmpty(whereClause)) {
 			ew.addFilter(whereClause, args);
 		}
-		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ew", ew);
 		List<T> tl = sqlSession().selectList(sqlStatement(SqlMethod.SELECT_PAGE), map, page);
 		page.setRecords(tl);
@@ -297,7 +334,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 查询所有(分页)
 	 * </p>
-	 *
+	 * 
 	 * @param page
 	 * @param whereClause
 	 * @param args
@@ -309,22 +346,22 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * <p>
-	 * 查询所有(分页)
+	 * 执行 SQL 查询，查询全部记录（并翻页）
 	 * </p>
-	 *
-	 * @param page
-	 *            翻页对象
+	 * 
+	 * @param sql
+	 *            SQL语句
 	 * @return
 	 */
-	public Page<T> selectPage(Page<T> page) {
-		return selectPage(page, null);
+	List<Map<String, Object>> selectPageSql(Page<T> page, String sql) {
+		return sqlSession().selectList(sqlStatement("selectPageSql"), sql, page);
 	}
 
 	/**
 	 * <p>
 	 * 查询总数
 	 * </p>
-	 *
+	 * 
 	 * @param whereClause
 	 *            查询条件
 	 * @param args
@@ -343,7 +380,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 * <p>
 	 * 查询总数
 	 * </p>
-	 *
+	 * 
 	 * @return
 	 */
 	public int selectCount() {
@@ -365,46 +402,25 @@ public abstract class Model<T extends Model> implements Serializable {
 
 	/**
 	 * <p>
-	 * 获取Session
-	 * </p>
-	 *
-	 * @param autoCommit
-	 *            true自动提交false则相反
-	 * @return SqlSession
-	 */
-	public SqlSession sqlSession(boolean autoCommit) {
-		return table().getSqlSessionFactory().openSession(autoCommit);
-	}
-
-	/**
 	 * 获取Session 默认自动提交
-	 * <p>
-	 * 特别说明:这里获取SqlSession时这里虽然设置了自动提交但是如果事务托管了的话 是不起作用的 切记!!
 	 * <p/>
-	 *
-	 * @return SqlSession
 	 */
 	private SqlSession sqlSession() {
-		return table().getSqlSessionFactory().openSession(true);
+		return Record.sqlSession(getClass());
 	}
 
 	/**
 	 * 获取SqlStatement
-	 *
+	 * 
 	 * @param sqlMethod
 	 * @return
 	 */
 	private String sqlStatement(SqlMethod sqlMethod) {
-		return table().getSqlStatement(sqlMethod);
+		return sqlStatement(sqlMethod.getMethod());
 	}
 
-	/**
-	 * 获取TableInfo
-	 *
-	 * @return TableInfo
-	 */
-	private TableInfo table() {
-		return TableInfoHelper.getTableInfo(getClass());
+	private String sqlStatement(String sqlMethod) {
+		return Record.table(getClass()).getSqlStatement(sqlMethod);
 	}
 
 	protected abstract Serializable getPrimaryKey();

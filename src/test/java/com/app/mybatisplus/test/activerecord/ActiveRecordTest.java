@@ -88,7 +88,7 @@ public class ActiveRecordTest {
 
 		// 翻页查询
 		Page<Test> page = new Page<Test>(0, 10);
-		page = t2.selectPage(page);
+		page = t2.selectPage(page, null);
 		print(page.toString());
 
 		// 根据ID删除
@@ -96,7 +96,7 @@ public class ActiveRecordTest {
 		print("deleteById=" + rlt + ", id=" + t2.getId());
 
 		// 执行 SQL 查询总数
-		List<Map<String, Object>> ul = t2.selectList(new SQL() {
+		List<Map<String, Object>> ul = t2.selectListSql(new SQL() {
 			{
 				SELECT("*");
 				FROM("test");

@@ -262,7 +262,7 @@ public interface IService<T> {
 
 	/**
 	 * 执行INSERT
-	 * 
+	 *
 	 * @param sql
 	 * @param args
 	 * @return
@@ -271,7 +271,7 @@ public interface IService<T> {
 
 	/**
 	 * 执行DELETE
-	 * 
+	 *
 	 * @param sql
 	 * @param args
 	 * @return
@@ -280,7 +280,7 @@ public interface IService<T> {
 
 	/**
 	 * 执行UPDATE
-	 * 
+	 *
 	 * @param sql
 	 * @param args
 	 * @return
@@ -289,7 +289,7 @@ public interface IService<T> {
 
 	/**
 	 * 执行SELETE
-	 * 
+	 *
 	 * @param sql
 	 * @param args
 	 * @return
@@ -298,7 +298,7 @@ public interface IService<T> {
 
 	/**
 	 * 执行SELETE
-	 * 
+	 *
 	 * @param sql
 	 * @param args
 	 * @return
@@ -307,7 +307,7 @@ public interface IService<T> {
 
 	/**
 	 * 执行SELETE Page
-	 * 
+	 *
 	 * @param sql
 	 * @param args
 	 * @return

@@ -15,12 +15,12 @@
  */
 package com.app.mybatisplus.mapper;
 
-import java.text.MessageFormat;
-import java.util.Collection;
-
 import com.app.common.CollectionUtil;
 import com.app.mybatisplus.MybatisAbstractSQL;
 import com.app.mybatisplus.toolkit.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Collection;
 
 /**
  * <p>

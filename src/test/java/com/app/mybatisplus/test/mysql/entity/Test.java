@@ -27,7 +27,7 @@ import java.io.Serializable;
  * @author Caratacu
  * @Date 2016-09-25
  */
-// 表名为 test 可以不需要注解，特殊如 @TableName("tb_test")
+//表名为 test 可以不需要注解，特殊如 @TableName("tb_test")
 public class Test extends Model<Test> {
 
 	// 静态属性会自动忽略
