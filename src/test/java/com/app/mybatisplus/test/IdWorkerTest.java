@@ -4,7 +4,6 @@ import com.app.mybatisplus.toolkit.IdWorker;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 /**
  * Copyright (c) 2011-2020, hubin (jobob@qq.com).
  * <p>
