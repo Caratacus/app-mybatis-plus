@@ -15,11 +15,16 @@
  */
 package com.app.mybatisplus.mapper;
 
+import com.app.common.MapUtils;
 import com.app.mybatisplus.toolkit.StringUtils;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+
 
 /**
  * <p>
@@ -31,28 +36,39 @@ import java.util.Collection;
  */
 @SuppressWarnings("serial")
 public abstract class Wrapper<T> implements Serializable {
+
+	/**
+	 * SQL 查询字段内容，例如：id,name,age
+	 */
+	protected String sqlSelect = null;
+
+	/**
+	 * 实现了TSQL语法的SQL实体
+	 */
+	protected SqlPlus sql = new SqlPlus();
+
 	/**
 	 * 兼容EntityWrapper
-	 * 
+	 *
 	 * @return
 	 */
 	public T getEntity() {
 		return null;
 	}
 
-	/**
-	 * 兼容EntityWrapper
-	 * 
-	 * @return
-	 */
 	public String getSqlSelect() {
-		return null;
+		if (StringUtils.isEmpty(sqlSelect)) {
+			return null;
+		}
+		return stripSqlInjection(sqlSelect);
 	}
 
-	/**
-	 * 实现了TSQL语法的SQL实体
-	 */
-	protected SqlPlus sql = new SqlPlus();
+	public Wrapper<T> setSqlSelect(String sqlSelect) {
+		if (StringUtils.isNotEmpty(sqlSelect)) {
+			this.sqlSelect = sqlSelect;
+		}
+		return this;
+	}
 
 	/**
 	 * SQL 片段 (子类实现)
@@ -81,6 +97,97 @@ public abstract class Wrapper<T> implements Serializable {
 	 */
 	public Wrapper<T> where(String sqlWhere, Object... params) {
 		sql.WHERE(formatSql(sqlWhere, params));
+		return this;
+	}
+
+	/**
+	 * <p>
+	 * 等同于SQL的"field=value"表达式
+	 * </p>
+	 *
+	 * @param column
+	 * @param params
+	 * @return
+	 */
+	public Wrapper<T> eq(String column, Object params) {
+		sql.WHERE(formatSql(String.format("%s = {0}", column), params));
+		return this;
+	}
+
+	/**
+	 * <p>
+	 * 等同于SQL的"field=value"表达式
+	 * </p>
+	 *
+	 * @param params
+	 * @return
+	 */
+
+	public Wrapper<T> allEq(Map<String, Object> params) {
+		if (MapUtils.isNotEmpty(params)) {
+			Iterator iterator = params.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map.Entry entry = (Map.Entry) iterator.next();
+				sql.WHERE(formatSql(String.format("%s = {0}", entry.getKey()), entry.getValue()));
+			}
+
+		}
+		return this;
+	}
+
+	/**
+	 * <p>
+	 * 等同于SQL的"field>value"表达式
+	 * </p>
+	 *
+	 * @param column
+	 * @param params
+	 * @return
+	 */
+	public Wrapper<T> gt(String column, Object params) {
+		sql.WHERE(formatSql(String.format("%s > {0}", column), params));
+		return this;
+	}
+
+	/**
+	 * <p>
+	 * 等同于SQL的"field>=value"表达式
+	 * </p>
+	 *
+	 * @param column
+	 * @param params
+	 * @return
+	 */
+	public Wrapper<T> ge(String column, Object params) {
+		sql.WHERE(formatSql(String.format("%s >= {0}", column), params));
+		return this;
+	}
+
+	/**
+	 * <p>
+	 * 等同于SQL的"field<value"表达式
+	 * </p>
+	 *
+	 * @param column
+	 * @param params
+	 * @return
+	 */
+	public Wrapper<T> lt(String column, Object params) {
+		sql.WHERE(formatSql(String.format("%s < {0}", column), params));
+		return this;
+	}
+
+	/**
+	 * <p>
+	 * 等同于SQL的"field<=value"表达式
+	 * </p>
+	 *
+	 * @param column
+	 * @param params
+	 * @return
+	 */
+	public Wrapper<T> le(String column, Object params) {
+		sql.WHERE(formatSql(String.format("%s <= {0}", column), params));
 		return this;
 	}
 
