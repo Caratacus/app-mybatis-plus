@@ -15,6 +15,8 @@
  */
 package com.app.mybatisplus.toolkit;
 
+import com.app.mybatisplus.annotations.FieldStrategy;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -108,11 +110,20 @@ public class ReflectionKit {
 		boolean result = false;
 		List<TableFieldInfo> fieldList = tableInfo.getFieldList();
 		for (TableFieldInfo tableFieldInfo : fieldList) {
+			FieldStrategy fieldStrategy = tableFieldInfo.getFieldStrategy();
 			Object val = getMethodValue(cls, bean, tableFieldInfo.getProperty());
-			if (null != val) {
-				result = true;
-				break;
+			if (FieldStrategy.NOT_EMPTY.equals(fieldStrategy)) {
+				if (null != val && !val.equals("")) {
+					result = true;
+					break;
+				}
+			} else {
+				if (null != val) {
+					result = true;
+					break;
+				}
 			}
+
 		}
 		return result;
 	}
