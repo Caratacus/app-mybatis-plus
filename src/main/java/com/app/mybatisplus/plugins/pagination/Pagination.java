@@ -120,10 +120,6 @@ public class Pagination extends RowBounds implements Serializable {
 
 	public void setTotal(int total) {
 		this.total = total;
-		this.pages = this.total / this.size;
-		if (this.total % this.size != 0) {
-			this.pages++;
-		}
 	}
 
 	public int getSize() {
@@ -135,7 +131,14 @@ public class Pagination extends RowBounds implements Serializable {
 	}
 
 	public int getPages() {
-		return pages;
+		if (this.size == 0) {
+			return 0;
+		}
+		this.pages = this.total / this.size;
+		if (this.total % this.size != 0) {
+			this.pages++;
+		}
+		return this.pages;
 	}
 
 	public void setCurrent(int current) {

@@ -15,6 +15,7 @@
  */
 package com.app.mybatisplus.toolkit;
 
+import com.app.mybatisplus.plugins.SQLFormatter;
 import com.app.mybatisplus.plugins.entity.CountOptimize;
 import com.app.mybatisplus.plugins.pagination.Pagination;
 
@@ -27,6 +28,7 @@ import com.app.mybatisplus.plugins.pagination.Pagination;
  * @Date 2016-11-13
  */
 public class SqlUtils {
+	private final static SQLFormatter sqlFormatter = new SQLFormatter();
 
 	/**
 	 * 获取CountOptimize
@@ -91,4 +93,18 @@ public class SqlUtils {
 		return originalSql;
 	}
 
+	/**
+	 * 格式sql
+	 * 
+	 * @param boundSql
+	 * @param format
+	 * @return
+	 */
+	public static String sqlFormat(String boundSql, boolean format) {
+		if (format) {
+			return sqlFormatter.format(boundSql);
+		} else {
+			return boundSql.replaceAll("[\\s]+", " ");
+		}
+	}
 }
