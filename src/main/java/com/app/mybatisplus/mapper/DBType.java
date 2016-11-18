@@ -59,7 +59,11 @@ public enum DBType {
 	/**
 	 * SQLSERVER
 	 */
-	SQLSERVER("sqlserver", "SQLServer数据库");
+	SQLSERVER("sqlserver", "SQLServer数据库"),
+	/**
+	 * UNKONWN DB
+	 */
+	OTHER("other", "其他数据库");
 
 	private final String db;
 

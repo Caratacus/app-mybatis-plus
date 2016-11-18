@@ -289,15 +289,16 @@ public class EntityWrapperTest {
 	}
 
 	/**
-	 * 测试Escape
+	 * 测试Qbc
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testQbc() {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("allEq1","22");
 		map.put("allEq2",3333);
 		map.put("allEq3",66.99);
-		String sqlPart = Condition.instance().gt("gt", 1).le("le",2).lt("le",3).ge("ge",4).eq("eq",5).allEq(map).setSqlSelect("11").toString();
+		String sqlPart = Condition.instance().gt("gt", 1).le("le",2).lt("le",3).ge("ge",4).eq("eq",5).allEq(map).toString();
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (gt > 1 AND le <= 2 AND le < 3 AND ge >= 4 AND eq = 5 AND allEq3 = 66.99 AND allEq1 = '22' AND allEq2 = 3333)", sqlPart);
 	}

@@ -27,20 +27,20 @@ import com.app.mybatisplus.plugins.pagination.dialects.SQLServerDialect;
 import com.app.mybatisplus.plugins.pagination.dialects.SQLiteDialect;
 
 import static com.app.mybatisplus.mapper.DBType.DB2;
-import static com.app.mybatisplus.mapper.DBType.H2;
-import static com.app.mybatisplus.mapper.DBType.HSQL;
 import static com.app.mybatisplus.mapper.DBType.MYSQL;
 import static com.app.mybatisplus.mapper.DBType.ORACLE;
+import static com.app.mybatisplus.mapper.DBType.H2;
 import static com.app.mybatisplus.mapper.DBType.POSTGRE;
 import static com.app.mybatisplus.mapper.DBType.SQLITE;
 import static com.app.mybatisplus.mapper.DBType.SQLSERVER;
 import static com.app.mybatisplus.mapper.DBType.SQLSERVER2005;
+import static com.app.mybatisplus.mapper.DBType.HSQL;
 
 /**
  * <p>
  * 分页方言工厂类
  * </p>
- *
+ * 
  * @author hubin
  * @Date 2016-01-23
  */
@@ -50,7 +50,7 @@ public class DialectFactory {
 	 * <p>
 	 * 根据数据库类型选择不同分页方言
 	 * </p>
-	 *
+	 * 
 	 * @param dbtype
 	 *            数据库类型
 	 * @return

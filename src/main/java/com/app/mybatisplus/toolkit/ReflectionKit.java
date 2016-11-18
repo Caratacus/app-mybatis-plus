@@ -130,7 +130,7 @@ public class ReflectionKit {
 
 	/**
 	 * 反射对象获取泛型
-	 * 
+	 *
 	 * @param clazz
 	 *            对象
 	 * @param index
