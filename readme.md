@@ -1,113 +1,62 @@
+![Mybatis-Plus-Logo](http://git.oschina.net/uploads/images/2016/0824/211639_4d931e7f_12260.png "logo")
 
-# Mybatis-Plus 使用文档
+> 为简化开发工作、提高生产率而生
 
-> 	更多文档查看 /mybatis-plus/src/test/resources/wiki
+# 简介 | Intro
 
->   官方文档  http://www.mybatis.org/mybatis-3/zh/index.html
+Mybatis 增强工具包 - 只做增强不做改变，简化`CRUD`操作
 
-# 插入
+# 优点 | Advantages
 
-> 	插入一条（id 如果不传入会自动生成）
+- **纯正血统**：完全继承原生 `Mybatis` 的所有特性
+- **最少依赖**：仅仅依赖`Mybatis`以及`Mybatis-Spring`
+- **性能损耗小**：启动即会自动注入基本CURD ，性能无损耗，直接面向对象操作
+- **自动热加载**：Mapper对应的xml可以热加载，大大减少重启Web服务器时间，提升开发效率
+- **自动生成代码**：包含自动生成代码类以及Maven插件，通过少量配置，即可快速生成Mybatis对应的xml、mapper、entity、service、serviceimpl层代码，减少开发时间
+- **自定义操作**：支持自定义Sql注入，实现个性化操作
+- **自定义转义规则**：支持数据库关键词（例如：`order`、`key`等）自动转义，支持自定义关键词
+- **多种主键策略**：支持多达4种主键策略，可自由配置，若无将会自动填充，更有充满黑科技的`分布式全局唯一ID生成器`
+- **无缝分页插件**：基于Mybatis物理分页，无需关心具体操作，等同于编写基本`selectList`查询
+- **性能分析**：自带Sql性能分析插件，开发测试时，能有效解决慢查询
+- **全局拦截**：提供全表`delete`、`update`操作智能分析阻断
+- **避免Sql注入**：内置Sql注入内容剥离器，预防Sql注入攻击
 
-	long id = IdWorker.getId();
-	int rlt = userMapper.insert(new User(id, "abc", 18, 0));
+# 文档 | Documentation
 
+[中文](http://mp.baomidou.com/) | [English](http://mp.baomidou.com/en/)
 
-> 	插入一条记录（选择字段， null 字段不插入）
-	int rlt = userMapper.insertSelective(new User("abc", 18));
+# 原理 | Principle
 
+[Mybatis-Plus 实践及架构原理](http://git.oschina.net/baomidou/mybatis-plus/attach_files)
 
-> 	批量插入
+# 应用实例 | Demo
 
-	List<User> ul = new ArrayList<User>();
-	//手动输入 ID
-	ul.add(new User(11L, "1", 1, 0));
-	ul.add(new User(12L, "2", 2, 1));
-	ul.add(new User(13L, "3", 3, 1));
-	ul.add(new User(14L, "delname", 4, 0));
-	ul.add(new User(15L, "5", 5, 1));
-	ul.add(new User(16L, "6", 6, 0));
-	ul.add(new User(17L, "7", 7, 0));
-	//使用 ID_WORKER 自动生成 ID
-	ul.add(new User("8", 8, 1));
-	ul.add(new User("9", 9, 1));
-	rlt = userMapper.insertBatch(ul);
+[Spring-MVC](https://git.oschina.net/baomidou/mybatisplus-spring-mvc)
 
+[Spring-Boot](https://git.oschina.net/baomidou/mybatisplus-spring-boot)
 
-# 删除
+[SSM-实战 Demo](http://git.oschina.net/juapk/SpringWind)
 
-> 	删除一条
+# 下载地址 | Download
 
-	int rlt = userMapper.deleteById(id);
+[点此去下载](http://maven.aliyun.com/nexus/#nexus-search;quick~mybatis-plus)
 
+```xml
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus</artifactId>
+    <version>maven 官方最新版本为准</version>
+</dependency>
+```
 
-> 	批量删除
+# 结构目录 | Architecture
 
-	List<Long> il = new ArrayList<Long>();
-	il.add(16L);
-	il.add(17L);
-	int rlt = userMapper.deleteBatchIds(il);
+![项目结构说明](http://git.oschina.net/uploads/images/2016/0821/161516_58956b85_12260.png "项目结构说明")
 
+# 期望 | Futures
 
-> 	按照条件删除
+> 欢迎提出更好的意见，帮助完善 Mybatis-Plus
 
-	int rlt = userMapper.deleteSelective(new User(14L, "delname"));
+# 版权 | License
 
-
-
-# 修改
-
-> 	修改
-
-	int rlt = userMapper.updateById(new User(12L, "MybatisPlus"));
-
-
-> 	根据 ID 选择修改
-
-	int rlt = userMapper.updateSelectiveById(new User(12L, "MybatisPlus"));
-
-
-> 	根据 whereEntity 条件，更新记录（支持 null 查询无条件更新）
-
-	int rlt = userMapper.update(new User("55", 55, 5), new User(15L, "5"));
-
-
-> 	根据 whereEntity 条件，选择更新记录（支持 null 查询无条件更新）
-
-	int rlt = userMapper.updateSelective(new User("00"), new User(15L, "55"));
-
-
-> 	根据ID 批量更新
-
-	List<User> userList = new ArrayList<User>();
-	userList.add(new User(11L, "updateBatchById-1", 1, 1));
-	userList.add(new User(12L, "updateBatchById-2", 2, 2));
-	userList.add(new User(13L, "updateBatchById-3", 3, 3));
-	int rlt = userMapper.updateBatchById(userList);
-
-
-# 查询
-
-> 	根据ID查询
-
-	User user = userMapper.selectById(12L);
-
-> 	根据ID批量查询
-
-	List<Long> idList = new ArrayList<Long>();
-	idList.add(11L);
-	idList.add(12L);
-	List<User> ul1 = userMapper.selectBatchIds(idList);
-
-> 	根据条件查询
-
-	User userOne = userMapper.selectOne(new User("MybatisPlus"));
-
-> 	根据条件查询总记录数（支持 null 查询无条件查询）
-
-	int count = userMapper.selectCount(null);
-
-> 	列表||翻页，模糊、排序 等查询
-
-	参考：mybatis-plus/src/test/java/com/app/mybatisplus/test/mysql/UserMapperTest.java
-
+[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
