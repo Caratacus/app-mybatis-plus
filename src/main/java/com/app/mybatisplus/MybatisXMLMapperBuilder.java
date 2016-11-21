@@ -16,6 +16,7 @@
 package com.app.mybatisplus;
 
 import com.app.mybatisplus.mapper.BaseMapper;
+import com.app.mybatisplus.toolkit.StringUtils;
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.CacheRefResolver;
@@ -121,7 +122,7 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
 	private void configurationElement(XNode context) {
 		try {
 			String namespace = context.getStringAttribute("namespace");
-			if (namespace == null || namespace.equals("")) {
+			if (StringUtils.isEmpty(namespace)) {
 				throw new BuilderException("Mapper's namespace cannot be empty");
 			}
 			builderAssistant.setCurrentNamespace(namespace);

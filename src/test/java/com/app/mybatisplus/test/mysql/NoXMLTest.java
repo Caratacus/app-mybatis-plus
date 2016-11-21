@@ -18,18 +18,19 @@ package com.app.mybatisplus.test.mysql;
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.test.mysql.entity.Test;
 import com.app.mybatisplus.toolkit.IdWorker;
-
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
  * 测试没有XML同样注入CRUD SQL
  * </p>
- * 
+ *
  * @author Caratacus
  * @date 2016-09-26
  */
@@ -48,7 +49,10 @@ public class NoXMLTest {
 		 */
 		TestMapper testMapper = sqlSession.getMapper(TestMapper.class);
 		testMapper.insert(new Test(IdWorker.getId(), "Caratacus"));
-		List<Test> tests = testMapper.selectList(null);
+		Map<String, Object> map = new HashMap();
+		map.put("type", null);
+		map.put("id", null);
+		List<Test> tests = testMapper.selectByMap(map);
 		if (null != tests) {
 			for (Test test : tests) {
 				System.out.println("id:"+test.getId()+ " , type:" + test.getType());

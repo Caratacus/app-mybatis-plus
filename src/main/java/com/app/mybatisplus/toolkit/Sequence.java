@@ -15,7 +15,6 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import com.app.common.SystemClock;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 
 import java.lang.management.ManagementFactory;

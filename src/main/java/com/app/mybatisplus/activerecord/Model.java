@@ -15,11 +15,11 @@
  */
 package com.app.mybatisplus.activerecord;
 
-import com.app.common.CollectionUtil;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.mapper.SqlMethod;
 import com.app.mybatisplus.plugins.Page;
+import com.app.mybatisplus.toolkit.CollectionUtil;
 import com.app.mybatisplus.toolkit.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 

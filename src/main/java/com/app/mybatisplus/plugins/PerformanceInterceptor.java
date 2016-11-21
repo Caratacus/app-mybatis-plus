@@ -15,10 +15,10 @@
  */
 package com.app.mybatisplus.plugins;
 
-import com.app.common.SystemClock;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.toolkit.SqlUtils;
 import com.app.mybatisplus.toolkit.StringUtils;
+import com.app.mybatisplus.toolkit.SystemClock;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;

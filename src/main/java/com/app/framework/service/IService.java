@@ -124,17 +124,6 @@ public interface IService<T> {
 
 	/**
 	 * <p>
-	 * 保存修改方法
-	 * </p>
-	 *
-	 * @param entity
-	 *            实体对象
-	 * @return boolean
-	 */
-	boolean saveOrUpdate(T entity);
-
-	/**
-	 * <p>
 	 * 根据 whereEntity 条件，更新记录
 	 * </p>
 	 *
@@ -258,59 +247,4 @@ public interface IService<T> {
 	 */
 	Page<T> selectPage(Page<T> page, Wrapper<T> wrapper);
 
-	// ------------------------------------------执行SQL部分-------------------------------------------//
-
-	/**
-	 * 执行INSERT
-	 *
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public boolean insertSql(String sql, Object... args);
-
-	/**
-	 * 执行DELETE
-	 *
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public boolean deleteSql(String sql, Object... args);
-
-	/**
-	 * 执行UPDATE
-	 *
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public boolean updateSql(String sql, Object... args);
-
-	/**
-	 * 执行SELETE
-	 *
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public List<Map<String, Object>> selectListSql(String sql, Object... args);
-
-	/**
-	 * 执行SELETE
-	 *
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public <V> List<V> selectListSql(String sql, Class<V> clazz, Object... args);
-
-	/**
-	 * 执行SELETE Page
-	 *
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	public Page selectPageSql(Page page, String sql, Object... args);
 }

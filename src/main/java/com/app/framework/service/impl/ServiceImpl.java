@@ -15,20 +15,6 @@
  */
 package com.app.framework.service.impl;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.app.common.CollectionUtil;
-import com.app.common.MapUtils;
-import com.app.framework.entity.AutoPrimaryKey;
-import com.app.framework.entity.IdWorkPrimaryKey;
-import com.app.framework.entity.InputPrimaryKey;
-import com.app.framework.entity.UuidPrimaryKey;
 import com.app.framework.service.IService;
 import com.app.mybatisplus.activerecord.Record;
 import com.app.mybatisplus.annotations.IdType;
@@ -36,10 +22,19 @@ import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.BaseMapper;
 import com.app.mybatisplus.mapper.Wrapper;
 import com.app.mybatisplus.plugins.Page;
+import com.app.mybatisplus.toolkit.CollectionUtil;
 import com.app.mybatisplus.toolkit.ReflectionKit;
 import com.app.mybatisplus.toolkit.StringUtils;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
+import org.apache.ibatis.jdbc.SQL;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -68,70 +63,6 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	}
 
 	/**
-	 * 根据对象主键属性正确的调用保存或修改方法
-	 *
-	 * @param entity
-	 * @return boolean
-	 * @throws MybatisPlusException
-	 *             entity need @Id
-	 * @author Caratacus
-	 * @date 2016/8/27 0027
-	 * @version 1.0
-	 */
-	@Override
-	public boolean saveOrUpdate(T entity) {
-		if (null != entity) {
-			Class<?> cls = entity.getClass();
-			TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
-			if (null != tableInfo) {
-				if (entity instanceof AutoPrimaryKey) {
-					AutoPrimaryKey auto = (AutoPrimaryKey) entity;
-					return saveOrUpdate(auto.getId(), entity, tableInfo);
-				} else if (entity instanceof UuidPrimaryKey) {
-					UuidPrimaryKey uuid = (UuidPrimaryKey) entity;
-					return saveOrUpdate(uuid.getId(), entity, tableInfo);
-				} else if (entity instanceof IdWorkPrimaryKey) {
-					IdWorkPrimaryKey idwork = (IdWorkPrimaryKey) entity;
-					return saveOrUpdate(idwork.getId(), entity, tableInfo);
-				} else if (entity instanceof InputPrimaryKey) {
-					InputPrimaryKey input = (InputPrimaryKey) entity;
-					return saveOrUpdate(input.getId(), entity, tableInfo);
-				}
-			} else {
-				throw new MybatisPlusException("Error:  Cannot execute. Could not find @TableId.");
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 类型转换执行saveOrUpdate
-	 *
-	 * @param id
-	 * @param entity
-	 * @return boolean
-	 * @author Caratacus
-	 * @date 2016/9/16 0027
-	 * @version 1.0
-	 */
-	private boolean saveOrUpdate(Serializable id, T entity, TableInfo tableInfo) {
-		if (null != id) {
-			return updateById(entity);
-		} else {
-			/* 特殊处理 INPUT 主键策略逻辑 */
-			if (IdType.INPUT == tableInfo.getIdType()) {
-				T entityValue = selectById((Serializable) id);
-				if (null != entityValue) {
-					return updateById(entity);
-				} else {
-					return insert(entity);
-				}
-			}
-			return insert(entity);
-		}
-	}
-
-	/**
 	 * <p>
 	 * SQL 构建方法
 	 * </p>
@@ -142,7 +73,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 *            执行参数
 	 * @return
 	 */
-	protected String sqlBuilder(String sql, Object... args) {
+	protected String sqlBuilder(SQL sql, Object... args) {
 		if (null == sql) {
 			throw new IllegalArgumentException("Error: sql Can not be empty.");
 		}
@@ -178,7 +109,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 			TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
 			if (null != tableInfo) {
 				Object idVal = ReflectionKit.getMethodValue(cls, entity, tableInfo.getKeyProperty());
-				if (null == idVal || "".equals(idVal)) {
+				if (StringUtils.checkValNull(idVal)) {
 					return insert(entity);
 				} else {
 					/* 特殊处理 INPUT 主键策略逻辑 */
@@ -329,42 +260,4 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return page;
 	}
 
-	// ------------------------------------------执行SQL部分-------------------------------------------//
-	@Override
-	public boolean insertSql(String sql, Object... args) {
-		return retBool(baseMapper.insertSql(sqlBuilder(sql, args)));
-	}
-
-	@Override
-	public boolean deleteSql(String sql, Object... args) {
-		return retBool(baseMapper.deleteSql(sqlBuilder(sql, args)));
-	}
-
-	@Override
-	public boolean updateSql(String sql, Object... args) {
-		return retBool(baseMapper.updateSql(sqlBuilder(sql, args)));
-	}
-
-	@Override
-	public List<Map<String, Object>> selectListSql(String sql, Object... args) {
-		return baseMapper.selectListSql(sqlBuilder(sql, args));
-	}
-
-	@Override
-	public <V> List<V> selectListSql(String sql, Class<V> clazz, Object... args) {
-		List<Map<String, Object>> maps = baseMapper.selectListSql(sqlBuilder(sql, args));
-		List<V> list = null;
-		try {
-			list = MapUtils.mapsToBeans(maps, clazz);
-		} catch (Exception e) {
-			logger.warning("Warn: Unexpected exception on selectListSql.  Cause:" + e);
-		}
-		return list;
-	}
-
-	@Override
-	public Page selectPageSql(Page page, String sql, Object... args) {
-		page.setRecords(baseMapper.selectPageSql(page, sqlBuilder(sql, args)));
-		return page;
-	}
 }

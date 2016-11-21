@@ -15,8 +15,8 @@
  */
 package com.app.mybatisplus.mapper;
 
-import com.app.common.CollectionUtil;
 import com.app.mybatisplus.MybatisAbstractSQL;
+import com.app.mybatisplus.toolkit.CollectionUtil;
 import com.app.mybatisplus.toolkit.StringUtils;
 
 import java.text.MessageFormat;

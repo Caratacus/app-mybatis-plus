@@ -18,6 +18,7 @@ package com.app.mybatisplus;
 import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.toolkit.IdWorker;
+import com.app.mybatisplus.toolkit.StringUtils;
 import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.apache.ibatis.mapping.BoundSql;
@@ -132,7 +133,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 			MetaObject metaObject = ms.getConfiguration().newMetaObject(parameterObject);
 			Object idValue = metaObject.getValue(tableInfo.getKeyProperty());
 			/* 自定义 ID */
-			if (null == idValue || "".equals(idValue)) {
+			if (StringUtils.checkValNull(idValue)) {
 				if (tableInfo.getIdType() == IdType.ID_WORKER) {
 					metaObject.setValue(tableInfo.getKeyProperty(), IdWorker.getId());
 				} else if (tableInfo.getIdType() == IdType.UUID) {

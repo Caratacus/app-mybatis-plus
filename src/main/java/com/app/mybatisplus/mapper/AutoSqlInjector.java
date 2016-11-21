@@ -536,14 +536,21 @@ public class AutoSqlInjector implements ISqlInjector {
 	protected String sqlWhereByMap() {
 		StringBuilder where = new StringBuilder();
 		where.append("\n<if test=\"cm!=null and !cm.isEmpty\">");
-		where.append("\n WHERE ");
+		where.append("\n<where> ");
 		where.append("\n<foreach collection=\"cm.keys\" item=\"k\" separator=\"AND\"> ");
+		if (MybatisConfiguration.FIELD_STRATEGY == FieldStrategy.NOT_EMPTY){
+			where.append("\n<if test=\"cm[k] != null and cm[k] != ''\">");
+		}else{
+			where.append("\n<if test=\"cm[k] != null\">");
+		}
 		if (DBType.MYSQL.equals(dbType)) {
 			where.append("\n`${k}` = #{cm[${k}]}");
 		}else{
 			where.append("\n${k} = #{cm[${k}]}");
 		}
+		where.append("\n</if>");
 		where.append("\n</foreach>");
+		where.append("\n</where> ");
 		where.append("\n</if>");
 		return where.toString();
 	}
