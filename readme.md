@@ -4,7 +4,7 @@
 
 # 简介 | Intro
 
-Mybatis 增强工具包 - 只做增强不做改变，简化`CRUD`操作
+Mybatis 增强工具包 - 只做增强不做改变，极简`CRUD`操作
 
 # 优点 | Advantages
 
