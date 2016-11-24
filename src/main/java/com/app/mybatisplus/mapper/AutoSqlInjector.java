@@ -26,6 +26,8 @@ import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.executor.keygen.NoKeyGenerator;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.mapping.SqlSource;
@@ -39,8 +41,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
-
 
 /**
  * <p>
@@ -51,7 +51,8 @@ import java.util.logging.Logger;
  * @Date 2016-09-09
  */
 public class AutoSqlInjector implements ISqlInjector {
-	protected static final Logger logger = Logger.getLogger("AutoSqlInjector");
+
+	private static final Log logger = LogFactory.getLog(AutoSqlInjector.class);
 
 	protected Configuration configuration;
 
@@ -125,7 +126,7 @@ public class AutoSqlInjector implements ISqlInjector {
 			/**
 			 * 警告
 			 */
-			logger.warning(String.format("%s ,Not found @TableId annotation, cannot use mybatis-plus curd method.",
+			logger.warn(String.format("%s ,Not found @TableId annotation, cannot use mybatis-plus curd method.",
 					modelClass.toString()));
 		}
 	}
@@ -134,7 +135,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 自定义方法，注入点（子类需重写该方法）
 	 */
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
-					   Class<?> modelClass, TableInfo table) {
+			Class<?> modelClass, TableInfo table) {
 		// to do nothing
 	}
 
@@ -541,7 +542,7 @@ public class AutoSqlInjector implements ISqlInjector {
 		where.append("\n<if test=\"cm[k] != null\">");
 		if (DBType.MYSQL.equals(dbType)) {
 			where.append("\n`${k}` = #{cm[${k}]}");
-		}else{
+		} else {
 			where.append("\n${k} = #{cm[${k}]}");
 		}
 		where.append("\n</if>");
@@ -611,7 +612,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 查询
 	 */
 	public MappedStatement addSelectMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource, Class<?> resultType,
-													TableInfo table) {
+			TableInfo table) {
 		if (null != table) {
 			String resultMap = table.getResultMap();
 			if (null != resultMap) {
@@ -630,7 +631,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 插入
 	 */
 	public MappedStatement addInsertMappedStatement(Class<?> mapperClass, Class<?> modelClass, String id, SqlSource sqlSource,
-													KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.INSERT, modelClass, null, Integer.class,
 				keyGenerator, keyProperty, keyColumn);
 	}
@@ -652,8 +653,8 @@ public class AutoSqlInjector implements ISqlInjector {
 	}
 
 	public MappedStatement addMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource,
-											  SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
-											  KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+			SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
+			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		String statementName = mapperClass.getName() + "." + id;
 		if (configuration.hasStatement(statementName)) {
 			System.err.println("{" + statementName

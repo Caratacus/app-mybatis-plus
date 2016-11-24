@@ -43,7 +43,7 @@ Mybatis 增强工具包 - 只做增强不做改变，极简`CRUD`操作
 
 ```xml
 <dependency>
-    <groupId>com.baomidou</groupId>
+    <groupId>com.app</groupId>
     <artifactId>mybatis-plus</artifactId>
     <version>maven 官方最新版本为准</version>
 </dependency>
