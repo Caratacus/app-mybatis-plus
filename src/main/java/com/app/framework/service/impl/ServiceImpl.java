@@ -67,7 +67,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	 * <p>
 	 * SQL 构建方法
 	 * </p>
-	 * 
+	 *
 	 * @param sql
 	 *            SQL 语句
 	 * @param args
@@ -139,12 +139,10 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return insertBatch(entityList, 30);
 	}
 
-	@Override
 	public boolean insertOrUpdateBatch(List<T> entityList) {
 		return insertOrUpdateBatch(entityList, 30);
 	}
 
-	@Override
 	public boolean insertOrUpdateBatch(List<T> entityList, int batchSize) {
 		if (CollectionUtil.isEmpty(entityList)) {
 			throw new IllegalArgumentException("Error: entityList must not be empty");
