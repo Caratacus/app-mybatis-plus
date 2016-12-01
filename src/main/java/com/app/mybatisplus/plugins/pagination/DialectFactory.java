@@ -27,14 +27,14 @@ import com.app.mybatisplus.plugins.pagination.dialects.SQLServerDialect;
 import com.app.mybatisplus.plugins.pagination.dialects.SQLiteDialect;
 
 import static com.app.mybatisplus.mapper.DBType.DB2;
+import static com.app.mybatisplus.mapper.DBType.H2;
+import static com.app.mybatisplus.mapper.DBType.HSQL;
 import static com.app.mybatisplus.mapper.DBType.MYSQL;
 import static com.app.mybatisplus.mapper.DBType.ORACLE;
-import static com.app.mybatisplus.mapper.DBType.H2;
 import static com.app.mybatisplus.mapper.DBType.POSTGRE;
 import static com.app.mybatisplus.mapper.DBType.SQLITE;
 import static com.app.mybatisplus.mapper.DBType.SQLSERVER;
 import static com.app.mybatisplus.mapper.DBType.SQLSERVER2005;
-import static com.app.mybatisplus.mapper.DBType.HSQL;
 
 /**
  * <p>
