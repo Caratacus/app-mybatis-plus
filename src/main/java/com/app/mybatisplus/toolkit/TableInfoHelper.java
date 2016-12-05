@@ -17,11 +17,13 @@ package com.app.mybatisplus.toolkit;
 
 import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.MybatisPlusHolder;
-import com.app.mybatisplus.annotations.FieldStrategy;
-import com.app.mybatisplus.annotations.IdType;
 import com.app.mybatisplus.annotations.TableField;
 import com.app.mybatisplus.annotations.TableId;
 import com.app.mybatisplus.annotations.TableName;
+import com.app.mybatisplus.entity.TableFieldInfo;
+import com.app.mybatisplus.entity.TableInfo;
+import com.app.mybatisplus.enums.FieldStrategy;
+import com.app.mybatisplus.enums.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.logging.Log;
@@ -131,8 +133,7 @@ public class TableInfoHelper {
 			/**
 			 * 字段, 使用 camelToUnderline 转换驼峰写法为下划线分割法, 如果已指定 TableField , 便不会执行这里
 			 */
-			TableFieldInfo tfi = new TableFieldInfo(field.getName());
-			fieldList.add(tfi);
+			fieldList.add(new TableFieldInfo(field.getName()));
 		}
 
 		/* 字段列表 */
@@ -193,7 +194,14 @@ public class TableInfoHelper {
 		TableId tableId = field.getAnnotation(TableId.class);
 		if (tableId != null) {
 			if (tableInfo.getKeyColumn() == null) {
-				tableInfo.setIdType(tableId.type());
+				/*
+				 * 主键策略（ 注解 > 全局 > 默认 ）
+				 */
+				if (IdType.INPUT != tableId.type()) {
+					tableInfo.setIdType(tableId.type());
+				} else {
+					tableInfo.setIdType(MybatisConfiguration.ID_TYPE);
+				}
 				if (StringUtils.isNotEmpty(tableId.value())) {
 					/* 自定义字段 */
 					tableInfo.setKeyColumn(tableId.value());
@@ -203,7 +211,7 @@ public class TableInfoHelper {
 					tableInfo.setKeyColumn(StringUtils.camelToUnderline(field.getName()));
 				} else {
 					tableInfo.setKeyColumn(field.getName());
-				}
+				} 
 				tableInfo.setKeyProperty(field.getName());
 				return true;
 			} else {
@@ -226,7 +234,7 @@ public class TableInfoHelper {
 	private static boolean initFieldId(TableInfo tableInfo, Field field, Class<?> clazz) {
 		if (DEFAULT_ID_NAME.equals(field.getName())) {
 			if (tableInfo.getKeyColumn() == null) {
-				tableInfo.setIdType(IdType.ID_WORKER);
+				tableInfo.setIdType(MybatisConfiguration.ID_TYPE);
 				tableInfo.setKeyColumn(field.getName());
 				tableInfo.setKeyProperty(field.getName());
 				return true;

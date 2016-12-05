@@ -15,8 +15,8 @@
  */
 package com.app.mybatisplus.plugins;
 
+import com.app.mybatisplus.entity.CountOptimize;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.plugins.entity.CountOptimize;
 import com.app.mybatisplus.plugins.pagination.DialectFactory;
 import com.app.mybatisplus.plugins.pagination.IDialect;
 import com.app.mybatisplus.plugins.pagination.Pagination;

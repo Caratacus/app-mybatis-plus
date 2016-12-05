@@ -46,6 +46,7 @@
 		<mybatis-ehcache.version>1.0.3</mybatis-ehcache.version>
 		<junit.version>4.12</junit.version>
 		<contiperf.version>2.3.4</contiperf.version>
+		<velocity.version>1.7</velocity.version>
 		<!--maven plugin-->
 		<maven.compiler.version>2.3.2</maven.compiler.version>
 		<maven.source.version>2.2.1</maven.source.version>
@@ -101,7 +102,12 @@
 			<version>${spring.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>${velocity.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- test begin -->
 		<dependency>
 			<groupId>mysql</groupId>

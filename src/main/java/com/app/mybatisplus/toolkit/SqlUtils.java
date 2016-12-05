@@ -15,9 +15,8 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import com.app.mybatisplus.plugins.SQLFormatter;
-import com.app.mybatisplus.plugins.entity.CountOptimize;
-import com.app.mybatisplus.plugins.entity.Optimize;
+import com.app.mybatisplus.entity.CountOptimize;
+import com.app.mybatisplus.enums.Optimize;
 import com.app.mybatisplus.plugins.pagination.Pagination;
 
 /**

@@ -312,7 +312,7 @@ public class UserMapperTest {
          * 纯 SQL 查询！！！
          * </p>
          * <p>
-         * 用法参考：/mybatis-plus/src/test/java/com/app/mybatisplus/test/SqlBuilderTest.java
+         * 用法参考：/mybatis-plus/src/test/java/com/baomidou/mybatisplus/test/SqlBuilderTest.java
          * </p>
          */
         SQL sql = new SQL() {{

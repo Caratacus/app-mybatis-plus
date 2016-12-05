@@ -15,16 +15,17 @@
  */
 package com.app.mybatisplus.test.mysql;
 
-import com.app.mybatisplus.MybatisSessionFactoryBuilder;
-import com.app.mybatisplus.test.mysql.entity.Test;
-import com.app.mybatisplus.toolkit.IdWorker;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+
+import com.app.mybatisplus.MybatisSessionFactoryBuilder;
+import com.app.mybatisplus.test.mysql.entity.Test;
+import com.app.mybatisplus.toolkit.IdWorker;
 
 /**
  * <p>
@@ -60,6 +61,8 @@ public class NoXMLTest {
 		} else {
 			System.err.println(" tests is null. ");
 		}
+		testMapper.delete(null);
+
 	}
 
 }

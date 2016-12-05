@@ -15,10 +15,10 @@
  */
 package com.app.mybatisplus.test.mysql.entity;
 
-import com.app.mybatisplus.annotations.FieldStrategy;
 import com.app.mybatisplus.annotations.TableField;
 import com.app.mybatisplus.annotations.TableId;
 import com.app.mybatisplus.annotations.TableName;
+import com.app.mybatisplus.enums.FieldStrategy;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -58,7 +58,7 @@ public class User implements Serializable {
 	private String desc = "默认描述";
 
 	// 或@TableField(el = "role,jdbcType=BIGINT)
-	@TableField(el = "phone, typeHandler=com.app.mybatisplus.test.mysql.typehandler.PhoneTypeHandler")
+	@TableField(el = "phone, typeHandler=PhoneTypeHandler")
 	private PhoneNumber phone;
 
 	public User() {

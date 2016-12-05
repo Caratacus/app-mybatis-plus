@@ -15,15 +15,18 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import com.app.mybatisplus.annotations.FieldStrategy;
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
+import com.app.mybatisplus.entity.TableFieldInfo;
+import com.app.mybatisplus.entity.TableInfo;
+import com.app.mybatisplus.enums.FieldStrategy;
 
 /**
  * <p>

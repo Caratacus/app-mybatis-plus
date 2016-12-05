@@ -15,6 +15,7 @@
  */
 package com.app.mybatisplus.test;
 
+import com.app.mybatisplus.enums.SQLlikeType;
 import com.app.mybatisplus.mapper.Condition;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.test.mysql.entity.User;
@@ -156,6 +157,13 @@ public class EntityWrapperTest {
 				.andNew("new=xx").like("hhh", "ddd").andNew("pwd=11").isNotNull("n1,n2").isNull("n3").groupBy("x1")
 				.groupBy("x2,x3").having("x1=11").having("x3=433").orderBy("dd").orderBy("d1,d2");
 		System.out.println(ew.toString());
+		Assert.assertEquals("AND (name=? AND id=1) \n" +
+				"OR (status=? OR status=1 AND nlike NOT LIKE '%notvalue%') \n" +
+				"AND (new=xx AND hhh LIKE '%ddd%') \n" +
+				"AND (pwd=11 AND n1 IS NOT NULL AND n2 IS NOT NULL AND n3 IS NULL)\n" +
+				"GROUP BY x1, x2,x3\n" +
+				"HAVING (x1=11 AND x3=433)\n" +
+				"ORDER BY dd, d1,d2",ew.toString());
 	}
 
 	@Test
@@ -301,5 +309,15 @@ public class EntityWrapperTest {
 		String sqlPart = Condition.instance().gt("gt", 1).le("le",2).lt("le",3).ge("ge",4).eq("eq",5).allEq(map).toString();
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (gt > 1 AND le <= 2 AND le < 3 AND ge >= 4 AND eq = 5 AND allEq3 = 66.99 AND allEq1 = '22' AND allEq2 = 3333)", sqlPart);
+	}
+	/**
+	 * 测试LIKE
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testlike() {
+		String sqlPart = Condition.instance().like("default", "default", SQLlikeType.DEFAULT).like("left","left", SQLlikeType.LEFT).like("right","right", SQLlikeType.RIGHT).toString();
+		System.out.println("sql ==> " + sqlPart);
+		Assert.assertEquals("WHERE (default LIKE '%default%' AND left LIKE '%left' AND right LIKE 'right%')", sqlPart);
 	}
 }

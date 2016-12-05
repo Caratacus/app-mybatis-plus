@@ -15,9 +15,10 @@
  */
 package com.app.mybatisplus;
 
-import com.app.mybatisplus.annotations.FieldStrategy;
+import com.app.mybatisplus.enums.DBType;
+import com.app.mybatisplus.enums.FieldStrategy;
+import com.app.mybatisplus.enums.IdType;
 import com.app.mybatisplus.mapper.AutoSqlInjector;
-import com.app.mybatisplus.mapper.DBType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.mapper.ISqlInjector;
 import org.apache.ibatis.binding.MapperRegistry;
@@ -49,6 +50,11 @@ public class MybatisConfiguration extends Configuration {
 	 * 数据库类型（默认 MySql）
 	 */
 	public static DBType DB_TYPE = DBType.MYSQL;
+	
+	/*
+	 * 主键策略 （默认 ID_WORKER）
+	 */
+	public static IdType ID_TYPE = IdType.ID_WORKER;
 
 	/*
 	 * 数据库字段使用下划线命名（默认 false）

@@ -19,9 +19,10 @@ import com.app.mybatisplus.MybatisConfiguration;
 import com.app.mybatisplus.MybatisPlusHolder;
 import com.app.mybatisplus.MybatisXMLConfigBuilder;
 import com.app.mybatisplus.MybatisXMLMapperBuilder;
-import com.app.mybatisplus.annotations.FieldStrategy;
+import com.app.mybatisplus.enums.DBType;
+import com.app.mybatisplus.enums.FieldStrategy;
+import com.app.mybatisplus.enums.IdType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.mapper.DBType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.mapper.ISqlInjector;
 import com.app.mybatisplus.toolkit.PackageHelper;
@@ -123,6 +124,11 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 	// TODO 注入数据库类型
 	public void setDbType(String dbType) {
 		MybatisConfiguration.DB_TYPE = DBType.getDBType(dbType);
+	}
+
+	// TODO 注入主键策略
+	public void setIdType(int idType) {
+		MybatisConfiguration.ID_TYPE = IdType.getIdType(idType);
 	}
 
 	// TODO 注入表字段使用下划线命名

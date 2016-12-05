@@ -15,11 +15,11 @@
  */
 package com.app.mybatisplus.activerecord;
 
+import com.app.mybatisplus.enums.SqlMethod;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.mapper.EntityWrapper;
-import com.app.mybatisplus.mapper.SqlMethod;
 import com.app.mybatisplus.plugins.Page;
-import com.app.mybatisplus.toolkit.CollectionUtil;
+import com.app.mybatisplus.toolkit.CollectionUtils;
 import com.app.mybatisplus.toolkit.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 
@@ -284,7 +284,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 */
 	public T selectOne(String columns, String whereClause, Object... args) {
 		List<T> tl = selectList(columns, whereClause, args);
-		if (CollectionUtil.isEmpty(tl)) {
+		if (CollectionUtils.isEmpty(tl)) {
 			return null;
 		}
 		return tl.get(0);
@@ -370,7 +370,7 @@ public abstract class Model<T extends Model> implements Serializable {
 	 */
 	public int selectCount(String whereClause, Object... args) {
 		List<T> tl = selectList(whereClause, args);
-		if (CollectionUtil.isEmpty(tl)) {
+		if (CollectionUtils.isEmpty(tl)) {
 			return 0;
 		}
 		return tl.size();

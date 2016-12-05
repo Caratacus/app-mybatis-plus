@@ -15,11 +15,11 @@
  */
 package com.app.mybatisplus.toolkit;
 
+import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.enums.DBType;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.mapper.DBType;
 
 /**
  * <p>

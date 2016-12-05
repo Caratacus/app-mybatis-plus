@@ -6,7 +6,7 @@
 
 ```
 <dependency>
-    <groupId>com.app</groupId>
+    <groupId>com.baomidou</groupId>
     <artifactId>mybatis-plus</artifactId>
     <version>最新版本 Maven 为准</version>
 </dependency>
@@ -16,7 +16,7 @@
 
 ```
 <!-- MyBatis SqlSessionFactoryBean 配置 -->
-<bean id="sqlSessionFactory" class="com.app.mybatisplus.spring.MybatisSqlSessionFactoryBean">
+<bean id="sqlSessionFactory" class="MybatisSqlSessionFactoryBean">
 	<property name="dataSource" ref="dataSource" />
 	<property name="configLocation" value="classpath:xml/mybatis-config.xml" />
 	<property name="typeAliasesPackage" value="xxx.entity" />
@@ -24,7 +24,7 @@
     <property name="plugins">
         <array>
             <!-- 分页插件配置 -->
-            <bean id="paginationInterceptor" class="com.app.mybatisplus.plugins.PaginationInterceptor">
+            <bean id="paginationInterceptor" class="PaginationInterceptor">
 		        <property name="dialectType" value="mysql" />
 		    </bean>
         </array>
@@ -59,14 +59,14 @@
     提供了两个构造,挑选一个配置进入spring配置文件即可：
 
 	构造1:
-	    <bean class="com.app.mybatisplus.spring.MybatisMapperRefresh">
+	    <bean class="MybatisMapperRefresh">
 	        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
 	        <constructor-arg name="mapperLocations" value="classpath*:mybatis/mappers/*/*.xml"/>
 	        <constructor-arg name="enabled" value="true"/>
 	    </bean>
 	
 	构造2:
-		<bean class="com.app.mybatisplus.spring.MybatisMapperRefresh">
+		<bean class="MybatisMapperRefresh">
 	        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
 	        <constructor-arg name="mapperLocations" value="classpath*:mybatis/mappers/*/*.xml"/>
 	        <constructor-arg name="delaySeconds" value="10"/>
@@ -120,21 +120,21 @@
 	     | dialectType 数据库方言  
 	     |             默认支持  mysql  oracle  hsql  sqlite  postgre  sqlserver
 	     | dialectClazz 方言实现类
-	     |              自定义需要实现 com.app.mybatisplus.plugins.pagination.IDialect 接口
+	     |              自定义需要实现 IDialect 接口
 	    1、 配置方式一、使用 MybatisPlus 提供方言实现类
-	    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
+	    <plugin interceptor="PaginationInterceptor">
 	        <property name="dialectType" value="mysql" />
 	    </plugin>
 	    2、配置方式二、使用自定义方言实现类 
-	    <plugin interceptor="com.app.mybatisplus.plugins.PaginationInterceptor">
+	    <plugin interceptor="PaginationInterceptor">
 	        <property name="dialectClazz" value="xxx.dialect.XXDialect" />
 	    </plugin>
         <!-- SQL 执行性能分析，开发环境使用，线上不推荐。 maxTime 指的是 sql 最大执行时长 -->
-        <plugin interceptor="com.app.mybatisplus.plugins.PerformanceInterceptor">
+        <plugin interceptor="PerformanceInterceptor">
             <property name="maxTime" value="100" />
         </plugin>
         <!-- SQL 执行分析拦截器 stopProceed 发现全表执行 delete update 是否停止运行 -->
-        <plugin interceptor="com.app.mybatisplus.plugins.SqlExplainInterceptor">
+        <plugin interceptor="SqlExplainInterceptor">
             <property name="stopProceed" value="false" />
         </plugin>
 	</plugins>

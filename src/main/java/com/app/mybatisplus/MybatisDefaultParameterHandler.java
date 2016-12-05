@@ -15,11 +15,11 @@
  */
 package com.app.mybatisplus;
 
-import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.entity.TableInfo;
+import com.app.mybatisplus.enums.IdType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.toolkit.IdWorker;
 import com.app.mybatisplus.toolkit.StringUtils;
-import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;

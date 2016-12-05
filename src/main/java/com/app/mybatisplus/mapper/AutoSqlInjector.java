@@ -16,11 +16,13 @@
 package com.app.mybatisplus.mapper;
 
 import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.annotations.FieldStrategy;
-import com.app.mybatisplus.annotations.IdType;
+import com.app.mybatisplus.entity.TableFieldInfo;
+import com.app.mybatisplus.entity.TableInfo;
+import com.app.mybatisplus.enums.DBType;
+import com.app.mybatisplus.enums.FieldStrategy;
+import com.app.mybatisplus.enums.IdType;
+import com.app.mybatisplus.enums.SqlMethod;
 import com.app.mybatisplus.toolkit.SqlReservedWords;
-import com.app.mybatisplus.toolkit.TableFieldInfo;
-import com.app.mybatisplus.toolkit.TableInfo;
 import com.app.mybatisplus.toolkit.TableInfoHelper;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
