@@ -15,16 +15,17 @@
  */
 package com.app.mybatisplus.test.mysql;
 
+import java.io.InputStream;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+
 import com.app.mybatisplus.MybatisSessionFactoryBuilder;
 import com.app.mybatisplus.mapper.EntityWrapper;
 import com.app.mybatisplus.test.mysql.entity.PhoneNumber;
 import com.app.mybatisplus.test.mysql.entity.Role;
 import com.app.mybatisplus.test.mysql.entity.User;
 import com.app.mybatisplus.toolkit.IdWorker;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-
-import java.io.InputStream;
 
 /**
  * <p>

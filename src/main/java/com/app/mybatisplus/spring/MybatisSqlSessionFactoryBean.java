@@ -15,17 +15,18 @@
  */
 package com.app.mybatisplus.spring;
 
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.MybatisPlusHolder;
-import com.app.mybatisplus.MybatisXMLConfigBuilder;
-import com.app.mybatisplus.MybatisXMLMapperBuilder;
-import com.app.mybatisplus.enums.DBType;
-import com.app.mybatisplus.enums.FieldStrategy;
-import com.app.mybatisplus.enums.IdType;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.mapper.IMetaObjectHandler;
-import com.app.mybatisplus.mapper.ISqlInjector;
-import com.app.mybatisplus.toolkit.PackageHelper;
+import static org.springframework.util.Assert.notNull;
+import static org.springframework.util.Assert.state;
+import static org.springframework.util.ObjectUtils.isEmpty;
+import static org.springframework.util.StringUtils.hasLength;
+import static org.springframework.util.StringUtils.tokenizeToStringArray;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.VFS;
@@ -52,16 +53,18 @@ import org.springframework.core.NestedIOException;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import static org.springframework.util.Assert.notNull;
-import static org.springframework.util.Assert.state;
-import static org.springframework.util.ObjectUtils.isEmpty;
-import static org.springframework.util.StringUtils.hasLength;
-import static org.springframework.util.StringUtils.tokenizeToStringArray;
+import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.MybatisXMLConfigBuilder;
+import com.app.mybatisplus.MybatisXMLMapperBuilder;
+import com.app.mybatisplus.entity.MybatisGlobalCache;
+import com.app.mybatisplus.enums.DBType;
+import com.app.mybatisplus.enums.FieldStrategy;
+import com.app.mybatisplus.enums.IdType;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.mapper.IMetaObjectHandler;
+import com.app.mybatisplus.mapper.ISqlInjector;
+import com.app.mybatisplus.toolkit.JdbcUtils;
+import com.app.mybatisplus.toolkit.PackageHelper;
 
 /**
  * <p>
@@ -121,34 +124,38 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 
 	private ObjectWrapperFactory objectWrapperFactory;
 
+	private MybatisGlobalCache mybatisGlobalCache = MybatisGlobalCache.defaults();
+
 	// TODO 注入数据库类型
 	public void setDbType(String dbType) {
-		MybatisConfiguration.DB_TYPE = DBType.getDBType(dbType);
+		// 以用户传递过来的dbType优先
+		mybatisGlobalCache.setDbType(DBType.getDBType(dbType));
+		mybatisGlobalCache.setAutoSetDbType(false);
 	}
 
 	// TODO 注入主键策略
 	public void setIdType(int idType) {
-		MybatisConfiguration.ID_TYPE = IdType.getIdType(idType);
+		mybatisGlobalCache.setIdType(IdType.getIdType(idType));
 	}
 
 	// TODO 注入表字段使用下划线命名
 	public void setDbColumnUnderline(boolean dbColumnUnderline) {
-		MybatisConfiguration.DB_COLUMN_UNDERLINE = dbColumnUnderline;
+		mybatisGlobalCache.setDbColumnUnderline(dbColumnUnderline);
 	}
 
 	// TODO 注入 SQL注入器
 	public void setSqlInjector(ISqlInjector sqlInjector) {
-		MybatisConfiguration.SQL_INJECTOR = sqlInjector;
+		mybatisGlobalCache.setSqlInjector(sqlInjector);
 	}
 
 	// TODO 注入 元对象字段填充控制器
 	public void setMetaObjectHandler(IMetaObjectHandler metaObjectHandler) {
-		MybatisConfiguration.META_OBJECT_HANDLER = metaObjectHandler;
+		mybatisGlobalCache.setMetaObjectHandler(metaObjectHandler);
 	}
 
 	// TODO 注入 元对象字段填充控制器
 	public void setFieldStrategy(int key) {
-		MybatisConfiguration.FIELD_STRATEGY = FieldStrategy.getFieldStrategy(key);
+		mybatisGlobalCache.setFieldStrategy(FieldStrategy.getFieldStrategy(key));
 	}
 
 	/**
@@ -430,7 +437,6 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 		notNull(sqlSessionFactoryBuilder, "Property 'sqlSessionFactoryBuilder' is required");
 		state((configuration == null && configLocation == null) || !(configuration != null && configLocation != null),
 				"Property 'configuration' and 'configLocation' can not specified with together");
-
 		this.sqlSessionFactory = buildSqlSessionFactory();
 	}
 
@@ -575,10 +581,20 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 		}
 
 		configuration.setEnvironment(new Environment(this.environment, this.transactionFactory, this.dataSource));
-
+		// TODO 自动设置数据库类型
+		if (mybatisGlobalCache.isAutoSetDbType()) {
+			try {
+				String jdbcUrl = dataSource.getConnection().getMetaData().getURL();
+				mybatisGlobalCache.setDbType(JdbcUtils.getDbType(jdbcUrl));
+			} catch (SQLException e) {
+				LOGGER.warn("Warn: Auto Set DbType Fail !  Cause:" + e);
+			}
+		}
 		SqlSessionFactory sqlSessionFactory = this.sqlSessionFactoryBuilder.build(configuration);
 		// TODO 缓存 sqlSessionFactory
-		MybatisPlusHolder.setSqlSessionFactory(sqlSessionFactory);
+		mybatisGlobalCache.setSqlSessionFactory(sqlSessionFactory);
+		// TODO 设置全局参数属性
+		MybatisGlobalCache.setGlobalCache(configuration, mybatisGlobalCache);
 
 		if (!isEmpty(this.mapperLocations)) {
 			for (Resource mapperLocation : this.mapperLocations) {

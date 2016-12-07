@@ -1,9 +1,9 @@
 package com.app.mybatisplus.test;
 
-import com.app.mybatisplus.toolkit.IdWorker;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import com.app.mybatisplus.toolkit.IdWorker;
 
 /**
  * Copyright (c) 2011-2020, hubin (jobob@qq.com).

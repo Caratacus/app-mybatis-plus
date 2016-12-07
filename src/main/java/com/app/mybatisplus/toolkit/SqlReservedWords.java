@@ -15,11 +15,10 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import com.app.mybatisplus.MybatisConfiguration;
-import com.app.mybatisplus.enums.DBType;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import com.app.mybatisplus.enums.DBType;
 
 /**
  * <p>
@@ -972,10 +971,6 @@ public class SqlReservedWords {
 			return String.format("`%s`", column);
 		}
 		return column;
-	}
-
-	public static String convert(String column) {
-		return convert(MybatisConfiguration.DB_TYPE, column);
 	}
 
 	public static boolean containsWord(String word) {

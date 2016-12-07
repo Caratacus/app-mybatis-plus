@@ -15,7 +15,7 @@
  */
 package com.app.mybatisplus.mapper;
 
-import com.app.mybatisplus.MybatisConfiguration;
+import com.app.mybatisplus.entity.MybatisGlobalCache;
 import com.app.mybatisplus.entity.TableFieldInfo;
 import com.app.mybatisplus.entity.TableInfo;
 import com.app.mybatisplus.enums.DBType;
@@ -72,7 +72,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 */
 	public void inspectInject(MapperBuilderAssistant builderAssistant, Class<?> mapperClass) {
 		String className = mapperClass.toString();
-		Set<String> mapperRegistryCache = MybatisConfiguration.MAPPER_REGISTRY_CACHE;
+		Set<String> mapperRegistryCache = MybatisGlobalCache.getMapperRegistryCache(builderAssistant.getConfiguration());
 		if (!mapperRegistryCache.contains(className)) {
 			inject(builderAssistant, mapperClass);
 			mapperRegistryCache.add(className);
@@ -86,12 +86,13 @@ public class AutoSqlInjector implements ISqlInjector {
 		this.configuration = builderAssistant.getConfiguration();
 		this.builderAssistant = builderAssistant;
 		this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
-		this.dbType = MybatisConfiguration.DB_TYPE;
+		MybatisGlobalCache globalCache = MybatisGlobalCache.globalCache(configuration);
+		this.dbType = globalCache.getDbType();
 		/*
 		 * 驼峰设置 PLUS 配置 > 原始配置
 		 */
-		if (!MybatisConfiguration.DB_COLUMN_UNDERLINE) {
-			MybatisConfiguration.DB_COLUMN_UNDERLINE = configuration.isMapUnderscoreToCamelCase();
+		if (!globalCache.isDbColumnUnderline()) {
+			globalCache.setDbColumnUnderline(configuration.isMapUnderscoreToCamelCase());
 		}
 		Class<?> modelClass = extractModelClass(mapperClass);
 		TableInfo table = TableInfoHelper.initTableInfo(builderAssistant, modelClass);
@@ -448,6 +449,19 @@ public class AutoSqlInjector implements ISqlInjector {
 
 	/**
 	 * <p>
+	 * 获取需要转义的SQL字段
+	 * </p>
+	 *
+	 * @param convertStr
+	 * @return
+	 */
+	protected String sqlWordConvert(String convertStr) {
+		DBType dbType = MybatisGlobalCache.getDbType(configuration);
+		return SqlReservedWords.convert(dbType, convertStr);
+	}
+
+	/**
+	 * <p>
 	 * SQL 查询所有表字段
 	 * </p>
 	 *
@@ -477,15 +491,15 @@ public class AutoSqlInjector implements ISqlInjector {
 				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
 			}
 			if (table.isKeyRelated()) {
-				columns.append(table.getKeyColumn()).append(" AS ").append(SqlReservedWords.convert(table.getKeyProperty()));
+				columns.append(table.getKeyColumn()).append(" AS ").append(sqlWordConvert(table.getKeyProperty()));
 			} else {
-				columns.append(SqlReservedWords.convert(table.getKeyProperty()));
+				columns.append(sqlWordConvert(table.getKeyProperty()));
 			}
 			List<TableFieldInfo> fieldList = table.getFieldList();
 			for (TableFieldInfo fieldInfo : fieldList) {
 				columns.append(",").append(fieldInfo.getColumn());
 				if (fieldInfo.isRelated()) {
-					columns.append(" AS ").append(SqlReservedWords.convert(fieldInfo.getProperty()));
+					columns.append(" AS ").append(sqlWordConvert(fieldInfo.getProperty()));
 				}
 			}
 			if (entityWrapper) {
@@ -539,7 +553,6 @@ public class AutoSqlInjector implements ISqlInjector {
 	protected String sqlWhereByMap() {
 		StringBuilder where = new StringBuilder();
 		where.append("\n<if test=\"cm!=null and !cm.isEmpty\">");
-		where.append("\n<where> ");
 		where.append("\n<foreach collection=\"cm.keys\" item=\"k\" separator=\"AND\"> ");
 		where.append("\n<if test=\"cm[k] != null\">");
 		if (DBType.MYSQL.equals(dbType)) {
@@ -549,7 +562,6 @@ public class AutoSqlInjector implements ISqlInjector {
 		}
 		where.append("\n</if>");
 		where.append("\n</foreach>");
-		where.append("\n</where> ");
 		where.append("\n</if>");
 		return where.toString();
 	}

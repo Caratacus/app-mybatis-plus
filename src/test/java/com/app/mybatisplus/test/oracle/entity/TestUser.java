@@ -1,11 +1,11 @@
 package com.app.mybatisplus.test.oracle.entity;
 
+import java.io.Serializable;
+
 import com.app.mybatisplus.annotations.TableField;
 import com.app.mybatisplus.annotations.TableId;
 import com.app.mybatisplus.annotations.TableName;
 import com.app.mybatisplus.enums.IdType;
-
-import java.io.Serializable;
 
 /**
  *

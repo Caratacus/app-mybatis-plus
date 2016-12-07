@@ -15,14 +15,11 @@
  */
 package com.app.mybatisplus.plugins;
 
-import com.app.mybatisplus.entity.CountOptimize;
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.plugins.pagination.DialectFactory;
-import com.app.mybatisplus.plugins.pagination.IDialect;
-import com.app.mybatisplus.plugins.pagination.Pagination;
-import com.app.mybatisplus.toolkit.IOUtils;
-import com.app.mybatisplus.toolkit.SqlUtils;
-import com.app.mybatisplus.toolkit.StringUtils;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Properties;
+
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -39,10 +36,14 @@ import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Properties;
+import com.app.mybatisplus.entity.CountOptimize;
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.plugins.pagination.DialectFactory;
+import com.app.mybatisplus.plugins.pagination.IDialect;
+import com.app.mybatisplus.plugins.pagination.Pagination;
+import com.app.mybatisplus.toolkit.IOUtils;
+import com.app.mybatisplus.toolkit.SqlUtils;
+import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>

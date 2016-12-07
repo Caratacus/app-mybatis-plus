@@ -15,18 +15,6 @@
  */
 package com.app.mybatisplus.generator;
 
-import com.app.mybatisplus.generator.config.ConstVal;
-import com.app.mybatisplus.generator.config.TemplateConfig;
-import com.app.mybatisplus.generator.config.builder.ConfigBuilder;
-import com.app.mybatisplus.generator.config.po.TableInfo;
-import com.app.mybatisplus.toolkit.StringUtils;
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.app.VelocityEngine;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,6 +26,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+
+import com.app.mybatisplus.generator.config.ConstVal;
+import com.app.mybatisplus.generator.config.TemplateConfig;
+import com.app.mybatisplus.generator.config.builder.ConfigBuilder;
+import com.app.mybatisplus.generator.config.po.TableInfo;
+import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * 生成文件

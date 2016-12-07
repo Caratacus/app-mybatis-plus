@@ -15,20 +15,23 @@
  */
 package com.app.mybatisplus;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Properties;
+
+import org.apache.ibatis.exceptions.ExceptionFactory;
+import org.apache.ibatis.executor.ErrorContext;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import com.app.mybatisplus.entity.MybatisGlobalCache;
 import com.app.mybatisplus.enums.DBType;
 import com.app.mybatisplus.enums.FieldStrategy;
 import com.app.mybatisplus.enums.IdType;
 import com.app.mybatisplus.mapper.IMetaObjectHandler;
 import com.app.mybatisplus.mapper.ISqlInjector;
 import com.app.mybatisplus.toolkit.IOUtils;
-import org.apache.ibatis.exceptions.ExceptionFactory;
-import org.apache.ibatis.executor.ErrorContext;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Properties;
 
 /**
  * <p>
@@ -40,11 +43,16 @@ import java.util.Properties;
  */
 public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
 
+	private MybatisGlobalCache globalCache = MybatisGlobalCache.defaults();
+
 	@Override
 	public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
 		try {
 			MybatisXMLConfigBuilder parser = new MybatisXMLConfigBuilder(reader, environment, properties);
-			return build(parser.parse());
+			// 原生支持全局配置缓存
+			Configuration configuration = parser.parse();
+			MybatisGlobalCache.setGlobalCache(configuration, globalCache);
+			return build(configuration);
 		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);
 		} finally {
@@ -57,7 +65,10 @@ public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
 	public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
 		try {
 			MybatisXMLConfigBuilder parser = new MybatisXMLConfigBuilder(inputStream, environment, properties);
-			return build(parser.parse());
+			// 原生支持全局配置缓存
+			Configuration configuration = parser.parse();
+			MybatisGlobalCache.setGlobalCache(configuration, globalCache);
+			return build(configuration);
 		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);
 		} finally {
@@ -68,32 +79,32 @@ public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
 
 	// TODO 注入数据库类型
 	public void setDbType(String dbType) {
-		MybatisConfiguration.DB_TYPE = DBType.getDBType(dbType);
+		globalCache.setDbType(DBType.getDBType(dbType));
 	}
 
 	// TODO 注入主键策略
 	public void setIdType(int idType) {
-		MybatisConfiguration.ID_TYPE = IdType.getIdType(idType);
+		globalCache.setIdType(IdType.getIdType(idType));
 	}
 
 	// TODO 注入表字段使用下划线命名
 	public void setDbColumnUnderline(boolean dbColumnUnderline) {
-		MybatisConfiguration.DB_COLUMN_UNDERLINE = dbColumnUnderline;
+		globalCache.setDbColumnUnderline(dbColumnUnderline);
 	}
 
 	// TODO 注入 SQL注入器
 	public void setSqlInjector(ISqlInjector sqlInjector) {
-		MybatisConfiguration.SQL_INJECTOR = sqlInjector;
+		globalCache.setSqlInjector(sqlInjector);
 	}
 
 	// TODO 注入 元对象字段填充控制器
 	public void setMetaObjectHandler(IMetaObjectHandler metaObjectHandler) {
-		MybatisConfiguration.META_OBJECT_HANDLER = metaObjectHandler;
+		globalCache.setMetaObjectHandler(metaObjectHandler);
 	}
 
 	// TODO 注入 元对象字段填充控制器
 	public void setFieldStrategy(int key) {
-		MybatisConfiguration.FIELD_STRATEGY = FieldStrategy.getFieldStrategy(key);
+		globalCache.setFieldStrategy(FieldStrategy.getFieldStrategy(key));
 	}
 
 }

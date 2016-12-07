@@ -15,14 +15,15 @@
  */
 package com.app.mybatisplus.toolkit;
 
-import com.app.mybatisplus.exceptions.MybatisPlusException;
-import com.app.mybatisplus.plugins.SqlExplainInterceptor;
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
+import com.app.mybatisplus.exceptions.MybatisPlusException;
+import com.app.mybatisplus.plugins.SqlExplainInterceptor;
 
 /**
  * <p>

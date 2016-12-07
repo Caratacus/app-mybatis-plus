@@ -15,10 +15,11 @@
  */
 package com.app.mybatisplus.plugins.pagination;
 
-import com.app.mybatisplus.toolkit.StringUtils;
+import java.io.Serializable;
+
 import org.apache.ibatis.session.RowBounds;
 
-import java.io.Serializable;
+import com.app.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>

@@ -1,11 +1,11 @@
 package com.app.mybatisplus.test;
 
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.ibatis.jdbc.SQL;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 
 /**

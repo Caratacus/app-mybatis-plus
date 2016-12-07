@@ -15,9 +15,9 @@
  */
 package com.app.mybatisplus.test.mysql.entity;
 
-import com.app.mybatisplus.activerecord.Model;
-
 import java.io.Serializable;
+
+import com.app.mybatisplus.activerecord.Model;
 
 /**
  * <p>

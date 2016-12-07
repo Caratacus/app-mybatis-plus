@@ -15,20 +15,21 @@
  */
 package com.app.mybatisplus.test;
 
-import com.app.mybatisplus.enums.SQLlikeType;
-import com.app.mybatisplus.mapper.Condition;
-import com.app.mybatisplus.mapper.EntityWrapper;
-import com.app.mybatisplus.test.mysql.entity.User;
-import com.app.mybatisplus.toolkit.TableInfoHelper;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.app.mybatisplus.enums.SQLlikeType;
+import com.app.mybatisplus.mapper.Condition;
+import com.app.mybatisplus.mapper.EntityWrapper;
+import com.app.mybatisplus.test.mysql.entity.User;
+import com.app.mybatisplus.toolkit.TableInfoHelper;
 
 /**
  * <p>

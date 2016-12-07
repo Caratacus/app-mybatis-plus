@@ -15,6 +15,7 @@
  */
 package com.app.mybatisplus.plugins.pagination;
 
+import com.app.mybatisplus.enums.DBType;
 import com.app.mybatisplus.exceptions.MybatisPlusException;
 import com.app.mybatisplus.plugins.pagination.dialects.DB2Dialect;
 import com.app.mybatisplus.plugins.pagination.dialects.H2Dialect;
@@ -25,16 +26,6 @@ import com.app.mybatisplus.plugins.pagination.dialects.PostgreDialect;
 import com.app.mybatisplus.plugins.pagination.dialects.SQLServer2005Dialect;
 import com.app.mybatisplus.plugins.pagination.dialects.SQLServerDialect;
 import com.app.mybatisplus.plugins.pagination.dialects.SQLiteDialect;
-
-import static com.app.mybatisplus.enums.DBType.DB2;
-import static com.app.mybatisplus.enums.DBType.H2;
-import static com.app.mybatisplus.enums.DBType.HSQL;
-import static com.app.mybatisplus.enums.DBType.MYSQL;
-import static com.app.mybatisplus.enums.DBType.ORACLE;
-import static com.app.mybatisplus.enums.DBType.POSTGRE;
-import static com.app.mybatisplus.enums.DBType.SQLITE;
-import static com.app.mybatisplus.enums.DBType.SQLSERVER;
-import static com.app.mybatisplus.enums.DBType.SQLSERVER2005;
 
 /**
  * <p>
@@ -57,23 +48,23 @@ public class DialectFactory {
 	 * @throws Exception
 	 */
 	public static IDialect getDialectByDbtype(String dbtype) throws Exception {
-		if (MYSQL.getDb().equalsIgnoreCase(dbtype)) {
+		if (DBType.MYSQL.getDb().equalsIgnoreCase(dbtype)) {
 			return new MySqlDialect();
-		} else if (ORACLE.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.ORACLE.getDb().equalsIgnoreCase(dbtype)) {
 			return new OracleDialect();
-		} else if (DB2.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.DB2.getDb().equalsIgnoreCase(dbtype)) {
 			return new DB2Dialect();
-		} else if (H2.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.H2.getDb().equalsIgnoreCase(dbtype)) {
 			return new H2Dialect();
-		} else if (SQLSERVER.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.SQLSERVER.getDb().equalsIgnoreCase(dbtype)) {
 			return new SQLServerDialect();
-		} else if (SQLSERVER2005.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.SQLSERVER2005.getDb().equalsIgnoreCase(dbtype)) {
 			return new SQLServer2005Dialect();
-		} else if (POSTGRE.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.POSTGRE.getDb().equalsIgnoreCase(dbtype)) {
 			return new PostgreDialect();
-		} else if (HSQL.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.HSQL.getDb().equalsIgnoreCase(dbtype)) {
 			return new HSQLDialect();
-		} else if (SQLITE.getDb().equalsIgnoreCase(dbtype)) {
+		} else if (DBType.SQLITE.getDb().equalsIgnoreCase(dbtype)) {
 			return new SQLiteDialect();
 		} else {
 			throw new MybatisPlusException("The database is not supported！dbtype:" + dbtype);
