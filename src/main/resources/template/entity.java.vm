@@ -4,13 +4,16 @@ package ${package.Entity};
 import ${superEntityClassPackage};
 #end
 #if(${activeRecord})
+import com.baomidou.mybatisplus.activerecord.Model;
 #end
-import com.app.mybatisplus.annotations.TableId;
-import com.app.mybatisplus.annotations.TableField;
-#if(${addTabeName})
-import com.app.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+#if(${tabeAnnotation})
+import com.baomidou.mybatisplus.annotations.TableName;
 #end
+import java.io.Serializable;
 #if(${table.hasDate})
+import java.util.Date;
 #end
 
 /**
@@ -41,6 +44,7 @@ public class ${entity} implements Serializable {
 	 * ${field.comment}
 	 */
 #if(${field.keyFlag} && ${field.convert})
+#set($keyPropertyName=${field.propertyName})
 	@TableId(value="${field.name}")
 #elseif(${field.convert})
 	@TableField(value="${field.name}")
@@ -59,7 +63,11 @@ public class ${entity} implements Serializable {
 		return ${field.propertyName};
 	}
 
+#if(${entityBuliderModel})
+	public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+#else
 	public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+#end
 		this.${field.propertyName} = ${field.propertyName};
 #if(${entityBuliderModel})
 		return this;
@@ -72,5 +80,16 @@ public class ${entity} implements Serializable {
 	public static final String ${field.name.toUpperCase()} = "${field.name}";
 
 #end
+#end
+#if(${activeRecord})
+	@Override
+	protected Serializable pkVal() {
+#if(${keyPropertyName})
+		return this.${keyPropertyName};
+#else
+		return this.id;
+#end
+	}
+
 #end
 }
