@@ -25,7 +25,7 @@ import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.baomidou.mybatisplus.enums.SQLlikeType;
+import com.baomidou.mybatisplus.enums.SqlLike;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.test.mysql.entity.User;
@@ -316,7 +316,7 @@ public class EntityWrapperTest {
 	 */
 	@Test
 	public void testlike() {
-		String sqlPart = Condition.instance().like("default", "default", SQLlikeType.DEFAULT).like("left","left", SQLlikeType.LEFT).like("right","right", SQLlikeType.RIGHT).toString();
+		String sqlPart = Condition.instance().like("default", "default", SqlLike.DEFAULT).like("left","left", SqlLike.LEFT).like("right","right", SqlLike.RIGHT).toString();
 		System.out.println("sql ==> " + sqlPart);
 		Assert.assertEquals("WHERE (default LIKE '%default%' AND left LIKE '%left' AND right LIKE 'right%')", sqlPart);
 	}

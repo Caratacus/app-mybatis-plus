@@ -31,6 +31,8 @@ import org.apache.ibatis.executor.keygen.NoKeyGenerator;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.mapping.StatementType;
@@ -40,6 +42,7 @@ import org.apache.ibatis.session.Configuration;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -136,7 +139,7 @@ public class AutoSqlInjector implements ISqlInjector {
 		}
 	}
 
-    /**
+	/**
 	 * 自定义方法，注入点（子类需重写该方法）
 	 */
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
@@ -380,22 +383,22 @@ public class AutoSqlInjector implements ISqlInjector {
 		this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, modelClass, table);
 	}
 
-    /**
-     * <p>
-     * 注入EntityWrapper方式查询记录列表 SQL 语句
-     * </p>
-     *
-     * @param sqlMethod
-     * @param mapperClass
-     * @param modelClass
-     * @param table
-     */
-    protected void injectSelectMapsSql(SqlMethod sqlMethod, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
-        String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, true), table.getTableName(),
-                sqlWhereEntityWrapper(table));
-        SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
-        this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, Map.class, table);
-    }
+	/**
+	 * <p>
+	 * 注入EntityWrapper方式查询记录列表 SQL 语句
+	 * </p>
+	 *
+	 * @param sqlMethod
+	 * @param mapperClass
+	 * @param modelClass
+	 * @param table
+	 */
+	protected void injectSelectMapsSql(SqlMethod sqlMethod, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
+		String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, true), table.getTableName(),
+				sqlWhereEntityWrapper(table));
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
+		this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, Map.class, table);
+	}
 
 	/**
 	 * <p>
@@ -604,12 +607,12 @@ public class AutoSqlInjector implements ISqlInjector {
 	 */
 	protected String convertIfTag(boolean ignored, TableFieldInfo fieldInfo, String prefix, boolean colse) {
 		/* 忽略策略 */
-		FieldStrategy fieldStrategy = fieldInfo.getFieldStrategy(); 
+		FieldStrategy fieldStrategy = fieldInfo.getFieldStrategy();
 		if (fieldStrategy == FieldStrategy.IGNORED) {
 			if (ignored) {
 				return "";
 			}
-			//TODO 考虑日期类型忽略
+			// TODO 考虑日期类型忽略
 			// 查询策略，使用全局策略
 			fieldStrategy = GlobalConfiguration.GlobalConfig(configuration).getFieldStrategy();
 		}
@@ -704,9 +707,132 @@ public class AutoSqlInjector implements ISqlInjector {
 		if (sqlCommandType == SqlCommandType.SELECT) {
 			isSelect = true;
 		}
-        return builderAssistant.addMappedStatement(id, sqlSource, StatementType.PREPARED, sqlCommandType, null, null, null,
+		return builderAssistant.addMappedStatement(id, sqlSource, StatementType.PREPARED, sqlCommandType, null, null, null,
 				parameterClass, resultMap, resultType, null, !isSelect, isSelect, false, keyGenerator, keyProperty, keyColumn,
 				configuration.getDatabaseId(), languageDriver, null);
+	}
+
+	// --------------------------------------------------------SqlRunner------------------------------------------------------------
+	public void injectSqlRunner(Configuration configuration) {
+		this.configuration = configuration;
+		this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
+		initSelect();
+		initInsert();
+		initUpdate();
+		initDelete();
+		initCount();
+	}
+
+	/**
+	 * 是否已经存在MappedStatement
+	 *
+	 * @param mappedStatement
+	 * @return
+	 */
+	private boolean hasMappedStatement(String mappedStatement) {
+		return configuration.hasStatement(mappedStatement, false);
+	}
+
+	/**
+	 * 创建查询MappedStatement
+	 *
+	 * @param mappedStatement
+	 * @param sqlSource
+	 *            执行的sqlSource
+	 * @param resultType
+	 *            返回的结果类型
+	 */
+	private void createSelectMappedStatement(String mappedStatement, SqlSource sqlSource, final Class<?> resultType) {
+		MappedStatement ms = new MappedStatement.Builder(configuration, mappedStatement, sqlSource, SqlCommandType.SELECT)
+				.resultMaps(new ArrayList<ResultMap>() {
+					{
+						add(new ResultMap.Builder(configuration, "defaultResultMap", resultType, new ArrayList<ResultMapping>(0))
+								.build());
+					}
+				}).build();
+		// 缓存
+		configuration.addMappedStatement(ms);
+	}
+
+	/**
+	 * 创建一个MappedStatement
+	 *
+	 * @param mappedStatement
+	 * @param sqlSource
+	 *            执行的sqlSource
+	 * @param sqlCommandType
+	 *            执行的sqlCommandType
+	 */
+	private void createUpdateMappedStatement(String mappedStatement, SqlSource sqlSource, SqlCommandType sqlCommandType) {
+		MappedStatement ms = new MappedStatement.Builder(configuration, mappedStatement, sqlSource, sqlCommandType).resultMaps(
+				new ArrayList<ResultMap>() {
+					{
+						add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0))
+								.build());
+					}
+				}).build();
+		// 缓存
+		configuration.addMappedStatement(ms);
+	}
+
+	/**
+	 * initSelect
+	 */
+	private void initSelect() {
+		if (hasMappedStatement(SqlRunner.SELECT)) {
+			logger.warn("MappedStatement 'SqlRunner.Select' Aalready Exists");
+			return;
+		}
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, SqlRunner.SQLScript, Map.class);
+		createSelectMappedStatement(SqlRunner.SELECT, sqlSource, Map.class);
+	}
+
+	/**
+	 * initSelect
+	 */
+	private void initCount() {
+		if (hasMappedStatement(SqlRunner.COUNT)) {
+			logger.warn("MappedStatement 'SqlRunner.Count' Aalready Exists");
+			return;
+		}
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, SqlRunner.SQLScript, Map.class);
+		createSelectMappedStatement(SqlRunner.COUNT, sqlSource, Integer.class);
+	}
+
+	/**
+	 * initInsert
+	 */
+	private void initInsert() {
+		if (hasMappedStatement(SqlRunner.INSERT)) {
+			logger.warn("MappedStatement 'SqlRunner.Insert' Aalready Exists");
+			return;
+		}
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, SqlRunner.SQLScript, Map.class);
+		createUpdateMappedStatement(SqlRunner.INSERT, sqlSource, SqlCommandType.INSERT);
+	}
+
+	/**
+	 * initUpdate
+	 */
+	private void initUpdate() {
+		if (hasMappedStatement(SqlRunner.UPDATE)) {
+			logger.warn("MappedStatement 'SqlRunner.Update' Aalready Exists");
+			return;
+		}
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, SqlRunner.SQLScript, Map.class);
+		createUpdateMappedStatement(SqlRunner.UPDATE, sqlSource, SqlCommandType.UPDATE);
+	}
+
+	/**
+	 * initDelete
+	 */
+	private void initDelete() {
+		if (hasMappedStatement(SqlRunner.DELETE)) {
+			logger.warn("MappedStatement 'SqlRunner.Delete' Aalready Exists");
+			return;
+		}
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, SqlRunner.SQLScript, Map.class);
+		createUpdateMappedStatement(SqlRunner.DELETE, sqlSource, SqlCommandType.DELETE);
 	}
 
 }

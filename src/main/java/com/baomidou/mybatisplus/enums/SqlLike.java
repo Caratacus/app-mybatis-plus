@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2020, hubin (jobob@qq.com).
+ * Copyright (c) 2011-2014, hubin (jobob@qq.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,34 +13,47 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baomidou.mybatisplus.mapper;
-
-import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
+package com.baomidou.mybatisplus.enums;
 
 /**
  * <p>
- * 纯 SQL Provider
+ * SQL like 枚举
  * </p>
  * 
- * @author hubin
- * @Date 2016-11-06
+ * @author Caratacus
+ * @Date 2016-12-4
  */
-public class PureSqlProvider {
-
+public enum SqlLike {
 	/**
-	 * <p>
-	 * 执行 SQL 语句
-	 * </p>
-	 * 
-	 * @param sql
-	 *            SQL语句
-	 * @return
+	 * LEFT
 	 */
-	public String sql(String sql) {
-		if (null == sql) {
-			throw new MybatisPlusException("sql is null.");
-		}
-		return sql;
+	LEFT("left", "左边%"),
+	/**
+	 * RIGHT
+	 */
+	RIGHT("right", "右边%"),
+	/**
+	 * DEFAULT
+	 */
+	DEFAULT("default", "两边%");
+
+	/** 主键 */
+	private final String type;
+
+	/** 描述 */
+	private final String desc;
+
+	SqlLike(final String type, final String desc) {
+		this.type = type;
+		this.desc = desc;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public String getDesc() {
+		return desc;
 	}
 
 }
