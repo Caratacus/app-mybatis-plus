@@ -183,7 +183,7 @@
 				</executions>
 			</plugin>
 			<!-- Javadoc -->
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.version}</version>
@@ -199,13 +199,13 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
-						<!-- JDK1.8除错 -->
+						&lt;!&ndash; JDK1.8除错 &ndash;&gt;
 						<configuration>
 							<additionalparam>-Xdoclint:none</additionalparam>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 			<!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>

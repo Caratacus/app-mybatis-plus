@@ -32,7 +32,7 @@ import java.util.Map;
 
 /**
  * <p>
- * SqlQuery 执行 SQL
+ * SqlRunner 执行 SQL
  * </p>
  *
  * @author Caratacus
@@ -41,12 +41,13 @@ import java.util.Map;
 public class SqlRunner {
 
 	private static final Log logger = LogFactory.getLog(SqlRunner.class);
+	// 默认FACTORY
 	public static SqlSessionFactory FACTORY;
-	public static final String INSERT = "SqlRunner.Insert";
-	public static final String DELETE = "SqlRunner.Delete";
-	public static final String UPDATE = "SqlRunner.Update";
-	public static final String SELECT = "SqlRunner.Select";
-	public static final String COUNT = "SqlRunner.Count";
+	public static final String INSERT = "com.baomidou.mybatisplus.mapper.SqlRunner.Insert";
+	public static final String DELETE = "com.baomidou.mybatisplus.mapper.SqlRunner.Delete";
+	public static final String UPDATE = "com.baomidou.mybatisplus.mapper.SqlRunner.Update";
+	public static final String SELECT = "com.baomidou.mybatisplus.mapper.SqlRunner.Select";
+	public static final String COUNT = "com.baomidou.mybatisplus.mapper.SqlRunner.Count";
 	public static final String SQLScript = "${sql}";
 	public static final String SQL = "sql";
 
@@ -74,7 +75,7 @@ public class SqlRunner {
 
 	/**
 	 * 获取sqlMap参数
-	 * 
+	 *
 	 * @param sql
 	 * @param args
 	 * @return
@@ -119,7 +120,7 @@ public class SqlRunner {
 
 	/**
 	 * 获取默认的SqlQuery(适用于单库)
-	 * 
+	 *
 	 * @return
 	 */
 	public static SqlRunner db() {
@@ -132,7 +133,7 @@ public class SqlRunner {
 
 	/**
 	 * 根据当前class对象获取SqlQuery(适用于多库)
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 */
