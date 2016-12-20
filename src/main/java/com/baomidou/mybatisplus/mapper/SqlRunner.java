@@ -75,7 +75,7 @@ public class SqlRunner {
 
 	/**
 	 * 获取sqlMap参数
-	 *
+	 * 
 	 * @param sql
 	 * @param args
 	 * @return
@@ -120,7 +120,7 @@ public class SqlRunner {
 
 	/**
 	 * 获取默认的SqlQuery(适用于单库)
-	 *
+	 * 
 	 * @return
 	 */
 	public static SqlRunner db() {
@@ -133,7 +133,7 @@ public class SqlRunner {
 
 	/**
 	 * 根据当前class对象获取SqlQuery(适用于多库)
-	 *
+	 * 
 	 * @param clazz
 	 * @return
 	 */

@@ -15,15 +15,15 @@
  */
 package com.baomidou.mybatisplus.mapper;
 
+import com.baomidou.mybatisplus.enums.SqlLike;
+import com.baomidou.mybatisplus.toolkit.MapUtils;
+import com.baomidou.mybatisplus.toolkit.StringUtils;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.enums.SqlLike;
-import com.baomidou.mybatisplus.toolkit.MapUtils;
-import com.baomidou.mybatisplus.toolkit.StringUtils;
 
 
 /**
