@@ -15,19 +15,19 @@
  */
 package com.baomidou.mybatisplus.test.mysql.entity;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldStrategy;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+
 /**
  * <p>
  * 测试用户类
  * </p>
- * 
+ *
  * @author hubin sjy
  * @Date 2016-09-09
  */
