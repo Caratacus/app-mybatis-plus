@@ -82,7 +82,7 @@ public class GlobalConfiguration implements Cloneable, Serializable {
 	// 是否大写命名
 	private boolean isCapitalMode = false;
 	// 标识符
-	private String identifierQuote = "`";
+	private String identifierQuote;
 	// 缓存当前Configuration的SqlSessionFactory
 	private SqlSessionFactory sqlSessionFactory;
 

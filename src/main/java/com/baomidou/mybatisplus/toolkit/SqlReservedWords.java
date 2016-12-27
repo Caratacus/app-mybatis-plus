@@ -161,7 +161,7 @@ public class SqlReservedWords {
 		if (containsWord(column)) {
 			String identifierQuote = StringUtils.isEmpty(globalConfig.getIdentifierQuote()) ? globalConfig.getDbType().getQuote()
 					: globalConfig.getIdentifierQuote();
-			if (StringUtils.isEmpty(identifierQuote)) {
+			if (StringUtils.isNotEmpty(identifierQuote)) {
 				return String.format(identifierQuote, column);
 			}
 		}
