@@ -15,10 +15,10 @@
  */
 package com.baomidou.mybatisplus.toolkit;
 
+import com.baomidou.mybatisplus.entity.GlobalConfiguration;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import com.baomidou.mybatisplus.enums.DBType;
 
 /**
  * <p>
@@ -960,25 +960,30 @@ public class SqlReservedWords {
 	 * 数据库字段转义
 	 * </p>
 	 *
-	 * @param dbType
-	 *            数据库类型
+	 * @param globalConfig
+	 *            全局配置
 	 * @param column
 	 *            数据库字段
 	 * @return
 	 */
-	public static String convert(DBType dbType, String column) {
-		if (dbType == DBType.MYSQL && containsWord(column)) {
-			return String.format("`%s`", column);
+	public static String convert(GlobalConfiguration globalConfig, String column) {
+		Set<String> sqlKeywords = globalConfig.getSqlKeywords();
+		if (StringUtils.isNotEmpty(column) && CollectionUtils.isNotEmpty(sqlKeywords)) {
+			if (sqlKeywords.contains(column.toUpperCase())) {
+				String quote = globalConfig.getIdentifierQuote();
+				if (StringUtils.isNotEmpty(quote)) {
+					return new StringBuilder(column.length() + 2).append(quote).append(column).append(quote).toString();
+				}
+			}
 		}
 		return column;
 	}
 
 	public static boolean containsWord(String word) {
-		boolean rc = false;
 		if (null != word) {
-			rc = RESERVED_WORDS.contains(word.toUpperCase());
+			return RESERVED_WORDS.contains(word.toUpperCase());
 		}
-		return rc;
+		return false;
 	}
 
 	/**

@@ -17,8 +17,11 @@ package com.baomidou.mybatisplus.toolkit;
 
 import com.baomidou.mybatisplus.enums.SqlLike;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -178,16 +181,14 @@ public class StringUtils {
 	 * @return
 	 */
 	public static String sqlArgsFill(String content, Object... args) {
-		if (null == content) {
+		if (StringUtils.isEmpty(content)) {
 			return null;
 		}
 		if (args != null) {
 			int length = args.length;
 			if (length >= 1) {
 				for (int i = 0; i < length; i++) {
-					// 改造 String.replace() 用法
-					content = Pattern.compile(String.format(PLACE_HOLDER, i), Pattern.LITERAL).matcher(content)
-							.replaceAll(sqlParam(args[i]));
+					content = content.replace(String.format(PLACE_HOLDER, i), sqlParam(args[i]));
 				}
 			}
 		}
@@ -238,17 +239,18 @@ public class StringUtils {
 	 * @return
 	 */
 	public static String concatLike(String str, SqlLike type) {
+		StringBuilder builder = new StringBuilder(str.length() + 3);
 		switch (type) {
 		case LEFT:
-			str = "%" + str;
+			builder.append("%").append(str);
 			break;
 		case RIGHT:
-			str += "%";
+			builder.append(str).append("%");
 			break;
 		default:
-			str = "%" + str + "%";
+			builder.append("%").append(str).append("%");
 		}
-		return StringEscape.escapeString(str);
+		return StringEscape.escapeString(builder.toString());
 	}
 
 	/**
@@ -268,10 +270,8 @@ public class StringUtils {
 		Iterator<?> iterator = coll.iterator();
 		while (iterator.hasNext()) {
 			String tempVal = StringUtils.quotaMark(iterator.next());
-			if (i + 1 == _size) {
-				sqlBuild.append(tempVal);
-			} else {
-				sqlBuild.append(tempVal);
+			sqlBuild.append(tempVal);
+			if (i + 1 < _size) {
 				sqlBuild.append(",");
 			}
 			i++;
@@ -439,6 +439,148 @@ public class StringUtils {
 		}
 		int strOffset = str.length() - suffix.length();
 		return str.regionMatches(ignoreCase, strOffset, suffix, 0, suffix.length());
+	}
+
+	/**
+	 * <p>
+	 * Splits the provided text into an array, separators specified. This is an
+	 * alternative to using StringTokenizer.
+	 * </p>
+	 *
+	 * <p>
+	 * The separator is not included in the returned String array. Adjacent
+	 * separators are treated as one separator. For more control over the split
+	 * use the StrTokenizer class.
+	 * </p>
+	 *
+	 * <p>
+	 * A {@code null} input String returns {@code null}. A {@code null}
+	 * separatorChars splits on whitespace.
+	 * </p>
+	 *
+	 * <pre>
+	 * StringUtils.split(null, *)         = null
+	 * StringUtils.split("", *)           = []
+	 * StringUtils.split("abc def", null) = ["abc", "def"]
+	 * StringUtils.split("abc def", " ")  = ["abc", "def"]
+	 * StringUtils.split("abc  def", " ") = ["abc", "def"]
+	 * StringUtils.split("ab:cd:ef", ":") = ["ab", "cd", "ef"]
+	 * </pre>
+	 *
+	 * @param str
+	 *            the String to parse, may be null
+	 * @param separatorChars
+	 *            the characters used as the delimiters, {@code null} splits on
+	 *            whitespace
+	 * @return an array of parsed Strings, {@code null} if null String input
+	 */
+	public static String[] split(final String str, final String separatorChars) {
+		List<String> strings = splitWorker(str, separatorChars, -1, false);
+		return strings.toArray(new String[strings.size()]);
+	}
+
+	/**
+	 * Performs the logic for the {@code split} and
+	 * {@code splitPreserveAllTokens} methods that return a maximum array
+	 * length.
+	 *
+	 * @param str
+	 *            the String to parse, may be {@code null}
+	 * @param separatorChars
+	 *            the separate character
+	 * @param max
+	 *            the maximum number of elements to include in the array. A zero
+	 *            or negative value implies no limit.
+	 * @param preserveAllTokens
+	 *            if {@code true}, adjacent separators are treated as empty
+	 *            token separators; if {@code false}, adjacent separators are
+	 *            treated as one separator.
+	 * @return an array of parsed Strings, {@code null} if null String input
+	 */
+	public static List<String> splitWorker(final String str, final String separatorChars, final int max,
+			final boolean preserveAllTokens) {
+		// Performance tuned for 2.0 (JDK1.4)
+		// Direct code is quicker than StringTokenizer.
+		// Also, StringTokenizer uses isSpace() not isWhitespace()
+
+		if (str == null) {
+			return null;
+		}
+		final int len = str.length();
+		if (len == 0) {
+			return Collections.emptyList();
+		}
+		final List<String> list = new ArrayList<String>();
+		int sizePlus1 = 1;
+		int i = 0, start = 0;
+		boolean match = false;
+		boolean lastMatch = false;
+		if (separatorChars == null) {
+			// Null separator means use whitespace
+			while (i < len) {
+				if (Character.isWhitespace(str.charAt(i))) {
+					if (match || preserveAllTokens) {
+						lastMatch = true;
+						if (sizePlus1++ == max) {
+							i = len;
+							lastMatch = false;
+						}
+						list.add(str.substring(start, i));
+						match = false;
+					}
+					start = ++i;
+					continue;
+				}
+				lastMatch = false;
+				match = true;
+				i++;
+			}
+		} else if (separatorChars.length() == 1) {
+			// Optimise 1 character case
+			final char sep = separatorChars.charAt(0);
+			while (i < len) {
+				if (str.charAt(i) == sep) {
+					if (match || preserveAllTokens) {
+						lastMatch = true;
+						if (sizePlus1++ == max) {
+							i = len;
+							lastMatch = false;
+						}
+						list.add(str.substring(start, i));
+						match = false;
+					}
+					start = ++i;
+					continue;
+				}
+				lastMatch = false;
+				match = true;
+				i++;
+			}
+		} else {
+			// standard case
+			while (i < len) {
+				if (separatorChars.indexOf(str.charAt(i)) >= 0) {
+					if (match || preserveAllTokens) {
+						lastMatch = true;
+						if (sizePlus1++ == max) {
+							i = len;
+							lastMatch = false;
+						}
+						list.add(str.substring(start, i));
+						match = false;
+					}
+					start = ++i;
+					continue;
+				}
+				lastMatch = false;
+				match = true;
+				i++;
+			}
+		}
+		if (match || preserveAllTokens && lastMatch) {
+			list.add(str.substring(start, i));
+		}
+		return list;
 	}
 
 }

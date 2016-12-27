@@ -15,18 +15,6 @@
  */
 package com.baomidou.mybatisplus.generator.config.builder;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
@@ -39,6 +27,18 @@ import com.baomidou.mybatisplus.generator.config.rules.DbType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.config.rules.QuerySQL;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 配置汇总 传递给文件生成工具
@@ -486,6 +486,8 @@ public class ConfigBuilder {
 			return processMySqlType(type);
 		} else if (QuerySQL.ORACLE == querySQL) {
 			return processOracleType(type);
+		}else if (QuerySQL.SQLSERVER == querySQL) {
+			return processSQLServerType(type);
 		}
 		return null;
 	}
@@ -537,13 +539,13 @@ public class ConfigBuilder {
 		} else if (t.contains("int")) {
 			return "Integer";
 		} else if (t.contains("date") || t.contains("time") || t.contains("year")) {
-			return "Date";
+			return "java.util.Date";
 		} else if (t.contains("text")) {
 			return "String";
 		} else if (t.contains("bit")) {
 			return "Boolean";
 		} else if (t.contains("decimal")) {
-			return "BigDecimal";
+			return "java.math.BigDecimal";
 		} else if (t.contains("blob")) {
 			return "byte[]";
 		} else if (t.contains("float")) {
@@ -568,7 +570,7 @@ public class ConfigBuilder {
 		if (t.contains("CHAR")) {
 			return "String";
 		} else if (t.contains("DATE") || t.contains("TIMESTAMP")) {
-			return "Date";
+			return "java.util.Date";
 		} else if (t.contains("NUMBER")) {
 			if (t.matches("NUMBER\\(+\\d{1}+\\)")) {
 				return "Integer";
@@ -582,6 +584,37 @@ public class ConfigBuilder {
 			return "Object";
 		} else if (t.contains("RAW")) {
 			return "byte[]";
+		}
+		return "String";
+	}
+
+	/**
+	 * SQLServer字段类型转换
+	 * @param type
+	 * @return
+	 */
+	private String processSQLServerType(String type) {
+		String t = type.toLowerCase();
+		if (t.contains("char") || t.contains("text") || t.contains("xml")) {
+			return "String";
+		} else if (t.contains("bigint")) {
+			return "Long";
+		} else if (t.contains("int")) {
+			return "Integer";
+		} else if (t.contains("date") || t.contains("time")) {
+			return "java.util.Date";
+		} else if (t.contains("text")) {
+			return "String";
+		} else if (t.contains("bit")) {
+			return "Boolean";
+		}else if (t.contains("decimal")||t.contains("numeric")){
+			return "Double";
+		}else if (t.contains("money")) {
+			return "java.math.BigDecimal";
+		} else if (t.contains("binary")||t.contains("image")) {
+			return "byte[]";
+		} else if (t.contains("float")||t.contains("real")) {
+			return "Float";
 		}
 		return "String";
 	}

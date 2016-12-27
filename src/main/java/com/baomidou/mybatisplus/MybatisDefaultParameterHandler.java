@@ -45,7 +45,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * <p>
@@ -174,7 +173,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 				if (tableInfo.getIdType() == IdType.ID_WORKER) {
 					metaObject.setValue(tableInfo.getKeyProperty(), IdWorker.getId());
 				} else if (tableInfo.getIdType() == IdType.UUID) {
-					metaObject.setValue(tableInfo.getKeyProperty(), get32UUID());
+					metaObject.setValue(tableInfo.getKeyProperty(), IdWorker.get32UUID());
 				}
 			}
 			/* 自定义元对象填充控制器 */
@@ -188,15 +187,6 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 		 * 不处理
 		 */
 		return parameterObject;
-	}
-
-	/**
-	 * <p>
-	 * 获取去掉"-" UUID
-	 * </p>
-	 */
-	protected static synchronized String get32UUID() {
-		return UUID.randomUUID().toString().replace("-", "");
 	}
 
 	@Override

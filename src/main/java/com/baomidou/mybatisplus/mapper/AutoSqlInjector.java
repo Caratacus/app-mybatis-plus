@@ -18,10 +18,8 @@ package com.baomidou.mybatisplus.mapper;
 import com.baomidou.mybatisplus.entity.GlobalConfiguration;
 import com.baomidou.mybatisplus.entity.TableFieldInfo;
 import com.baomidou.mybatisplus.entity.TableInfo;
-import com.baomidou.mybatisplus.enums.DBType;
 import com.baomidou.mybatisplus.enums.FieldStrategy;
 import com.baomidou.mybatisplus.enums.IdType;
-import com.baomidou.mybatisplus.enums.InjectionRules;
 import com.baomidou.mybatisplus.enums.SqlMethod;
 import com.baomidou.mybatisplus.toolkit.SqlReservedWords;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
@@ -45,6 +43,7 @@ import org.apache.ibatis.session.Configuration;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,16 +57,10 @@ import java.util.Set;
  * @Date 2016-09-09
  */
 public class AutoSqlInjector implements ISqlInjector {
-
 	private static final Log logger = LogFactory.getLog(AutoSqlInjector.class);
-
 	protected Configuration configuration;
-
 	protected LanguageDriver languageDriver;
-
 	protected MapperBuilderAssistant builderAssistant;
-
-	protected DBType dbType = DBType.MYSQL;
 
 	/**
 	 * CRUD注入后给予标识 注入过后不再注入
@@ -92,7 +85,6 @@ public class AutoSqlInjector implements ISqlInjector {
 		this.builderAssistant = builderAssistant;
 		this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
 		GlobalConfiguration globalCache = GlobalConfiguration.GlobalConfig(configuration);
-		this.dbType = globalCache.getDbType();
 		/*
 		 * 驼峰设置 PLUS 配置 > 原始配置
 		 */
@@ -101,19 +93,12 @@ public class AutoSqlInjector implements ISqlInjector {
 		}
 		Class<?> modelClass = extractModelClass(mapperClass);
 		if (modelClass != null) {
-			TableInfo table = TableInfoHelper.initTableInfo(builderAssistant, modelClass);
-
 			/**
 			 * 表信息不为空的情况
 			 */
+			TableInfo table = TableInfoHelper.initTableInfo(builderAssistant, modelClass);
 			if (null != table) {
-				InjectionRules injectionRule = globalCache.getInjectionRule();
-				if (InjectionRules.UNREQUIREDPK.equals(injectionRule)) {
-					InjectUnrequiredPK(builderAssistant, mapperClass, modelClass, table);
-				} else {
-					InjectRequiredPK(builderAssistant, mapperClass, modelClass, table);
-				}
-
+				injectSql(builderAssistant, mapperClass, modelClass, table);
 			} else {
 				/**
 				 * 警告 Mybatis-Plus 默认方法不能使用
@@ -125,15 +110,16 @@ public class AutoSqlInjector implements ISqlInjector {
 	}
 
 	/**
-	 * 注入SQL时不需要主键策略
+	 * <p>
+	 * 注入SQL
+	 * </p>
 	 * 
 	 * @param builderAssistant
 	 * @param mapperClass
 	 * @param modelClass
 	 * @param table
 	 */
-	protected void InjectUnrequiredPK(MapperBuilderAssistant builderAssistant, Class<?> mapperClass, Class<?> modelClass,
-			TableInfo table) {
+	protected void injectSql(MapperBuilderAssistant builderAssistant, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
 		/**
 		 * #148 表信息包含主键，注入主键相关方法
 		 */
@@ -146,11 +132,8 @@ public class AutoSqlInjector implements ISqlInjector {
 			/* 查询 */
 			this.injectSelectByIdSql(false, mapperClass, modelClass, table);
 			this.injectSelectByIdSql(true, mapperClass, modelClass, table);
-		}
-		/**
-		 * 表不包含主键时 给予警告
-		 */
-		if (StringUtils.isEmpty(table.getKeyProperty())) {
+		} else {
+			// 表不包含主键时 给予警告
 			logger.warn(String.format("%s ,Not found @TableId annotation, Cannot use Mybatis-Plus 'xxById' Method.",
 					modelClass.toString()));
 		}
@@ -174,53 +157,6 @@ public class AutoSqlInjector implements ISqlInjector {
 		this.injectSelectMapsSql(SqlMethod.SELECT_MAPS_PAGE, mapperClass, modelClass, table);
 		/* 自定义方法 */
 		this.inject(configuration, builderAssistant, mapperClass, modelClass, table);
-	}
-
-	/**
-	 * 注入SQL时不需要主键策略
-	 * 
-	 * @param builderAssistant
-	 * @param mapperClass
-	 * @param modelClass
-	 * @param table
-	 */
-	protected void InjectRequiredPK(MapperBuilderAssistant builderAssistant, Class<?> mapperClass, Class<?> modelClass,
-			TableInfo table) {
-		if (StringUtils.isNotEmpty(table.getKeyProperty())) {
-			/* 插入 */
-			this.injectInsertOneSql(mapperClass, modelClass, table);
-
-			/* 删除 */
-			this.injectDeleteSql(mapperClass, modelClass, table);
-			this.injectDeleteByMapSql(mapperClass, table);
-			this.injectDeleteByIdSql(false, mapperClass, modelClass, table);
-			this.injectDeleteByIdSql(true, mapperClass, modelClass, table);
-
-			/* 修改 */
-			this.injectUpdateByIdSql(mapperClass, modelClass, table);
-			this.injectUpdateSql(mapperClass, modelClass, table);
-
-			/* 查询 */
-			this.injectSelectByIdSql(false, mapperClass, modelClass, table);
-			this.injectSelectByIdSql(true, mapperClass, modelClass, table);
-			this.injectSelectByMapSql(mapperClass, modelClass, table);
-			this.injectSelectOneSql(mapperClass, modelClass, table);
-			this.injectSelectCountSql(mapperClass, modelClass, table);
-			this.injectSelectListSql(SqlMethod.SELECT_LIST, mapperClass, modelClass, table);
-			this.injectSelectListSql(SqlMethod.SELECT_PAGE, mapperClass, modelClass, table);
-			this.injectSelectMapsSql(SqlMethod.SELECT_MAPS, mapperClass, modelClass, table);
-			this.injectSelectMapsSql(SqlMethod.SELECT_MAPS_PAGE, mapperClass, modelClass, table);
-
-			/* 自定义方法 */
-			this.inject(configuration, builderAssistant, mapperClass, modelClass, table);
-		} else {
-			/**
-			 * 警告
-			 */
-			logger.warn(String.format("%s ,Not found @TableId annotation, Cannot use Mybatis-Plus crud Method.",
-					modelClass.toString()));
-		}
-
 	}
 
 	/**
@@ -574,8 +510,8 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * @return
 	 */
 	protected String sqlWordConvert(String convertStr) {
-		DBType dbType = GlobalConfiguration.getDbType(configuration);
-		return SqlReservedWords.convert(dbType, convertStr);
+		GlobalConfiguration globalConfig = GlobalConfiguration.GlobalConfig(configuration);
+		return SqlReservedWords.convert(globalConfig, convertStr);
 	}
 
 	/**
@@ -608,17 +544,27 @@ public class AutoSqlInjector implements ISqlInjector {
 			if (entityWrapper) {
 				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
 			}
-			if (table.isKeyRelated()) {
-				columns.append(table.getKeyColumn()).append(" AS ").append(sqlWordConvert(table.getKeyProperty()));
-			} else {
-				columns.append(sqlWordConvert(table.getKeyProperty()));
-			}
-			List<TableFieldInfo> fieldList = table.getFieldList();
-			for (TableFieldInfo fieldInfo : fieldList) {
-				columns.append(",").append(fieldInfo.getColumn());
-				if (fieldInfo.isRelated()) {
-					columns.append(" AS ").append(sqlWordConvert(fieldInfo.getProperty()));
+			if (StringUtils.isNotEmpty(table.getKeyProperty())) {
+				if (table.isKeyRelated()) {
+					columns.append(table.getKeyColumn()).append(" AS ").append(sqlWordConvert(table.getKeyProperty()));
+				} else {
+					columns.append(sqlWordConvert(table.getKeyProperty()));
 				}
+				columns.append(",");
+			}
+
+			List<TableFieldInfo> fieldList = table.getFieldList();
+			int _size = fieldList.size();
+			int i = 0;
+			Iterator<TableFieldInfo> iterator = fieldList.iterator();
+			while (iterator.hasNext()) {
+				TableFieldInfo fieldInfo = iterator.next();
+				columns.append(fieldInfo.getColumn());
+				columns.append(" AS ").append(sqlWordConvert(fieldInfo.getProperty()));
+				if (i + 1 < _size) {
+					columns.append(",");
+				}
+				i++;
 			}
 			if (entityWrapper) {
 				columns.append("</otherwise></choose>");
@@ -676,8 +622,13 @@ public class AutoSqlInjector implements ISqlInjector {
 		where.append("\n<where>");
 		where.append("\n<foreach collection=\"cm.keys\" item=\"k\" separator=\"AND\">");
 		where.append("\n<if test=\"cm[k] != null\">");
-		if (DBType.MYSQL.equals(dbType)) {
-			where.append("\n`${k}` = #{cm[${k}]}");
+		String quote = GlobalConfiguration.getIdentifierQuote(configuration);
+		if (StringUtils.isNotEmpty(quote)) {
+			where.append("\n");
+			where.append(quote);
+			where.append("${k}");
+			where.append(quote);
+			where.append(" = #{cm[${k}]}");
 		} else {
 			where.append("\n${k} = #{cm[${k}]}");
 		}
