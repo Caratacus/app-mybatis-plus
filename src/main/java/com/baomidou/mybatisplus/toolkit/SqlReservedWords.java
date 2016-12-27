@@ -967,16 +967,7 @@ public class SqlReservedWords {
 	 * @return
 	 */
 	public static String convert(GlobalConfiguration globalConfig, String column) {
-		Set<String> sqlKeywords = globalConfig.getSqlKeywords();
-		if (StringUtils.isNotEmpty(column) && CollectionUtils.isNotEmpty(sqlKeywords)) {
-			if (sqlKeywords.contains(column.toUpperCase())) {
-				String quote = globalConfig.getIdentifierQuote();
-				if (StringUtils.isNotEmpty(quote)) {
-					return new StringBuilder(column.length() + 2).append(quote).append(column).append(quote).toString();
-				}
-			}
-		}
-		return column;
+		return new StringBuilder(column.length() + 2).append("`").append(column).append("`").toString();
 	}
 
 	public static boolean containsWord(String word) {
