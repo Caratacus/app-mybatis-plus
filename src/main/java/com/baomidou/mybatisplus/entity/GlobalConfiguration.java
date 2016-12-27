@@ -83,7 +83,7 @@ public class GlobalConfiguration implements Cloneable, Serializable {
 	// 是否大写命名
 	private boolean isCapitalMode = false;
 	// 标识符
-	private String identifierQuote;
+	private String identifierQuote = "`";
 	// 缓存当前Configuration的SqlSessionFactory
 	private SqlSessionFactory sqlSessionFactory;
 
@@ -361,13 +361,16 @@ public class GlobalConfiguration implements Cloneable, Serializable {
 		try {
 			connection = dataSource.getConnection();
 			String jdbcUrl = connection.getMetaData().getURL();
-			List<String> sqlKeywords = StringUtils.splitWorker(connection.getMetaData().getSQLKeywords().toUpperCase(),
-					",", -1, false);
+			List<String> sqlKeywords = StringUtils.splitWorker(connection.getMetaData().getSQLKeywords().toUpperCase(), ",", -1,
+					false);
 			// 设置全局关键字
 			globalConfig.setSqlKeywords(new HashSet<String>(sqlKeywords) {
 			});
-			// 设置标识符
-			globalConfig.setIdentifierQuote(connection.getMetaData().getIdentifierQuoteString());
+			String identifierQuoteString = connection.getMetaData().getIdentifierQuoteString();
+			if (StringUtils.isNotEmpty(identifierQuoteString)) {
+				// 设置标识符
+				globalConfig.setIdentifierQuote(connection.getMetaData().getIdentifierQuoteString());
+			}
 			// TODO 自动设置数据库类型
 			if (globalConfig.isAutoSetDbType()) {
 				globalConfig.setDbTypeByJdbcUrl(jdbcUrl);
