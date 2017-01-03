@@ -95,8 +95,23 @@ public class SqlHelper {
 	 *            数据库操作返回影响条数
 	 * @return boolean
 	 */
-	public static boolean retBool(int result) {
+	public static boolean retBool(Integer result) {
+		if (null == result) {
+			return false;
+		}
 		return result >= 1;
+	}
+
+	/**
+	 * <p>
+	 * 返回SelectCount执行结果
+	 * </p>
+	 *
+	 * @param result
+	 * @return int
+	 */
+	public static int retCount(Integer result) {
+		return (null == result) ? 0 : result;
 	}
 
 }

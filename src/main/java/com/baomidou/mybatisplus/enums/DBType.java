@@ -19,7 +19,7 @@ package com.baomidou.mybatisplus.enums;
  * <p>
  * MybatisPlus 数据库类型
  * </p>
- * 
+ *
  * @author hubin
  * @Date 2016-04-15
  */
@@ -81,7 +81,7 @@ public enum DBType {
 	 * <p>
 	 * 获取数据库类型（默认 MySql）
 	 * </p>
-	 * 
+	 *
 	 * @param dbType
 	 *            数据库类型字符串
 	 * @return

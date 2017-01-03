@@ -141,6 +141,25 @@ public class StringUtils {
 
 	/**
 	 * <p>
+	 * 首字母转换小写
+	 * </p>
+	 *
+	 * @param param
+	 *            需要转换的字符串
+	 * @return 转换好的字符串
+	 */
+	public static String firstToLowerCase(String param) {
+		if (isEmpty(param)) {
+			return EMPTY;
+		}
+		StringBuilder sb = new StringBuilder(param.length());
+		sb.append(param.substring(0, 1).toLowerCase());
+		sb.append(param.substring(1));
+		return sb.toString();
+	}
+
+	/**
+	 * <p>
 	 * 判断字符串是否为纯大写字母
 	 * </p>
 	 *

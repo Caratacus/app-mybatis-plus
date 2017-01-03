@@ -24,13 +24,13 @@ import java.util.Set;
  * <p>
  * 数据库保留字转义处理类
  * </p>
- * 
+ *
  * @author hubin
  * @date 2016-08-18
  */
 public class SqlReservedWords {
 
-	private static Set<String> RESERVED_WORDS;
+	public static Set<String> RESERVED_WORDS;
 
 	static {
 		String[] words = { "AUDIT", "VOLUMES", "MINVALUE", "STATIC", "FLOOR", "CATALOG", "YEAR", "TRIGGER_CATALOG", "WLM",
@@ -170,7 +170,7 @@ public class SqlReservedWords {
 
 	/**
 	 * 判断关键字中是否包含该字段
-	 * 
+	 *
 	 * @param word
 	 * @return
 	 */
