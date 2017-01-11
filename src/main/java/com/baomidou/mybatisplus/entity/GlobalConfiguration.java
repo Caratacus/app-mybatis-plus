@@ -254,14 +254,17 @@ public class GlobalConfiguration implements Cloneable, Serializable {
 
 	/**
 	 * <p>
-	 * 设置全局设置 (统一所有入口)
-	 * <p/>
+	 * 标记全局设置 (统一所有入口)
+	 * </p>
 	 *
-	 * @param configuration
+	 * @param sqlSessionFactory
 	 * @return
 	 */
-	public void setGlobalConfig(Configuration configuration) {
-		setGlobalConfig(configuration, this);
+	public SqlSessionFactory signGlobalConfig(SqlSessionFactory sqlSessionFactory) {
+		if (null != sqlSessionFactory) {
+			setGlobalConfig(sqlSessionFactory.getConfiguration(), this);
+		}
+		return sqlSessionFactory;
 	}
 
 	/**
@@ -287,7 +290,7 @@ public class GlobalConfiguration implements Cloneable, Serializable {
 		GlobalConfiguration cache = GLOBAL_CONFIG.get(configMark);
 		if (cache == null) {
 			// 没有获取全局配置初始全局配置
-			logger.warn("Warn: Not getting global configuration ! global configuration Initializing !");
+			logger.debug("DeBug: MyBatis Plus Global configuration Initializing !");
 			GLOBAL_CONFIG.put(configMark, DEFAULT);
 			return DEFAULT;
 		}
