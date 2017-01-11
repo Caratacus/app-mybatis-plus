@@ -23,9 +23,12 @@ import org.apache.ibatis.logging.LogFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -72,8 +75,12 @@ public class ReflectionKit {
 	public static Object getMethodValue(Class<?> cls, Object entity, String str) {
 		Object obj = null;
 		try {
-			Field field = cls.getDeclaredField(str);
-			Method method = cls.getMethod(getMethodCapitalize(field, str));
+			Map<String, Field> fieldMaps = getFieldMaps(cls);
+			if (MapUtils.isEmpty(fieldMaps)){
+				logger.warn(String.format("Warn: NoSuchField in %s.  Cause:", cls.getSimpleName()));
+				return obj;
+			}
+			Method method = cls.getMethod(getMethodCapitalize(fieldMaps.get(str), str));
 			obj = method.invoke(entity);
 		} catch (NoSuchMethodException e) {
 			logger.warn(String.format("Warn: No such method. in %s.  Cause:", cls.getSimpleName()) + e);
@@ -173,4 +180,36 @@ public class ReflectionKit {
 		return (Class) params[index];
 	}
 
+	/**
+	 * 获取该类的所有属性列表
+	 *
+	 * @param clazz
+	 *            反射类
+	 * @return
+	 */
+	private static Map<String, Field> getFieldMaps(Class<?> clazz) {
+		if (null == clazz) {
+			return null;
+		}
+		Map<String, Field> fieldMaps = new LinkedHashMap<String, Field>();
+		Field[] fields = clazz.getDeclaredFields();
+		for (Field field : fields) {
+			/* 过滤静态属性 */
+			if (Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+			/* 过滤 transient关键字修饰的属性 */
+			if (Modifier.isTransient(field.getModifiers())) {
+				continue;
+			}
+			fieldMaps.put(field.getName(), field);
+		}
+		/* 处理父类字段 */
+		Class<?> superClass = clazz.getSuperclass();
+		if (superClass.equals(Object.class)) {
+			return fieldMaps;
+		}
+		fieldMaps.putAll(getFieldMaps(superClass));
+		return fieldMaps;
+	}
 }
