@@ -1,8 +1,5 @@
 package com.baomidou.mybatisplus.test.generator;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -11,6 +8,9 @@ import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.rules.DbType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by nieqiurong on 2016/12/25.
@@ -24,7 +24,7 @@ public class PostgreSQLGenerator {
         GlobalConfig gc = new GlobalConfig();
         gc.setOutputDir("D://");
         gc.setFileOverride(true);
-        gc.setActiveRecord(true);
+        gc.setActiveRecord(true);// 开启 activeRecord 模式
         gc.setEnableCache(false);// XML 二级缓存
         gc.setBaseResultMap(true);// XML ResultMap
         gc.setBaseColumnList(false);// XML columList
@@ -79,8 +79,8 @@ public class PostgreSQLGenerator {
         // 包配置
         PackageConfig pc = new PackageConfig();
         pc.setModuleName("test");
-        pc.setParent("com.baomidou");
-		pc.setController("controller");
+        pc.setParent("com.baomidou");//自定义包路径
+		pc.setController("controller");//这里是控制器包名，默认 web
         mpg.setPackageInfo(pc);
 
         // 注入自定义配置，可以在 VM 中使用 cfg.abc 设置的值

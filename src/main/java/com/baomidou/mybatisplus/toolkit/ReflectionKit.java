@@ -18,15 +18,19 @@ package com.baomidou.mybatisplus.toolkit;
 import com.baomidou.mybatisplus.entity.TableFieldInfo;
 import com.baomidou.mybatisplus.entity.TableInfo;
 import com.baomidou.mybatisplus.enums.FieldStrategy;
+import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +43,7 @@ import java.util.Map;
  * @Date 2016-09-22
  */
 public class ReflectionKit {
+
 	private static final Log logger = LogFactory.getLog(ReflectionKit.class);
 
 	/**
@@ -73,23 +78,23 @@ public class ReflectionKit {
 	 * @return Object
 	 */
 	public static Object getMethodValue(Class<?> cls, Object entity, String str) {
-		Object obj = null;
+		Map<String, Field> fieldMaps = getFieldMap(cls);
 		try {
-			Map<String, Field> fieldMaps = getFieldMaps(cls);
-			if (MapUtils.isEmpty(fieldMaps)){
-				logger.warn(String.format("Warn: NoSuchField in %s.  Cause:", cls.getSimpleName()));
-				return obj;
+			if (MapUtils.isEmpty(fieldMaps)) {
+				throw new MybatisPlusException(
+						String.format("Error: NoSuchField in %s for %s.  Cause:", cls.getSimpleName(), str));
 			}
 			Method method = cls.getMethod(getMethodCapitalize(fieldMaps.get(str), str));
-			obj = method.invoke(entity);
+			return method.invoke(entity);
 		} catch (NoSuchMethodException e) {
-			logger.warn(String.format("Warn: No such method. in %s.  Cause:", cls.getSimpleName()) + e);
+			throw new MybatisPlusException(String.format("Error: NoSuchMethod in %s.  Cause:", cls.getSimpleName()) + e);
 		} catch (IllegalAccessException e) {
-			logger.warn(String.format("Warn: Cannot execute a private method. in %s.  Cause:", cls.getSimpleName()) + e);
-		} catch (Exception e) {
-			logger.warn("Warn: Unexpected exception on getMethodValue.  Cause:" + e);
+			throw new MybatisPlusException(String.format("Error: Cannot execute a private method. in %s.  Cause:",
+					cls.getSimpleName())
+					+ e);
+		} catch (InvocationTargetException e) {
+			throw new MybatisPlusException("Error: InvocationTargetException on getMethodValue.  Cause:" + e);
 		}
-		return obj;
 	}
 
 	/**
@@ -122,8 +127,7 @@ public class ReflectionKit {
 		Class<?> cls = bean.getClass();
 		TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
 		if (null == tableInfo) {
-			logger.warn("Warn: Could not find @TableId.");
-			return false;
+			throw new MybatisPlusException(String.format("Error: Could Not find %s in TableInfo Cache. ", cls.getSimpleName()));
 		}
 		boolean result = false;
 		List<TableFieldInfo> fieldList = tableInfo.getFieldList();
@@ -187,11 +191,30 @@ public class ReflectionKit {
 	 *            反射类
 	 * @return
 	 */
-	private static Map<String, Field> getFieldMaps(Class<?> clazz) {
+	public static Map<String, Field> getFieldMap(Class<?> clazz) {
+		List<Field> fieldList = getFieldList(clazz);
+		Map<String, Field> fieldMap = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(fieldList)) {
+			fieldMap = new LinkedHashMap<String, Field>();
+			for (Field field : fieldList) {
+				fieldMap.put(field.getName(), field);
+			}
+		}
+		return fieldMap;
+	}
+
+	/**
+	 * 获取该类的所有属性列表
+	 *
+	 * @param clazz
+	 *            反射类
+	 * @return
+	 */
+	public static List<Field> getFieldList(Class<?> clazz) {
 		if (null == clazz) {
 			return null;
 		}
-		Map<String, Field> fieldMaps = new LinkedHashMap<String, Field>();
+		List<Field> fieldList = new LinkedList<Field>();
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			/* 过滤静态属性 */
@@ -202,14 +225,14 @@ public class ReflectionKit {
 			if (Modifier.isTransient(field.getModifiers())) {
 				continue;
 			}
-			fieldMaps.put(field.getName(), field);
+			fieldList.add(field);
 		}
 		/* 处理父类字段 */
 		Class<?> superClass = clazz.getSuperclass();
 		if (superClass.equals(Object.class)) {
-			return fieldMaps;
+			return fieldList;
 		}
-		fieldMaps.putAll(getFieldMaps(superClass));
-		return fieldMaps;
+		fieldList.addAll(getFieldList(superClass));
+		return fieldList;
 	}
 }

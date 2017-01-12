@@ -15,6 +15,18 @@
  */
 package com.baomidou.mybatisplus.generator;
 
+import com.baomidou.mybatisplus.generator.config.ConstVal;
+import com.baomidou.mybatisplus.generator.config.TemplateConfig;
+import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
+import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.toolkit.StringUtils;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,20 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.app.VelocityEngine;
-
-import com.baomidou.mybatisplus.generator.config.ConstVal;
-import com.baomidou.mybatisplus.generator.config.StrategyConfig;
-import com.baomidou.mybatisplus.generator.config.TemplateConfig;
-import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
-import com.baomidou.mybatisplus.generator.config.po.TableInfo;
-import com.baomidou.mybatisplus.toolkit.StringUtils;
 
 /**
  * 生成文件
@@ -108,9 +106,9 @@ public class AutoGenerator extends AbstractGenerator {
 		String superServiceImplClass = getSuperClassName(config.getSuperServiceImplClass());
 		String superControllerClass = getSuperClassName(config.getSuperControllerClass());
 		String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-
+		VelocityContext ctx;
 		for (TableInfo tableInfo : tableList) {
-			VelocityContext ctx = new VelocityContext();
+			ctx = new VelocityContext();
 			if (null != cfg) {
 				/**
 				 * 注入自定义配置
@@ -118,20 +116,27 @@ public class AutoGenerator extends AbstractGenerator {
 				cfg.initMap();
 				ctx.put("cfg", cfg.getMap());
 			}
+			/* ---------- 添加导入包 ---------- */
+			if (!tableInfo.getEntityName().toLowerCase().equals(tableInfo.getName().toLowerCase())) {
+				// 表注解
+				tableInfo.setImportPackages("com.baomidou.mybatisplus.annotations.TableName");
+				ctx.put("tableAnnotation", true);
+			}
+			if (StringUtils.isNotEmpty(config.getSuperEntityClass())) {
+				// 父实体
+				tableInfo.setImportPackages(config.getSuperEntityClass());
+			}
 			ctx.put("package", packageInfo);
 			ctx.put("author", config.getGlobalConfig().getAuthor());
+			ctx.put("activeRecord", config.getGlobalConfig().isActiveRecord());
 			ctx.put("date", date);
 			ctx.put("table", tableInfo);
-			ctx.put("dbColumnUnderline", StrategyConfig.DB_COLUMN_UNDERLINE);
-			ctx.put("activeRecord", config.getGlobalConfig().isActiveRecord());
 			ctx.put("enableCache", config.getGlobalConfig().isEnableCache());
 			ctx.put("baseResultMap", config.getGlobalConfig().isBaseResultMap());
 			ctx.put("baseColumnList", config.getGlobalConfig().isBaseColumnList());
 			ctx.put("entity", tableInfo.getEntityName());
 			ctx.put("entityColumnConstant", config.getStrategyConfig().isEntityColumnConstant());
 			ctx.put("entityBuliderModel", config.getStrategyConfig().isEntityBuliderModel());
-			ctx.put("tabeAnnotation", !tableInfo.getEntityName().toLowerCase().equals(tableInfo.getName().toLowerCase()));
-			ctx.put("superEntityClassPackage", config.getSuperEntityClass());
 			ctx.put("superEntityClass", superEntityClass);
 			ctx.put("superMapperClassPackage", config.getSuperMapperClass());
 			ctx.put("superMapperClass", superMapperClass);

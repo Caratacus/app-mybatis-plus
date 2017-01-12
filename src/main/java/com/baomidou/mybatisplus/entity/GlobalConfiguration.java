@@ -257,7 +257,7 @@ public class GlobalConfiguration implements Cloneable, Serializable {
 	 * 标记全局设置 (统一所有入口)
 	 * </p>
 	 *
-	 * @param sqlSessionFactory
+	 * @param configuration
 	 * @return
 	 */
 	public SqlSessionFactory signGlobalConfig(SqlSessionFactory sqlSessionFactory) {

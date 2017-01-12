@@ -15,12 +15,12 @@
  */
 package com.baomidou.mybatisplus.generator.config;
 
+import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
+import com.baomidou.mybatisplus.generator.config.rules.DbType;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
-import com.baomidou.mybatisplus.generator.config.rules.DbType;
 
 /**
  * <p>
@@ -64,6 +64,8 @@ public class DataSourceConfig {
 				dbType = DbType.MYSQL;
 			} else if (driverName.contains("oracle")) {
 				dbType = DbType.ORACLE;
+			} else if (driverName.contains("postgresql")) {
+				dbType = DbType.POSTGRE_SQL;
 			} else {
 				throw new MybatisPlusException("Unknown type of database!");
 			}
