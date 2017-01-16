@@ -15,6 +15,8 @@
  */
 package com.baomidou.mybatisplus.toolkit;
 
+import com.baomidou.mybatisplus.enums.SqlLike;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,8 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.baomidou.mybatisplus.enums.SqlLike;
 
 /**
  * <p>
@@ -367,6 +367,25 @@ public class StringUtils {
 	 */
 	public static boolean checkValNull(Object object) {
 		return !checkValNotNull(object);
+	}
+
+	/**
+	 * <p>
+	 * 包含大写字母
+	 * </p>
+	 * 
+	 * @param word
+	 *            待判断字符串
+	 * @return
+	 */
+	public static boolean containsUpperCase(String word) {
+		for (int i = 0; i < word.length(); i++) {
+			char c = word.charAt(i);
+			if (Character.isUpperCase(c)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

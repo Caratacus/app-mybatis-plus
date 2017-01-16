@@ -50,7 +50,7 @@ public enum NamingStrategy {
 		}
 		StringBuilder result = new StringBuilder();
 		// 用下划线将原始字符串分割
-		String camels[] = name.toLowerCase().split(ConstVal.UNDERLINE);
+		String camels[] = name.split(ConstVal.UNDERLINE);
 		for (String camel : camels) {
 			// 跳过原始字符串中开头、结尾的下换线或双重下划线
 			if (StringUtils.isEmpty(camel)) {
@@ -92,20 +92,20 @@ public enum NamingStrategy {
 	 * @param prefix
 	 * @return
 	 */
-	public static String removePrefix(String name, String prefix) {
+	public static String removePrefix(String name, String[] prefix) {
 		if (StringUtils.isEmpty(name)) {
 			return "";
 		}
-		int idx = name.indexOf(ConstVal.UNDERLINE);
-		if (prefix != null && !"".equals(prefix.trim())) {
-			if (name.toLowerCase().matches("^" + prefix.toLowerCase() + ".*")) { // 判断是否有匹配的前缀，然后截取前缀
-				idx = prefix.length() - 1;
+		if (null != prefix) {
+			for (String pf : prefix) {
+				if (name.toLowerCase().matches("^" + pf.toLowerCase() + ".*")) {
+					// 判断是否有匹配的前缀，然后截取前缀
+					// 删除前缀
+					return name.substring(pf.length());
+				}
 			}
 		}
-		if (idx == -1) {
-			return name;
-		}
-		return name.substring(idx + 1);
+		return name;
 	}
 
 	/**
@@ -115,7 +115,7 @@ public enum NamingStrategy {
 	 * @param tablePrefix
 	 * @return
 	 */
-	public static String removePrefixAndCamel(String name, String tablePrefix) {
+	public static String removePrefixAndCamel(String name, String[] tablePrefix) {
 		return underlineToCamel(removePrefix(name, tablePrefix));
 	}
 

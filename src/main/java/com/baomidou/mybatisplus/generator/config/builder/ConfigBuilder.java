@@ -286,7 +286,7 @@ public class ConfigBuilder {
 	 * @param tablePrefix
 	 * @return 补充完整信息后的表
 	 */
-	private List<TableInfo> processTable(List<TableInfo> tableList, NamingStrategy strategy, String tablePrefix) {
+	private List<TableInfo> processTable(List<TableInfo> tableList, NamingStrategy strategy, String[] tablePrefix) {
 		for (TableInfo tableInfo : tableList) {
 			tableInfo.setEntityName(NamingStrategy.capitalFirst(processName(tableInfo.getName(), strategy, tablePrefix)));
 			if (StringUtils.isNotEmpty(globalConfig.getMapperName())) {
@@ -415,9 +415,8 @@ public class ConfigBuilder {
 		ResultSet results = pstate.executeQuery();
 
 		List<TableField> fieldList = new ArrayList<TableField>();
-		TableField field;
 		while (results.next()) {
-			field = new TableField();
+			TableField field = new TableField();
 			String key = results.getString(querySQL.getFieldKey());
 			// 避免多重主键设置，目前只取第一个找到ID，并放到list中的索引为0的位置
 			boolean isId = StringUtils.isNotEmpty(key) && key.toUpperCase().equals("PRI");
@@ -436,6 +435,15 @@ public class ConfigBuilder {
 			}
 			field.setType(results.getString(querySQL.getFieldType()));
 			field.setPropertyName(processName(field.getName(), strategy));
+			if (StrategyConfig.DB_COLUMN_UNDERLINE) {
+				// 转换字段
+				if (StringUtils.containsUpperCase(field.getName())) {
+					field.setConvert(true);
+				}
+			} else if (!field.getName().equalsIgnoreCase(field.getPropertyName())) {
+				// 转换字段
+				field.setConvert(true);
+			}
 			field.setColumnType(processFiledType(field.getType()));
 			field.setComment(results.getString(querySQL.getFieldComment()));
 			fieldList.add(field);
@@ -514,7 +522,7 @@ public class ConfigBuilder {
 	 * @param tablePrefix
 	 * @return 根据策略返回处理后的名称
 	 */
-	private String processName(String name, NamingStrategy strategy, String tablePrefix) {
+	private String processName(String name, NamingStrategy strategy, String[] tablePrefix) {
 		String propertyName = "";
 		if (strategy == NamingStrategy.remove_prefix_and_camel) {
 			propertyName = NamingStrategy.removePrefixAndCamel(name, tablePrefix);
