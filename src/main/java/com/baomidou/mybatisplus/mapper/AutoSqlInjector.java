@@ -164,7 +164,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 自定义方法，注入点（子类需重写该方法）
 	 */
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
-			Class<?> modelClass, TableInfo table) {
+					   Class<?> modelClass, TableInfo table) {
 		// to do nothing
 	}
 
@@ -577,7 +577,7 @@ public class AutoSqlInjector implements ISqlInjector {
 			Iterator<TableFieldInfo> iterator = fieldList.iterator();
 			while (iterator.hasNext()) {
 				TableFieldInfo fieldInfo = iterator.next();
-				//匹配转换内容
+				// 匹配转换内容
 				String wordConvert = sqlWordConvert(fieldInfo.getProperty());
 				if (fieldInfo.getColumn().equals(wordConvert)) {
 					columns.append(wordConvert);
@@ -705,16 +705,34 @@ public class AutoSqlInjector implements ISqlInjector {
 		// 验证逻辑
 		if (fieldStrategy == FieldStrategy.NOT_EMPTY) {
 			String propertyType = fieldInfo.getPropertyType();
-			// 如果是Date类型
-			if ("java.util.Date".equals(propertyType) || "java.sql.Date".equals(propertyType)) {
-				return String.format("\n\t<if test=\"%s!=null \">", property, property);
-			} else {
+			if (decideEmptyType(propertyType)) {
 				return String.format("\n\t<if test=\"%s!=null and %s!=''\">", property, property);
+			} else {
+				return String.format("\n\t<if test=\"%s!=null \">", property, property);
 			}
 		} else {
 			// FieldStrategy.NOT_NULL
 			return String.format("\n\t<if test=\"%s!=null\">", property);
 		}
+	}
+
+	/**
+	 * 判断是否需要添加NOT_EMPTY验证逻辑
+	 *
+	 * @param propertyType
+	 * @return
+	 */
+	protected Boolean decideEmptyType(String propertyType) {
+		Class<?> cls = null;
+		try {
+			cls = Class.forName(propertyType);
+		} catch (ClassNotFoundException e) {
+			//
+		}
+		if (cls != null) {
+			return CharSequence.class.isAssignableFrom(cls);
+		}
+		return false;
 	}
 
 	protected String convertIfTagIgnored(TableFieldInfo fieldInfo, boolean colse) {
@@ -733,7 +751,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 查询
 	 */
 	public MappedStatement addSelectMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource, Class<?> resultType,
-			TableInfo table) {
+													TableInfo table) {
 		if (null != table) {
 			String resultMap = table.getResultMap();
 			if (null != resultMap) {
@@ -774,8 +792,8 @@ public class AutoSqlInjector implements ISqlInjector {
 	}
 
 	public MappedStatement addMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource,
-			SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
-			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+											  SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
+											  KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		String statementName = mapperClass.getName() + "." + id;
 		if (configuration.hasStatement(statementName)) {
 			System.err.println("{" + statementName
