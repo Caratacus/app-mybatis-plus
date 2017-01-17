@@ -15,11 +15,11 @@
  */
 package com.baomidou.mybatisplus.test.proxy;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-
 import com.baomidou.mybatisplus.test.proxy.mapper.IUserMapper;
 import com.baomidou.mybatisplus.test.proxy.mapper.UserMapperImpl;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * <p>

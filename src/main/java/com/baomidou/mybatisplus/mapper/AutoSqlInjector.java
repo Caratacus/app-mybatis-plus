@@ -164,7 +164,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 自定义方法，注入点（子类需重写该方法）
 	 */
 	public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
-					   Class<?> modelClass, TableInfo table) {
+			Class<?> modelClass, TableInfo table) {
 		// to do nothing
 	}
 
@@ -562,34 +562,45 @@ public class AutoSqlInjector implements ISqlInjector {
 			if (entityWrapper) {
 				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
 			}
+			List<TableFieldInfo> fieldList = table.getFieldList();
+			int _size = 0;
+			if (null != fieldList) {
+				_size = fieldList.size();
+			}
+
+			// 主键处理
 			if (StringUtils.isNotEmpty(table.getKeyProperty())) {
 				if (table.isKeyRelated()) {
 					columns.append(table.getKeyColumn()).append(" AS ").append(sqlWordConvert(table.getKeyProperty()));
 				} else {
 					columns.append(sqlWordConvert(table.getKeyProperty()));
 				}
-				columns.append(",");
-			}
-
-			List<TableFieldInfo> fieldList = table.getFieldList();
-			int _size = fieldList.size();
-			int i = 0;
-			Iterator<TableFieldInfo> iterator = fieldList.iterator();
-			while (iterator.hasNext()) {
-				TableFieldInfo fieldInfo = iterator.next();
-				// 匹配转换内容
-				String wordConvert = sqlWordConvert(fieldInfo.getProperty());
-				if (fieldInfo.getColumn().equals(wordConvert)) {
-					columns.append(wordConvert);
-				} else {
-					// 字段属性不一致
-					columns.append(fieldInfo.getColumn());
-					columns.append(" AS ").append(wordConvert);
-				}
-				if (i + 1 < _size) {
+				if (_size >= 1) {
+					// 判断其余字段是否存在
 					columns.append(",");
 				}
-				i++;
+			}
+
+			if (_size >= 1) {
+				// 字段处理
+				int i = 0;
+				Iterator<TableFieldInfo> iterator = fieldList.iterator();
+				while (iterator.hasNext()) {
+					TableFieldInfo fieldInfo = iterator.next();
+					// 匹配转换内容
+					String wordConvert = sqlWordConvert(fieldInfo.getProperty());
+					if (fieldInfo.getColumn().equals(wordConvert)) {
+						columns.append(wordConvert);
+					} else {
+						// 字段属性不一致
+						columns.append(fieldInfo.getColumn());
+						columns.append(" AS ").append(wordConvert);
+					}
+					if (i + 1 < _size) {
+						columns.append(",");
+					}
+					i++;
+				}
 			}
 			if (entityWrapper) {
 				columns.append("</otherwise></choose>");
@@ -705,7 +716,7 @@ public class AutoSqlInjector implements ISqlInjector {
 		// 验证逻辑
 		if (fieldStrategy == FieldStrategy.NOT_EMPTY) {
 			String propertyType = fieldInfo.getPropertyType();
-			if (decideEmptyType(propertyType)) {
+			if (StringUtils.isCharSequence(propertyType)) {
 				return String.format("\n\t<if test=\"%s!=null and %s!=''\">", property, property);
 			} else {
 				return String.format("\n\t<if test=\"%s!=null \">", property, property);
@@ -714,25 +725,6 @@ public class AutoSqlInjector implements ISqlInjector {
 			// FieldStrategy.NOT_NULL
 			return String.format("\n\t<if test=\"%s!=null\">", property);
 		}
-	}
-
-	/**
-	 * 判断是否需要添加NOT_EMPTY验证逻辑
-	 *
-	 * @param propertyType
-	 * @return
-	 */
-	protected Boolean decideEmptyType(String propertyType) {
-		Class<?> cls = null;
-		try {
-			cls = Class.forName(propertyType);
-		} catch (ClassNotFoundException e) {
-			//
-		}
-		if (cls != null) {
-			return CharSequence.class.isAssignableFrom(cls);
-		}
-		return false;
 	}
 
 	protected String convertIfTagIgnored(TableFieldInfo fieldInfo, boolean colse) {
@@ -751,7 +743,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 查询
 	 */
 	public MappedStatement addSelectMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource, Class<?> resultType,
-													TableInfo table) {
+			TableInfo table) {
 		if (null != table) {
 			String resultMap = table.getResultMap();
 			if (null != resultMap) {
@@ -770,7 +762,7 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * 插入
 	 */
 	public MappedStatement addInsertMappedStatement(Class<?> mapperClass, Class<?> modelClass, String id, SqlSource sqlSource,
-													KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		return this.addMappedStatement(mapperClass, id, sqlSource, SqlCommandType.INSERT, modelClass, null, Integer.class,
 				keyGenerator, keyProperty, keyColumn);
 	}
@@ -792,8 +784,8 @@ public class AutoSqlInjector implements ISqlInjector {
 	}
 
 	public MappedStatement addMappedStatement(Class<?> mapperClass, String id, SqlSource sqlSource,
-											  SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
-											  KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
+			SqlCommandType sqlCommandType, Class<?> parameterClass, String resultMap, Class<?> resultType,
+			KeyGenerator keyGenerator, String keyProperty, String keyColumn) {
 		String statementName = mapperClass.getName() + "." + id;
 		if (configuration.hasStatement(statementName)) {
 			System.err.println("{" + statementName

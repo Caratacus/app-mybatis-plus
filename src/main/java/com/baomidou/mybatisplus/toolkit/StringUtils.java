@@ -241,7 +241,7 @@ public class StringUtils {
 	 */
 	public static String quotaMark(Object obj) {
 		String srcStr = String.valueOf(obj);
-		if (obj instanceof String) {
+		if (isCharSequence(obj.getClass())) {
 			// fix #79
 			return StringEscape.escapeString(srcStr);
 		}
@@ -620,5 +620,31 @@ public class StringUtils {
 		}
 		return list;
 	}
-
+	/**
+	 * 是否为CharSequence类型
+	 *
+	 * @param cls
+	 * @return
+	 */
+	public static Boolean isCharSequence(Class<?> cls) {
+		if(cls != null){
+			return CharSequence.class.isAssignableFrom(cls);
+		}
+		return false;
+	}
+	/**
+	 * 是否为CharSequence类型
+	 *
+	 * @param propertyType
+	 * @return
+	 */
+	public static Boolean isCharSequence(String propertyType) {
+		Class<?> cls = null;
+		try {
+			cls = Class.forName(propertyType);
+		} catch (ClassNotFoundException e) {
+			//
+		}
+		return isCharSequence(cls);
+	}
 }
