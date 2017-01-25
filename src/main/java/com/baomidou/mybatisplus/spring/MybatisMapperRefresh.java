@@ -15,8 +15,16 @@
  */
 package com.baomidou.mybatisplus.spring;
 
-import com.baomidou.mybatisplus.entity.GlobalConfiguration;
-import com.baomidou.mybatisplus.toolkit.SystemClock;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
@@ -35,10 +43,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.*;
+import com.baomidou.mybatisplus.entity.GlobalConfiguration;
+import com.baomidou.mybatisplus.toolkit.SystemClock;
 
 /**
  * <p>
@@ -83,7 +89,7 @@ public class MybatisMapperRefresh implements Runnable {
 	private static Map<String, List<Resource>> jarMapper = new HashMap<String, List<Resource>>();
 
 	public MybatisMapperRefresh(Resource[] mapperLocations, SqlSessionFactory sqlSessionFactory, int delaySeconds,
-								int sleepSeconds, boolean enabled) {
+			int sleepSeconds, boolean enabled) {
 		this.mapperLocations = mapperLocations;
 		this.sqlSessionFactory = sqlSessionFactory;
 		this.delaySeconds = delaySeconds;
@@ -102,7 +108,7 @@ public class MybatisMapperRefresh implements Runnable {
 	}
 
 	public void run() {
-		final GlobalConfiguration mybatisGlobalCache = GlobalConfiguration.GlobalConfig(configuration);
+		final GlobalConfiguration globalConfig = GlobalConfiguration.GlobalConfig(configuration);
 		/*
 		 * 启动 XML 热加载
 		 */
@@ -145,7 +151,7 @@ public class MybatisMapperRefresh implements Runnable {
 							for (String filePath : fileSet) {
 								File file = new File(filePath);
 								if (file != null && file.isFile() && file.lastModified() > beforeTime) {
-									mybatisGlobalCache.setRefresh(true);
+									globalConfig.setRefresh(true);
 									List<Resource> removeList = jarMapper.get(filePath);
 									if (removeList != null && !removeList.isEmpty()) {// 如果是jar包中的xml，将刷新jar包中存在的所有xml，后期再修改加载jar中修改过后的xml
 										for (Resource resource : removeList) {
@@ -156,10 +162,10 @@ public class MybatisMapperRefresh implements Runnable {
 									}
 								}
 							}
-							if (mybatisGlobalCache.isRefresh()) {
+							if (globalConfig.isRefresh()) {
 								beforeTime = SystemClock.now();
 							}
-							mybatisGlobalCache.setRefresh(true);
+							globalConfig.setRefresh(true);
 						} catch (Exception exception) {
 							exception.printStackTrace();
 						}
@@ -239,20 +245,21 @@ public class MybatisMapperRefresh implements Runnable {
 			String id = resultMapNode.getStringAttribute("id", resultMapNode.getValueBasedIdentifier());
 			configuration.getResultMapNames().remove(id);
 			configuration.getResultMapNames().remove(namespace + "." + id);
-			clearResultMap(resultMapNode,namespace);
+			clearResultMap(resultMapNode, namespace);
 		}
 	}
 
-	private void clearResultMap(XNode xNode,String namespace){
+	private void clearResultMap(XNode xNode, String namespace) {
 		for (XNode resultChild : xNode.getChildren()) {
-			if ("association".equals(resultChild.getName())
-					|| "collection".equals(resultChild.getName())
+			if ("association".equals(resultChild.getName()) || "collection".equals(resultChild.getName())
 					|| "case".equals(resultChild.getName())) {
 				if (resultChild.getStringAttribute("select") == null) {
-					configuration.getResultMapNames().remove(resultChild.getStringAttribute("id",resultChild.getValueBasedIdentifier()));
-					configuration.getResultMapNames().remove(namespace+"."+resultChild.getStringAttribute("id",resultChild.getValueBasedIdentifier()));
-					if(resultChild.getChildren()!=null&&!resultChild.getChildren().isEmpty()){
-						clearResultMap(resultChild,namespace);
+					configuration.getResultMapNames().remove(
+							resultChild.getStringAttribute("id", resultChild.getValueBasedIdentifier()));
+					configuration.getResultMapNames().remove(
+							namespace + "." + resultChild.getStringAttribute("id", resultChild.getValueBasedIdentifier()));
+					if (resultChild.getChildren() != null && !resultChild.getChildren().isEmpty()) {
+						clearResultMap(resultChild, namespace);
 					}
 				}
 			}

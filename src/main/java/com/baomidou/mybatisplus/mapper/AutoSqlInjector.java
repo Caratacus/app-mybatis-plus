@@ -168,6 +168,12 @@ public class AutoSqlInjector implements ISqlInjector {
 		// to do nothing
 	}
 
+	/**
+	 * 避免扫描到BaseMapper
+	 * 
+	 * @param mapperClass
+	 * @return
+	 */
 	protected Class<?> extractModelClass(Class<?> mapperClass) {
 		if (mapperClass == BaseMapper.class) {
 			logger.warn(" Current Class is BaseMapper ");
@@ -653,7 +659,6 @@ public class AutoSqlInjector implements ISqlInjector {
 	 * </p>
 	 */
 	protected String sqlWhereByMap() {
-
 		StringBuilder where = new StringBuilder();
 		where.append("\n<if test=\"cm!=null and !cm.isEmpty\">");
 		where.append("\n<where>");

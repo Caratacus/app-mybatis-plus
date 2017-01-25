@@ -241,7 +241,7 @@ public class StringUtils {
 	 */
 	public static String quotaMark(Object obj) {
 		String srcStr = String.valueOf(obj);
-		if (isCharSequence(obj.getClass())) {
+		if (obj instanceof CharSequence) {
 			// fix #79
 			return StringEscape.escapeString(srcStr);
 		}
@@ -265,6 +265,9 @@ public class StringUtils {
 			break;
 		case RIGHT:
 			builder.append(str).append("%");
+			break;
+		case CUSTOM:
+			builder.append(str);
 			break;
 		default:
 			builder.append("%").append(str).append("%");
@@ -386,6 +389,22 @@ public class StringUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * <p>
+	 * 是否为大写命名
+	 * </p>
+	 * 
+	 * @param word
+	 *            待判断字符串
+	 * @return
+	 */
+	public static boolean isCapitalMode(String word) {
+		if (null == word) {
+			return false;
+		}
+		return word.matches("^[0-9A-Z/_]+$");
 	}
 
 	/**
@@ -620,6 +639,7 @@ public class StringUtils {
 		}
 		return list;
 	}
+
 	/**
 	 * 是否为CharSequence类型
 	 *
@@ -627,11 +647,12 @@ public class StringUtils {
 	 * @return
 	 */
 	public static Boolean isCharSequence(Class<?> cls) {
-		if(cls != null){
+		if (cls != null) {
 			return CharSequence.class.isAssignableFrom(cls);
 		}
 		return false;
 	}
+
 	/**
 	 * 是否为CharSequence类型
 	 *

@@ -16,9 +16,11 @@
 package com.baomidou.mybatisplus.generator;
 
 import com.baomidou.mybatisplus.generator.config.ConstVal;
+import com.baomidou.mybatisplus.generator.config.FileOutConfig;
 import com.baomidou.mybatisplus.generator.config.TemplateConfig;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -109,18 +111,17 @@ public class AutoGenerator extends AbstractGenerator {
 		VelocityContext ctx;
 		for (TableInfo tableInfo : tableList) {
 			ctx = new VelocityContext();
-			if (null != cfg) {
+			if (null != injectionConfig) {
 				/**
 				 * 注入自定义配置
 				 */
-				cfg.initMap();
-				ctx.put("cfg", cfg.getMap());
+				injectionConfig.initMap();
+				ctx.put("cfg", injectionConfig.getMap());
 			}
 			/* ---------- 添加导入包 ---------- */
-			if (!tableInfo.getEntityName().toLowerCase().equals(tableInfo.getName().toLowerCase())) {
+			if (tableInfo.isConvert()) {
 				// 表注解
 				tableInfo.setImportPackages("com.baomidou.mybatisplus.annotations.TableName");
-				ctx.put("tableAnnotation", true);
 			}
 			if (StringUtils.isNotEmpty(config.getSuperEntityClass())) {
 				// 父实体
@@ -219,6 +220,18 @@ public class AutoGenerator extends AbstractGenerator {
 			if (isCreate(controllerFile)) {
 				vmToFile(context, template.getController(), controllerFile);
 			}
+			if (injectionConfig != null) {
+				/**
+				 * 输出自定义文件内容
+				 */
+				List<FileOutConfig> focList = injectionConfig.getFileOutConfigList();
+				if (CollectionUtils.isNotEmpty(focList)) {
+					for (FileOutConfig foc : focList) {
+						vmToFile(context, foc.getTemplatePath(), foc.outputFile(tableInfo));
+					}
+				}
+			}
+
 		} catch (IOException e) {
 			logger.error("无法创建文件，请检查配置信息！", e);
 		}
