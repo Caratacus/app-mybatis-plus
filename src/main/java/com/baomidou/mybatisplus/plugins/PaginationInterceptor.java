@@ -145,9 +145,9 @@ public class PaginationInterceptor implements Interceptor {
 			if (rowBounds instanceof Pagination) {
 				Connection connection = null;
 				try {
-					connection = mappedStatement.getConfiguration().getEnvironment().getDataSource().getConnection();
 					Pagination page = (Pagination) rowBounds;
 					if (page.isSearchCount()) {
+						connection = mappedStatement.getConfiguration().getEnvironment().getDataSource().getConnection();
 						/*
 						 * COUNT 查询，去掉 ORDER BY 优化执行 SQL
 						 */

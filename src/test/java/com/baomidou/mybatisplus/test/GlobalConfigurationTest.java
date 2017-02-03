@@ -15,23 +15,22 @@
  */
 package com.baomidou.mybatisplus.test;
 
-import java.io.InputStream;
-import java.util.Date;
-import java.util.UUID;
-
+import com.baomidou.mybatisplus.MybatisSessionFactoryBuilder;
+import com.baomidou.mybatisplus.entity.GlobalConfiguration;
+import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.test.mysql.entity.NotPK;
+import com.baomidou.mybatisplus.test.mysql.entity.Test;
+import com.baomidou.mybatisplus.test.mysql.mapper.NotPKMapper;
+import com.baomidou.mybatisplus.test.mysql.mapper.TestMapper;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.junit.Assert;
 
-import com.baomidou.mybatisplus.MybatisSessionFactoryBuilder;
-import com.baomidou.mybatisplus.entity.GlobalConfiguration;
-import com.baomidou.mybatisplus.mapper.Condition;
-import com.baomidou.mybatisplus.test.mysql.NotPKMapper;
-import com.baomidou.mybatisplus.test.mysql.TestMapper;
-import com.baomidou.mybatisplus.test.mysql.entity.NotPK;
-import com.baomidou.mybatisplus.test.mysql.entity.Test;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * <p>

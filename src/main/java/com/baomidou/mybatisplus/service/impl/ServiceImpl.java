@@ -67,6 +67,16 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	}
 
 	/**
+	 * 获取SqlStatement
+	 *
+	 * @param sqlMethod
+	 * @return
+	 */
+	protected String sqlStatement(SqlMethod sqlMethod) {
+		return SqlHelper.table(currentModleClass()).getSqlStatement(sqlMethod.getMethod());
+	}
+
+	/**
 	 * <p>
 	 * 判断数据库操作是否成功
 	 * </p>
@@ -284,23 +294,4 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 		return page;
 	}
 
-	/**
-	 * 获取SqlStatement
-	 *
-	 * @param sqlMethod
-	 * @return
-	 */
-	protected String sqlStatement(SqlMethod sqlMethod) {
-		return sqlStatement(sqlMethod.getMethod());
-	}
-
-	/**
-	 * 获取SqlStatement
-	 *
-	 * @param sqlMethod
-	 * @return
-	 */
-	protected String sqlStatement(String sqlMethod) {
-		return SqlHelper.table(currentModleClass()).getSqlStatement(sqlMethod);
-	}
 }

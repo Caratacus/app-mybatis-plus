@@ -18,6 +18,7 @@ package com.baomidou.mybatisplus.test.mysql;
 import com.baomidou.mybatisplus.MybatisSessionFactoryBuilder;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.test.mysql.entity.Test;
+import com.baomidou.mybatisplus.test.mysql.mapper.TestMapper;
 import com.baomidou.mybatisplus.toolkit.IdWorker;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
@@ -27,6 +28,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+//git.oschina.net/baomidou/mybatis-plus.git
 
 /**
  * <p>
