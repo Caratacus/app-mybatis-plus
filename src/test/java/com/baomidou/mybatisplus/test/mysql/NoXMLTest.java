@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//git.oschina.net/baomidou/mybatis-plus.git
-
 /**
  * <p>
  * 测试没有XML同样注入CRUD SQL

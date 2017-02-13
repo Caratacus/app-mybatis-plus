@@ -31,8 +31,6 @@ import org.springframework.core.io.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 
-//git.oschina.net/baomidou/mybatis-plus.git
-
 /**
  * <p>
  * 切莫用于生产环境（后果自负）<br>

@@ -15,12 +15,12 @@
  */
 package com.baomidou.mybatisplus.mapper;
 
+import java.util.Collection;
+
 import com.baomidou.mybatisplus.MybatisAbstractSQL;
 import com.baomidou.mybatisplus.enums.SqlLike;
 import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
-
-import java.util.Collection;
 
 /**
  * <p>
@@ -251,13 +251,7 @@ public class SqlPlus extends MybatisAbstractSQL<SqlPlus> {
 	 */
 	private void handerIn(String column, String value, boolean isNot) {
 		if (StringUtils.isNotEmpty(column) && StringUtils.isNotEmpty(value)) {
-			StringBuilder inSql = new StringBuilder();
-			inSql.append(column);
-			if (isNot) {
-				inSql.append(" NOT");
-			}
-			inSql.append(" IN (").append(value).append(")");
-			WHERE(inSql.toString());
+			handerIn(column, StringUtils.splitWorker(value, ",", -1, false), isNot);
 		}
 	}
 
