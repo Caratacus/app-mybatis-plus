@@ -15,12 +15,12 @@
  */
 package com.baomidou.mybatisplus.plugins;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 
 /**
  * <p>

@@ -15,6 +15,11 @@
  */
 package com.baomidou.mybatisplus.test.generator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -22,14 +27,11 @@ import com.baomidou.mybatisplus.generator.config.FileOutConfig;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.DbType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -51,7 +53,7 @@ public class MysqlGenerator {
 
 		// 全局配置
 		GlobalConfig gc = new GlobalConfig();
-		gc.setOutputDir("D://");
+		gc.setOutputDir("/develop/code/");
 		gc.setFileOverride(true);
 		gc.setActiveRecord(true);// 开启 activeRecord 模式
 		gc.setEnableCache(false);// XML 二级缓存
@@ -70,7 +72,14 @@ public class MysqlGenerator {
 		// 数据源配置
 		DataSourceConfig dsc = new DataSourceConfig();
 		dsc.setDbType(DbType.MYSQL);
-		dsc.setTypeConvert(new MyFieldTypeConvert());
+		dsc.setTypeConvert(new MySqlTypeConvert(){
+			// 自定义数据库表字段类型转换【可选】
+			@Override
+			public DbColumnType processTypeConvert(String fieldType) {
+				System.out.println("转换类型：" + fieldType);
+				return super.processTypeConvert(fieldType);
+			}
+		});
 		dsc.setDriverName("com.mysql.jdbc.Driver");
 		dsc.setUsername("root");
 		dsc.setPassword("521");
@@ -124,11 +133,11 @@ public class MysqlGenerator {
 			}
 		};
 		List<FileOutConfig> focList = new ArrayList<FileOutConfig>();
-		focList.add(new FileOutConfig("/template/entity.java.vm") {
+		focList.add(new FileOutConfig("/templates/entity.java.vm") {
 			@Override
 			public String outputFile(TableInfo tableInfo) {
 				// 自定义输入文件名称
-				return "D://my_" + tableInfo.getEntityName() + ".java";
+				return "/develop/code/my_" + tableInfo.getEntityName() + ".java";
 			}
 		});
 		cfg.setFileOutConfigList(focList);

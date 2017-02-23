@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.plugins.pagination.DialectFactory;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.baomidou.mybatisplus.toolkit.SqlUtils;
+import com.baomidou.mybatisplus.toolkit.StringUtils;
 import com.baomidou.mybatisplus.toolkit.SystemClock;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -52,8 +53,8 @@ import java.util.Properties;
  * @Date 2016-07-07
  */
 @Intercepts({
-		@Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class,
-				RowBounds.class, ResultHandler.class }),
+		@Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class, RowBounds.class,
+				ResultHandler.class }),
 		@Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class PerformanceInterceptor implements Interceptor {
 
@@ -74,7 +75,7 @@ public class PerformanceInterceptor implements Interceptor {
 		RowBounds rowBounds = null;
 		Pagination pagination = null;
 		boolean isPageSql = false;
-		if (invocation.getMethod().getName().equals("query")) {
+		if ("query".equals(invocation.getMethod().getName())) {
 			rowBounds = (RowBounds) invocation.getArgs()[2];
 			if (rowBounds instanceof Pagination) {
 				isPageSql = true;
@@ -94,8 +95,8 @@ public class PerformanceInterceptor implements Interceptor {
 						page.isOptimizeCount());
 				orderBy = countOptimize.isOrderBy();
 			}
-			String sql = DialectFactory.buildPaginationSql(pagination,
-					SqlUtils.concatOrderBy(boundSql.getSql(), page, orderBy), dbType, null).replaceAll("[\\s]+", " ");
+			String sql = DialectFactory.buildPaginationSql(pagination, SqlUtils.concatOrderBy(boundSql.getSql(), page, orderBy),
+					dbType, null).replaceAll("[\\s]+", " ");
 			sqlBuilder.append(getSql(configuration, boundSql, sql));
 		} else {
 			sqlBuilder.append(getSql(configuration, boundSql, boundSql.getSql()));
@@ -116,42 +117,44 @@ public class PerformanceInterceptor implements Interceptor {
 	public static String getSql(Configuration configuration, BoundSql boundSql, String sql) {
 		Object parameterObject = boundSql.getParameterObject();
 		List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
-		sql = sql.replaceAll("[\\s]+", " ");
-		if (parameterMappings != null && parameterMappings.size() > 0 && parameterObject != null) {
+		String targetSql = sql.replaceAll("[\\s]+", " ");
+		if (parameterMappings != null && !parameterMappings.isEmpty() && parameterObject != null) {
 			TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
 			if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
-				sql = sql.replaceFirst("\\?", getParameterValue(parameterObject));
+				targetSql = targetSql.replaceFirst("\\?", getParameterValue(parameterObject));
 			} else {
 				MetaObject metaObject = configuration.newMetaObject(parameterObject);
 				for (ParameterMapping parameterMapping : parameterMappings) {
 					String propertyName = parameterMapping.getProperty();
 					if (metaObject.hasGetter(propertyName)) {
 						Object obj = metaObject.getValue(propertyName);
-						sql = sql.replaceFirst("\\?", getParameterValue(obj));
+						targetSql = targetSql.replaceFirst("\\?", getParameterValue(obj));
 					} else if (boundSql.hasAdditionalParameter(propertyName)) {
 						Object obj = boundSql.getAdditionalParameter(propertyName);
-						sql = sql.replaceFirst("\\?", getParameterValue(obj));
+						targetSql = targetSql.replaceFirst("\\?", getParameterValue(obj));
 					}
 				}
 			}
 		}
-		return sql;
+		return targetSql;
 	}
 
 	private static String getParameterValue(Object obj) {
+		if (StringUtils.checkValNull(obj)) {
+			return StringUtils.EMPTY;
+		}
 		String value;
 		if (obj instanceof String) {
-			value = obj != null ? "'" + obj.toString() + "'" : "''";
+			value = "'" + obj.toString() + "'";
 		} else if (obj instanceof Date) {
 			if (obj instanceof java.sql.Date) {
-				value = obj != null ? "'" + obj.toString() + "'" : "''";
+				value = "'" + obj.toString() + "'";
 			} else {
-				DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT,
-						Locale.CHINA);
-				value = obj != null ? "'" + formatter.format(obj) + "'" : "''";
+				DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.CHINA);
+				value = "'" + formatter.format(obj) + "'";
 			}
 		} else {
-			value = obj != null ? obj.toString() : "";
+			value = obj.toString();
 		}
 		return value;
 	}
@@ -164,7 +167,14 @@ public class PerformanceInterceptor implements Interceptor {
 	}
 
 	public void setProperties(Properties prop) {
-		// TODO
+		String maxTime = prop.getProperty("maxTime");
+		String format = prop.getProperty("format");
+		if (StringUtils.isNotEmpty(maxTime)) {
+			this.maxTime = Long.parseLong(maxTime);
+		}
+		if (StringUtils.isNotEmpty(format)) {
+			this.format = Boolean.valueOf(format);
+		}
 	}
 
 	public long getMaxTime() {
