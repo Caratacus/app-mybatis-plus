@@ -15,6 +15,20 @@
  */
 package com.baomidou.mybatisplus.generator;
 
+import com.baomidou.mybatisplus.generator.config.ConstVal;
+import com.baomidou.mybatisplus.generator.config.FileOutConfig;
+import com.baomidou.mybatisplus.generator.config.TemplateConfig;
+import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
+import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.toolkit.StringUtils;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,21 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.app.VelocityEngine;
-
-import com.baomidou.mybatisplus.generator.config.ConstVal;
-import com.baomidou.mybatisplus.generator.config.FileOutConfig;
-import com.baomidou.mybatisplus.generator.config.TemplateConfig;
-import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
-import com.baomidou.mybatisplus.generator.config.po.TableInfo;
-import com.baomidou.mybatisplus.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.toolkit.StringUtils;
 
 /**
  * 生成文件
@@ -120,6 +119,10 @@ public class AutoGenerator extends AbstractGenerator {
 				ctx.put("cfg", injectionConfig.getMap());
 			}
 			/* ---------- 添加导入包 ---------- */
+			if (config.getGlobalConfig().isActiveRecord()) {
+				// 开启 ActiveRecord 模式
+				tableInfo.setImportPackages("com.baomidou.mybatisplus.activerecord.Model");
+			}
 			if (tableInfo.isConvert()) {
 				// 表注解
 				tableInfo.setImportPackages("com.baomidou.mybatisplus.annotations.TableName");
@@ -127,6 +130,8 @@ public class AutoGenerator extends AbstractGenerator {
 			if (StringUtils.isNotEmpty(config.getSuperEntityClass())) {
 				// 父实体
 				tableInfo.setImportPackages(config.getSuperEntityClass());
+			} else {
+				tableInfo.setImportPackages("java.io.Serializable");
 			}
 			ctx.put("package", packageInfo);
 			ctx.put("author", config.getGlobalConfig().getAuthor());
@@ -249,6 +254,9 @@ public class AutoGenerator extends AbstractGenerator {
 	 *            文件生成的目录
 	 */
 	private void vmToFile(VelocityContext context, String templatePath, String outputFile) throws IOException {
+		if (StringUtils.isEmpty(templatePath)) {
+			return;
+		}
 		VelocityEngine velocity = getVelocityEngine();
 		Template template = velocity.getTemplate(templatePath, ConstVal.UTF8);
 		FileOutputStream fos = new FileOutputStream(outputFile);

@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.entity.TableInfo;
 import com.baomidou.mybatisplus.enums.SqlMethod;
 import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.SqlHelper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -123,7 +124,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 			}
 			batchSqlSession.flushStatements();
 		} catch (Exception e) {
-			logger.warn("Error: Cannot execute insertBatch Method. Cause:" + e);
+			logger.error("Error: Cannot execute insertBatch Method. Cause:" + e);
 			return false;
 		} finally {
 			batchSqlSession.close();
@@ -185,7 +186,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 			}
 			batchSqlSession.flushStatements();
 		} catch (Exception e) {
-			logger.warn("Error: Cannot execute insertOrUpdateBatch Method. Cause:" + e);
+			logger.error("Error: Cannot execute insertOrUpdateBatch Method. Cause:" + e);
 			return false;
 		} finally {
 			batchSqlSession.close();
@@ -240,7 +241,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 			}
 			batchSqlSession.flushStatements();
 		} catch (Exception e) {
-			logger.warn("Error: Cannot execute insertBatch Method. Cause:" + e);
+			logger.error("Error: Cannot execute insertBatch Method. Cause:" + e);
 			return false;
 		} finally {
 			batchSqlSession.close();
@@ -281,8 +282,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
 	}
 
 	public Page<T> selectPage(Page<T> page) {
-		page.setRecords(baseMapper.selectPage(page, null));
-		return page;
+		return selectPage(page, Condition.instance());
 	}
 
 	public List<Map<String, Object>> selectMaps(Wrapper<T> wrapper) {

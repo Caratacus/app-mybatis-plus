@@ -15,14 +15,13 @@
  */
 package com.baomidou.mybatisplus.plugins;
 
-import com.baomidou.mybatisplus.MybatisDefaultParameterHandler;
 import com.baomidou.mybatisplus.entity.CountOptimize;
 import com.baomidou.mybatisplus.plugins.pagination.DialectFactory;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.baomidou.mybatisplus.toolkit.IOUtils;
 import com.baomidou.mybatisplus.toolkit.PluginUtils;
 import com.baomidou.mybatisplus.toolkit.SqlUtils;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
+import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -35,27 +34,27 @@ import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
-import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
-import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.Properties;
 
 /**
  * <p>
- * 分页拦截器
+ * 缓存分页拦截器
  * </p>
  *
  * @author hubin
  * @Date 2016-01-23
  */
-@Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
-public class PaginationInterceptor implements Interceptor {
+@Intercepts({
+		@Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class, RowBounds.class,
+				ResultHandler.class }),
+		@Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
+public class CachePaginationInterceptor extends PaginationInterceptor implements Interceptor {
 
-	private static final Log logger = LogFactory.getLog(PaginationInterceptor.class);
+	private static final Log logger = LogFactory.getLog(CachePaginationInterceptor.class);
 
 	/* 溢出总页数，设置第一页 */
 	private boolean overflowCurrent = false;
@@ -78,7 +77,6 @@ public class PaginationInterceptor implements Interceptor {
 			MetaObject metaStatementHandler = SystemMetaObject.forObject(statementHandler);
 			RowBounds rowBounds = (RowBounds) metaStatementHandler.getValue("delegate.rowBounds");
 
-			/* 不需要分页的场合 */
 			if (rowBounds == null || rowBounds == RowBounds.DEFAULT) {
 				return invocation.proceed();
 			}
@@ -86,7 +84,6 @@ public class PaginationInterceptor implements Interceptor {
 			String originalSql = (String) boundSql.getSql();
 
 			if (rowBounds instanceof Pagination) {
-				MappedStatement mappedStatement = (MappedStatement) metaStatementHandler.getValue("delegate.mappedStatement");
 				Pagination page = (Pagination) rowBounds;
 				boolean orderBy = true;
 				if (page.isSearchCount()) {
@@ -94,13 +91,6 @@ public class PaginationInterceptor implements Interceptor {
 							page.isOptimizeCount());
 					orderBy = countOptimize.isOrderBy();
 				}
-				CountOptimize countOptimize = SqlUtils.getCountOptimize(originalSql, optimizeType, dialectType,
-						page.isOptimizeCount());
-				this.count(countOptimize.getCountSQL(), mappedStatement, boundSql, page);
-				if (page.getTotal() <= 0) {
-					return invocation.proceed();
-				}
-
 				String buildSql = SqlUtils.concatOrderBy(originalSql, page, orderBy);
 				originalSql = DialectFactory.buildPaginationSql(page, buildSql, dialectType, dialectClazz);
 			} else {
@@ -108,58 +98,40 @@ public class PaginationInterceptor implements Interceptor {
 				originalSql = DialectFactory.buildPaginationSql(rowBounds, originalSql, dialectType, dialectClazz);
 			}
 
-			/*
-			 * <p> 禁用内存分页 </p> <p> 内存分页会查询所有结果出来处理（这个很吓人的），如果结果变化频繁这个数据还会不准。
-			 * </p>
-			 */
 			metaStatementHandler.setValue("delegate.boundSql.sql", originalSql);
 			metaStatementHandler.setValue("delegate.rowBounds.offset", RowBounds.NO_ROW_OFFSET);
 			metaStatementHandler.setValue("delegate.rowBounds.limit", RowBounds.NO_ROW_LIMIT);
-		}
+		} else {
+			MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
+			Object parameterObject = invocation.getArgs()[1];
+			RowBounds rowBounds = (RowBounds) invocation.getArgs()[2];
+			if (rowBounds == null || rowBounds == RowBounds.DEFAULT) {
+				return invocation.proceed();
+			}
 
+			BoundSql boundSql = mappedStatement.getBoundSql(parameterObject);
+			String originalSql = (String) boundSql.getSql();
+
+			if (rowBounds instanceof Pagination) {
+				Pagination page = (Pagination) rowBounds;
+				if (page.isSearchCount()) {
+					CountOptimize countOptimize = SqlUtils.getCountOptimize(originalSql, optimizeType, dialectType,
+							page.isOptimizeCount());
+					super.count(countOptimize.getCountSQL(), mappedStatement, boundSql, page);
+					if (page.getTotal() <= 0) {
+						return invocation.proceed();
+					}
+				}
+			}
+		}
 		return invocation.proceed();
-	}
 
-	/**
-	 * 查询总记录条数
-	 *
-	 * @param sql
-	 * @param mappedStatement
-	 * @param boundSql
-	 * @param page
-	 */
-	protected void count(String sql, MappedStatement mappedStatement, BoundSql boundSql, Pagination page) {
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-		Configuration configuration = mappedStatement.getConfiguration();
-		try {
-			Connection connection = mappedStatement.getConfiguration().getEnvironment().getDataSource().getConnection();
-			statement = connection.prepareStatement(sql);
-			DefaultParameterHandler parameterHandler = new MybatisDefaultParameterHandler(mappedStatement,
-					boundSql.getParameterObject(), boundSql);
-			parameterHandler.setParameters(statement);
-			resultSet = statement.executeQuery();
-			int total = 0;
-			if (resultSet.next()) {
-				total = resultSet.getInt(1);
-			}
-			page.setTotal(total);
-			/*
-			 * 溢出总页数，设置第一页
-			 */
-			if (overflowCurrent && (page.getCurrent() > page.getPages())) {
-				page = new Pagination(1, page.getSize());
-				page.setTotal(total);
-			}
-		} catch (Exception e) {
-			logger.error("Error: query page count total fail!", e);
-		} finally {
-			IOUtils.closeQuietly(statement);
-			IOUtils.closeQuietly(resultSet);
-		}
 	}
 
 	public Object plugin(Object target) {
+		if (target instanceof Executor) {
+			return Plugin.wrap(target, this);
+		}
 		if (target instanceof StatementHandler) {
 			return Plugin.wrap(target, this);
 		}

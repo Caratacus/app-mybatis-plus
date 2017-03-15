@@ -15,18 +15,6 @@
  */
 package com.baomidou.mybatisplus.generator.config.builder;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
@@ -39,6 +27,18 @@ import com.baomidou.mybatisplus.generator.config.rules.DbType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.config.rules.QuerySQL;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 配置汇总 传递给文件生成工具
@@ -82,7 +82,7 @@ public class ConfigBuilder {
 	 * 模板路径配置信息
 	 */
 	private TemplateConfig template;
-	
+
 	/**
 	 * 数据库配置
 	 */
@@ -100,7 +100,7 @@ public class ConfigBuilder {
 
 	/**
 	 * 在构造器中处理配置
-	 * 
+	 *
 	 * @param packageConfig
 	 *            包配置
 	 * @param dataSourceConfig
@@ -120,11 +120,17 @@ public class ConfigBuilder {
 		} else {
 			this.globalConfig = globalConfig;
 		}
+		// 模板配置
+		if (null == template) {
+			this.template = new TemplateConfig();
+		} else {
+			this.template = template;
+		}
 		// 包配置
 		if (null == packageConfig) {
-			handlerPackage(this.globalConfig.getOutputDir(), new PackageConfig());
+			handlerPackage(this.template, this.globalConfig.getOutputDir(), new PackageConfig());
 		} else {
-			handlerPackage(this.globalConfig.getOutputDir(), packageConfig);
+			handlerPackage(this.template, this.globalConfig.getOutputDir(), packageConfig);
 		}
 		this.dataSourceConfig = dataSourceConfig;
 		handlerDataSource(dataSourceConfig);
@@ -135,12 +141,6 @@ public class ConfigBuilder {
 			this.strategyConfig = strategyConfig;
 		}
 		handlerStrategy(this.strategyConfig);
-		// 模板配置
-		if (null == template) {
-			this.template = new TemplateConfig();
-		} else {
-			this.template = template;
-		}
 	}
 
 	// ************************ 曝露方法 BEGIN*****************************
@@ -199,7 +199,7 @@ public class ConfigBuilder {
 
 	/**
 	 * 模板路径配置信息
-	 * 
+	 *
 	 * @return 所以模板路径配置信息
 	 */
 	public TemplateConfig getTemplate() {
@@ -211,10 +211,13 @@ public class ConfigBuilder {
 	/**
 	 * 处理包配置
 	 *
+	 * @param template
+	 *            TemplateConfig
+	 * @param outputDir
 	 * @param config
 	 *            PackageConfig
 	 */
-	private void handlerPackage(String outputDir, PackageConfig config) {
+	private void handlerPackage(TemplateConfig template, String outputDir, PackageConfig config) {
 		packageInfo = new HashMap<String, String>();
 		packageInfo.put(ConstVal.MODULENAME, config.getModuleName());
 		packageInfo.put(ConstVal.ENTITY, joinPackage(config.getParent(), config.getEntity()));
@@ -224,13 +227,26 @@ public class ConfigBuilder {
 		packageInfo.put(ConstVal.SERVICEIMPL, joinPackage(config.getParent(), config.getServiceImpl()));
 		packageInfo.put(ConstVal.CONTROLLER, joinPackage(config.getParent(), config.getController()));
 
+		// 生成路径信息
 		pathInfo = new HashMap<String, String>();
-		pathInfo.put(ConstVal.ENTITY_PATH, joinPath(outputDir, packageInfo.get(ConstVal.ENTITY)));
-		pathInfo.put(ConstVal.MAPPER_PATH, joinPath(outputDir, packageInfo.get(ConstVal.MAPPER)));
-		pathInfo.put(ConstVal.XML_PATH, joinPath(outputDir, packageInfo.get(ConstVal.XML)));
-		pathInfo.put(ConstVal.SERIVCE_PATH, joinPath(outputDir, packageInfo.get(ConstVal.SERIVCE)));
-		pathInfo.put(ConstVal.SERVICEIMPL_PATH, joinPath(outputDir, packageInfo.get(ConstVal.SERVICEIMPL)));
-		pathInfo.put(ConstVal.CONTROLLER_PATH, joinPath(outputDir, packageInfo.get(ConstVal.CONTROLLER)));
+		if (StringUtils.isNotEmpty(template.getEntity())) {
+			pathInfo.put(ConstVal.ENTITY_PATH, joinPath(outputDir, packageInfo.get(ConstVal.ENTITY)));
+		}
+		if (StringUtils.isNotEmpty(template.getMapper())) {
+			pathInfo.put(ConstVal.MAPPER_PATH, joinPath(outputDir, packageInfo.get(ConstVal.MAPPER)));
+		}
+		if (StringUtils.isNotEmpty(template.getXml())) {
+			pathInfo.put(ConstVal.XML_PATH, joinPath(outputDir, packageInfo.get(ConstVal.XML)));
+		}
+		if (StringUtils.isNotEmpty(template.getService())) {
+			pathInfo.put(ConstVal.SERIVCE_PATH, joinPath(outputDir, packageInfo.get(ConstVal.SERIVCE)));
+		}
+		if (StringUtils.isNotEmpty(template.getServiceImpl())) {
+			pathInfo.put(ConstVal.SERVICEIMPL_PATH, joinPath(outputDir, packageInfo.get(ConstVal.SERVICEIMPL)));
+		}
+		if (StringUtils.isNotEmpty(template.getController())) {
+			pathInfo.put(ConstVal.CONTROLLER_PATH, joinPath(outputDir, packageInfo.get(ConstVal.CONTROLLER)));
+		}
 	}
 
 	/**
@@ -337,7 +353,6 @@ public class ConfigBuilder {
 		List<TableInfo> tableList = new ArrayList<TableInfo>();
 		Set<String> notExistTables = new HashSet<String>();
 		NamingStrategy strategy = config.getNaming();
-		NamingStrategy fieldStrategy = config.getFieldNaming();
 		PreparedStatement pstate = null;
 		try {
 			pstate = connection.prepareStatement(querySQL.getTableCommentsSql());
@@ -371,7 +386,7 @@ public class ConfigBuilder {
 						tableInfo.setComment(tableComment);
 					}
 					if (StringUtils.isNotEmpty(tableInfo.getName())) {
-						List<TableField> fieldList = getListFields(tableInfo.getName(), fieldStrategy);
+						List<TableField> fieldList = getListFields(tableInfo.getName(), strategy);
 						tableInfo.setFields(fieldList);
 						tableList.add(tableInfo);
 					}
@@ -405,6 +420,22 @@ public class ConfigBuilder {
 	}
 
 	/**
+	 * 判断主键是否为identity，目前仅对mysql进行检查
+	 * @param results ResultSet
+	 * @return 主键是否为identity
+	 * @throws SQLException
+     */
+	private boolean isKeyIdentity(ResultSet results) throws SQLException{
+		if(QuerySQL.MYSQL==this.querySQL){
+			String extra= results.getString("Extra");
+			if("auto_increment".equals(extra)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 将字段信息与表信息关联
 	 *
 	 * @param tableName
@@ -427,6 +458,9 @@ public class ConfigBuilder {
 			// 处理ID
 			if (isId && !havedId) {
 				field.setKeyFlag(true);
+				if(isKeyIdentity(results)){
+					field.setKeyIdentityFlag(true);
+				}
 				havedId = true;
 			} else {
 				field.setKeyFlag(false);
@@ -493,21 +527,31 @@ public class ConfigBuilder {
 
 	/**
 	 * 处理字段名称
-	 * 
+	 *
 	 * @param name
 	 * @param strategy
 	 * @param tablePrefix
 	 * @return 根据策略返回处理后的名称
 	 */
 	private String processName(String name, NamingStrategy strategy, String[] tablePrefix) {
+		boolean removePrefix = false;
+		if (tablePrefix != null && tablePrefix.length >= 1) {
+			removePrefix = true;
+		}
 		String propertyName = "";
-		if (strategy == NamingStrategy.remove_prefix_and_camel) {
-			propertyName = NamingStrategy.removePrefixAndCamel(name, tablePrefix);
+		if (removePrefix) {
+			if (strategy == NamingStrategy.underline_to_camel) {
+				// 删除前缀、下划线转驼峰
+				propertyName = NamingStrategy.removePrefixAndCamel(name, tablePrefix);
+			} else {
+				// 删除前缀
+				propertyName = NamingStrategy.removePrefix(name, tablePrefix);
+			}
 		} else if (strategy == NamingStrategy.underline_to_camel) {
+			// 下划线转驼峰
 			propertyName = NamingStrategy.underlineToCamel(name);
-		} else if (strategy == NamingStrategy.remove_prefix) {
-			propertyName = NamingStrategy.removePrefix(name, tablePrefix);
 		} else {
+			// 不处理
 			propertyName = name;
 		}
 		return propertyName;

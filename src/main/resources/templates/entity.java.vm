@@ -1,13 +1,7 @@
 package ${package.Entity};
 
-#if(${activeRecord})
-import com.baomidou.mybatisplus.activerecord.Model;
-#end
 #foreach($pkg in ${table.importPackages})
 import ${pkg};
-#end
-#if(!${superEntityClass})
-import java.io.Serializable;
 #end
 
 /**
@@ -40,12 +34,14 @@ public class ${entity} implements Serializable {
      * ${field.comment}
      */
 #end
-#if(${field.convert})
 #if(${field.keyFlag})
-	@TableId("${field.name}")
-#else
-	@TableField("${field.name}")
+#if(${field.keyIdentityFlag})
+	@TableId(value="${field.name}", type= IdType.AUTO)
+#elseif(${field.convert})
+    @TableId("${field.name}")
 #end
+#elseif(${field.convert})
+	@TableField("${field.name}")
 #end
 	private ${field.propertyType} ${field.propertyName};
 #end

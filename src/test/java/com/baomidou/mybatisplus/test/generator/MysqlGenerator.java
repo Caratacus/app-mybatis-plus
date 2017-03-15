@@ -15,11 +15,6 @@
  */
 package com.baomidou.mybatisplus.test.generator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -32,6 +27,11 @@ import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.DbType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -91,11 +91,9 @@ public class MysqlGenerator {
 		// strategy.setCapitalMode(true);// 全局大写命名
 		// strategy.setDbColumnUnderline(true);//全局下划线命名
 		strategy.setTablePrefix(new String[] { "bmd_", "mp_" });// 此处可以修改为您的表前缀
-		strategy.setNaming(NamingStrategy.remove_prefix_and_camel);// 表名生成策略
+		strategy.setNaming(NamingStrategy.underline_to_camel);// 表名生成策略
 		// strategy.setInclude(new String[] { "user" }); // 需要生成的表
 		// strategy.setExclude(new String[]{"test"}); // 排除生成的表
-		// 字段名生成策略
-		strategy.setFieldNaming(NamingStrategy.underline_to_camel);
 		// 自定义实体父类
 		// strategy.setSuperEntityClass("com.baomidou.demo.TestEntity");
 		// 自定义实体，公共字段

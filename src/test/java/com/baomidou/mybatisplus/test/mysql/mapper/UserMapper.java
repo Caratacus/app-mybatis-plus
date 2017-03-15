@@ -15,13 +15,13 @@
  */
 package com.baomidou.mybatisplus.test.mysql.mapper;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.baomidou.mybatisplus.test.mysql.entity.User;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
-import java.util.List;
+import com.baomidou.mybatisplus.test.mysql.entity.User;
 
 /**
  * <p>
@@ -31,7 +31,7 @@ import java.util.List;
  * @author hubin
  * @Date 2016-01-23
  */
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper extends MyBaseMapper<User> {
 
 	/**
 	 * 用户列表，分页显示
@@ -52,6 +52,12 @@ public interface UserMapper extends BaseMapper<User> {
 	 * 自定义注入方法
 	 */
 	int deleteAll();
+	
+	/**
+	 * 自定义注入逻辑删除方法<br>
+	 * com.baomidou.mybatisplus.test.mysql.MetaObjectHandlerTest
+	 */
+	int deleteLogicById(@Param("id") Long id);
 
 	/**
 	 * 根据主键批量查询

@@ -16,6 +16,9 @@
  */
 package com.baomidou.mybatisplus.toolkit;
 
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +31,8 @@ import java.net.Socket;
 import java.net.URLConnection;
 import java.nio.channels.Selector;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * <p>
@@ -39,11 +44,15 @@ import java.sql.Connection;
  */
 public class IOUtils {
 
+	private static final Log logger = LogFactory.getLog(IOUtils.class);
+
+	private IOUtils() {
+	}
+
 	/**
 	 * Closes a URLConnection.
 	 *
-	 * @param conn
-	 *            the connection to close.
+	 * @param conn the connection to close.
 	 * @since 2.4
 	 */
 	public static void close(final URLConnection conn) {
@@ -55,8 +64,8 @@ public class IOUtils {
 	/**
 	 * Closes an <code>Reader</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link Reader#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link Reader#close()}, except any exceptions will be ignored. This is typically used in finally
+	 * blocks.
 	 * <p>
 	 * Example code:
 	 * 
@@ -74,8 +83,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param input
-	 *            the Reader to close, may be null or already closed
+	 * @param input the Reader to close, may be null or already closed
 	 */
 	public static void closeQuietly(final Reader input) {
 		closeQuietly((Closeable) input);
@@ -84,8 +92,8 @@ public class IOUtils {
 	/**
 	 * Closes an <code>Writer</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link Writer#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link Writer#close()}, except any exceptions will be ignored. This is typically used in finally
+	 * blocks.
 	 * <p>
 	 * Example code:
 	 * 
@@ -102,8 +110,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param output
-	 *            the Writer to close, may be null or already closed
+	 * @param output the Writer to close, may be null or already closed
 	 */
 	public static void closeQuietly(final Writer output) {
 		closeQuietly((Closeable) output);
@@ -112,8 +119,8 @@ public class IOUtils {
 	/**
 	 * Closes an <code>InputStream</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link InputStream#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link InputStream#close()}, except any exceptions will be ignored. This is typically used in
+	 * finally blocks.
 	 * <p>
 	 * Example code:
 	 * 
@@ -131,8 +138,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param input
-	 *            the InputStream to close, may be null or already closed
+	 * @param input the InputStream to close, may be null or already closed
 	 */
 	public static void closeQuietly(final InputStream input) {
 		closeQuietly((Closeable) input);
@@ -141,8 +147,8 @@ public class IOUtils {
 	/**
 	 * Closes an <code>OutputStream</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link OutputStream#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link OutputStream#close()}, except any exceptions will be ignored. This is typically used in
+	 * finally blocks.
 	 * <p>
 	 * Example code:
 	 * 
@@ -161,8 +167,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param output
-	 *            the OutputStream to close, may be null or already closed
+	 * @param output the OutputStream to close, may be null or already closed
 	 */
 	public static void closeQuietly(final OutputStream output) {
 		closeQuietly((Closeable) output);
@@ -171,8 +176,8 @@ public class IOUtils {
 	/**
 	 * Closes a <code>Closeable</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link Closeable#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link Closeable#close()}, except any exceptions will be ignored. This is typically used in finally
+	 * blocks.
 	 * <p>
 	 * Example code:
 	 * </p>
@@ -202,8 +207,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param closeable
-	 *            the objects to close, may be null or already closed
+	 * @param closeable the objects to close, may be null or already closed
 	 * @since 2.0
 	 */
 	public static void closeQuietly(final Closeable closeable) {
@@ -212,24 +216,21 @@ public class IOUtils {
 				closeable.close();
 			}
 		} catch (final IOException ioe) {
-			// ignore
+			logger.error("error close io", ioe);
 		}
 	}
 
 	/**
 	 * Closes a <code>Closeable</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link Closeable#close()}, except any exceptions will be
-	 * ignored.
+	 * Equivalent to {@link Closeable#close()}, except any exceptions will be ignored.
 	 * <p>
-	 * This is typically used in finally blocks to ensure that the closeable is
-	 * closed even if an Exception was thrown before the normal close statement
-	 * was reached. <br>
-	 * <b>It should not be used to replace the close statement(s) which should
-	 * be present for the non-exceptional case.</b> <br>
-	 * It is only intended to simplify tidying up where normal processing has
-	 * already failed and reporting close failure as well is not necessary or
-	 * useful.
+	 * This is typically used in finally blocks to ensure that the closeable is closed even if an Exception was thrown
+	 * before the normal close statement was reached. <br>
+	 * <b>It should not be used to replace the close statement(s) which should be present for the non-exceptional
+	 * case.</b> <br>
+	 * It is only intended to simplify tidying up where normal processing has already failed and reporting close failure
+	 * as well is not necessary or useful.
 	 * <p>
 	 * Example code:
 	 * </p>
@@ -257,8 +258,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param closeables
-	 *            the objects to close, may be null or already closed
+	 * @param closeables the objects to close, may be null or already closed
 	 * @see #closeQuietly(Closeable)
 	 * @since 2.5
 	 */
@@ -274,8 +274,8 @@ public class IOUtils {
 	/**
 	 * Closes a <code>Socket</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link Socket#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link Socket#close()}, except any exceptions will be ignored. This is typically used in finally
+	 * blocks.
 	 * <p>
 	 * Example code:
 	 * 
@@ -292,8 +292,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param sock
-	 *            the Socket to close, may be null or already closed
+	 * @param sock the Socket to close, may be null or already closed
 	 * @since 2.0
 	 */
 	public static void closeQuietly(final Socket sock) {
@@ -301,7 +300,7 @@ public class IOUtils {
 			try {
 				sock.close();
 			} catch (final IOException ioe) {
-				// ignored
+				logger.error("error close io", ioe);
 			}
 		}
 	}
@@ -309,8 +308,8 @@ public class IOUtils {
 	/**
 	 * Closes a <code>Selector</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link Selector#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link Selector#close()}, except any exceptions will be ignored. This is typically used in finally
+	 * blocks.
 	 * <p>
 	 * Example code:
 	 * 
@@ -327,8 +326,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param selector
-	 *            the Selector to close, may be null or already closed
+	 * @param selector the Selector to close, may be null or already closed
 	 * @since 2.2
 	 */
 	public static void closeQuietly(final Selector selector) {
@@ -336,7 +334,7 @@ public class IOUtils {
 			try {
 				selector.close();
 			} catch (final IOException ioe) {
-				// ignored
+				logger.error("error close io", ioe);
 			}
 		}
 	}
@@ -344,8 +342,8 @@ public class IOUtils {
 	/**
 	 * Closes a <code>ServerSocket</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link ServerSocket#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link ServerSocket#close()}, except any exceptions will be ignored. This is typically used in
+	 * finally blocks.
 	 * <p>
 	 * Example code:
 	 * 
@@ -362,8 +360,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param sock
-	 *            the ServerSocket to close, may be null or already closed
+	 * @param sock the ServerSocket to close, may be null or already closed
 	 * @since 2.2
 	 */
 	public static void closeQuietly(final ServerSocket sock) {
@@ -371,7 +368,7 @@ public class IOUtils {
 			try {
 				sock.close();
 			} catch (final IOException ioe) {
-				// ignored
+				logger.error("error close io", ioe);
 			}
 		}
 	}
@@ -379,8 +376,8 @@ public class IOUtils {
 	/**
 	 * Closes a <code>Connection</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link Connection#close()}, except any exceptions will be
-	 * ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link Connection#close()}, except any exceptions will be ignored. This is typically used in
+	 * finally blocks.
 	 * <p>
 	 * Example code:
 	 *
@@ -397,8 +394,7 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param conn
-	 *            the Connection to close, may be null or already closed
+	 * @param conn the Connection to close, may be null or already closed
 	 * @since 2.2
 	 */
 	public static void closeQuietly(final Connection conn) {
@@ -406,7 +402,7 @@ public class IOUtils {
 			try {
 				conn.close();
 			} catch (Exception e) {
-				// ignored
+				logger.error("error close conn", e);
 			}
 		}
 	}
@@ -414,17 +410,17 @@ public class IOUtils {
 	/**
 	 * Closes a <code>AutoCloseable</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link AutoCloseable#close()}, except any exceptions will
-	 * be ignored. This is typically used in finally blocks.
+	 * Equivalent to {@link ResultSet#close()}, except any exceptions will be ignored. This is typically used in finally
+	 * blocks.
 	 * <p>
 	 * Example code:
 	 *
 	 * <pre>
-	 * AutoCloseable closeable = null;
+	 * AutoCloseable statement = null;
 	 * try {
-	 * 	closeable = new Connection();
+	 * 	statement = new Connection();
 	 * 	// process close
-	 * 	closeable.close();
+	 * 	statement.close();
 	 * } catch (Exception e) {
 	 * 	// error handling
 	 * } finally {
@@ -432,16 +428,15 @@ public class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param closeable
-	 *            the Connection to close, may be null or already closed
+	 * @param resultSet the Connection to close, may be null or already closed
 	 * @since 2.2
 	 */
-	public static void closeQuietly(final AutoCloseable closeable) {
-		if (closeable != null) {
+	public static void closeQuietly(final ResultSet resultSet) {
+		if (resultSet != null) {
 			try {
-				closeable.close();
+				resultSet.close();
 			} catch (Exception e) {
-				// ignored
+				logger.error("error close resultSet", e);
 			}
 		}
 	}
@@ -449,17 +444,48 @@ public class IOUtils {
 	/**
 	 * Closes a <code>AutoCloseable</code> unconditionally.
 	 * <p>
-	 * Equivalent to {@link AutoCloseable#close()}, except any exceptions will
-	 * be ignored.
+	 * Equivalent to {@link Statement#close()}, except any exceptions will be ignored. This is typically used in finally
+	 * blocks.
 	 * <p>
-	 * This is typically used in finally blocks to ensure that the closeable is
-	 * closed even if an Exception was thrown before the normal close statement
-	 * was reached. <br>
-	 * <b>It should not be used to replace the close statement(s) which should
-	 * be present for the non-exceptional case.</b> <br>
-	 * It is only intended to simplify tidying up where normal processing has
-	 * already failed and reporting close failure as well is not necessary or
-	 * useful.
+	 * Example code:
+	 *
+	 * <pre>
+	 * AutoCloseable statement = null;
+	 * try {
+	 * 	statement = new Connection();
+	 * 	// process close
+	 * 	statement.close();
+	 * } catch (Exception e) {
+	 * 	// error handling
+	 * } finally {
+	 * 	IOUtils.closeQuietly(conn);
+	 * }
+	 * </pre>
+	 *
+	 * @param statement the Connection to close, may be null or already closed
+	 * @since 2.2
+	 */
+	public static void closeQuietly(final Statement statement) {
+		if (statement != null) {
+			try {
+				statement.close();
+			} catch (Exception e) {
+				logger.error("error close statement", e);
+			}
+		}
+	}
+
+	/**
+	 * Closes a <code>AutoCloseable</code> unconditionally.
+	 * <p>
+	 * Equivalent to {@link AutoCloseable#close()}, except any exceptions will be ignored.
+	 * <p>
+	 * This is typically used in finally blocks to ensure that the closeable is closed even if an Exception was thrown
+	 * before the normal close statement was reached. <br>
+	 * <b>It should not be used to replace the close statement(s) which should be present for the non-exceptional
+	 * case.</b> <br>
+	 * It is only intended to simplify tidying up where normal processing has already failed and reporting close failure
+	 * as well is not necessary or useful.
 	 * <p>
 	 * Example code:
 	 * </p>
@@ -479,17 +505,17 @@ public class IOUtils {
 	 * <p>
 	 * Closing all streams: <br>
 	 *
-	 * @param closeables
-	 *            the objects to close, may be null or already closed
-	 * @see #closeQuietly(AutoCloseable)
+	 * @param statements the objects to close, may be null or already closed
+	 * @see #closeQuietly(Statement)
 	 * @since 2.5
 	 */
-	public static void closeQuietly(final AutoCloseable... closeables) {
-		if (closeables == null) {
+	public static void closeQuietly(final Statement... statements) {
+		if (statements == null) {
 			return;
 		}
-		for (final AutoCloseable closeable : closeables) {
-			closeQuietly(closeable);
+		for (final Statement statement : statements) {
+			closeQuietly(statement);
 		}
 	}
+
 }

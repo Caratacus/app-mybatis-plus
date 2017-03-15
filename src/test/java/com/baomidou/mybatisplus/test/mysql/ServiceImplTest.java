@@ -31,6 +31,8 @@ import java.util.List;
  * @author hubin
  * @date 2017-01-30
  */
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration({ "classpath:spring/spring-servlet.xml" })
 public class ServiceImplTest {
 	@Autowired
 	private IUserService userService;
@@ -43,5 +45,9 @@ public class ServiceImplTest {
 		}
 		boolean batchResult = userService.insertBatch(userList);
 		System.err.println("batchResult: " + batchResult);
+
+		// 注入测试
+		userService.testSqlInjector();
 	}
+
 }

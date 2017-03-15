@@ -15,8 +15,6 @@
  */
 package com.baomidou.mybatisplus.toolkit;
 
-import com.baomidou.mybatisplus.enums.SqlLike;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +47,9 @@ public class StringUtils {
 	 * 占位符
 	 */
 	public static final String PLACE_HOLDER = "{%s}";
+
+	private StringUtils() {
+	}
 
 	/**
 	 * <p>
@@ -216,7 +217,7 @@ public class StringUtils {
 
 	/**
 	 * 获取SQL PARAMS字符串
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
@@ -246,33 +247,6 @@ public class StringUtils {
 			return StringEscape.escapeString(srcStr);
 		}
 		return srcStr;
-	}
-
-	/**
-	 * <p>
-	 * 用%连接like
-	 * </p>
-	 *
-	 * @param str
-	 *            原字符串
-	 * @return
-	 */
-	public static String concatLike(String str, SqlLike type) {
-		StringBuilder builder = new StringBuilder(str.length() + 3);
-		switch (type) {
-		case LEFT:
-			builder.append("%").append(str);
-			break;
-		case RIGHT:
-			builder.append(str).append("%");
-			break;
-		case CUSTOM:
-			builder.append(str);
-			break;
-		default:
-			builder.append("%").append(str).append("%");
-		}
-		return StringEscape.escapeString(builder.toString());
 	}
 
 	/**
@@ -664,7 +638,7 @@ public class StringUtils {
 		try {
 			cls = Class.forName(propertyType);
 		} catch (ClassNotFoundException e) {
-			//
+			return false;
 		}
 		return isCharSequence(cls);
 	}
