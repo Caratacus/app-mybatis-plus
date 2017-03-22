@@ -124,7 +124,7 @@ public class SqlHelper {
 	 * @return boolean
 	 */
 	public static boolean retBool(Integer result) {
-		return (null == result) ? false : result >= 1;
+		return null != result && result >= 1;
 	}
 
 	/**
@@ -166,6 +166,9 @@ public class SqlHelper {
 	 * @param wrapper
 	 */
 	public static void fillWrapper(Page<?> page, Wrapper<?> wrapper) {
+		if (null == page) {
+			return;
+		}
 		if (null != wrapper) {
 			if (page.isOpenSort()) {
 				wrapper.orderBy(page.getOrderByField(), page.isAsc());

@@ -29,17 +29,9 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * 生成文件
@@ -259,6 +251,14 @@ public class AutoGenerator extends AbstractGenerator {
 		}
 		VelocityEngine velocity = getVelocityEngine();
 		Template template = velocity.getTemplate(templatePath, ConstVal.UTF8);
+		File file = new File(outputFile);
+		if (!file.getParentFile().exists()) {
+			// 如果文件所在的目录不存在，则创建目录
+			if (!file.getParentFile().mkdirs()) {
+				logger.debug("创建文件所在的目录失败!");
+				return;
+			}
+		}
 		FileOutputStream fos = new FileOutputStream(outputFile);
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos, ConstVal.UTF8));
 		template.merge(context, writer);

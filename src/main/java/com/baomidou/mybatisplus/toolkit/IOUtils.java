@@ -16,9 +16,6 @@
  */
 package com.baomidou.mybatisplus.toolkit;
 
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +30,9 @@ import java.nio.channels.Selector;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 
 /**
  * <p>

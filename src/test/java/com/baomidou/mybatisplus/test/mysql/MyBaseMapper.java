@@ -13,21 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baomidou.mybatisplus.test.ioc;
+package com.baomidou.mybatisplus.test.mysql;
+
+import com.baomidou.mybatisplus.mapper.BaseMapper;
 
 /**
  * <p>
- * 汽车接口
+ * 自定义 Mapper 接口
  * </p>
- * 
+ *
  * @author hubin
- * @Date 2016-07-06
+ * @date 2017-03-14
  */
-public interface ICar {
+public interface MyBaseMapper<T> extends BaseMapper<T> {
 
-	boolean start();
+	// 测试自定义 Mapper 接口
 
-
-	void driver();
+	// 这个类  不要放到  mapper 扫描目录，否则会当做真实 表 mapper 扫描异常！！
 
 }

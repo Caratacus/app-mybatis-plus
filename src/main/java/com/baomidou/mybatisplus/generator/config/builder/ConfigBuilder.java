@@ -538,7 +538,7 @@ public class ConfigBuilder {
 		if (tablePrefix != null && tablePrefix.length >= 1) {
 			removePrefix = true;
 		}
-		String propertyName = "";
+		String propertyName;
 		if (removePrefix) {
 			if (strategy == NamingStrategy.underline_to_camel) {
 				// 删除前缀、下划线转驼峰
