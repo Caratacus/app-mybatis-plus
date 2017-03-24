@@ -15,15 +15,14 @@
  */
 package com.baomidou.mybatisplus;
 
-import java.lang.reflect.Field;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import com.baomidou.mybatisplus.entity.GlobalConfiguration;
+import com.baomidou.mybatisplus.entity.TableInfo;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.mapper.IMetaObjectHandler;
+import com.baomidou.mybatisplus.toolkit.IdWorker;
+import com.baomidou.mybatisplus.toolkit.MapUtils;
+import com.baomidou.mybatisplus.toolkit.StringUtils;
+import com.baomidou.mybatisplus.toolkit.TableInfoHelper;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -38,14 +37,14 @@ import org.apache.ibatis.type.TypeException;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
-import com.baomidou.mybatisplus.entity.GlobalConfiguration;
-import com.baomidou.mybatisplus.entity.TableInfo;
-import com.baomidou.mybatisplus.enums.IdType;
-import com.baomidou.mybatisplus.mapper.IMetaObjectHandler;
-import com.baomidou.mybatisplus.toolkit.IdWorker;
-import com.baomidou.mybatisplus.toolkit.MapUtils;
-import com.baomidou.mybatisplus.toolkit.StringUtils;
-import com.baomidou.mybatisplus.toolkit.TableInfoHelper;
+import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -155,21 +154,25 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 
 	/**
 	 * <p>
-	 * 填充主键 ID
+	 * 自定义元对象填充控制器
 	 * </p>
-	 * 
+	 *
 	 * @param tableInfo
 	 * @param ms
-	 * @param parameterObject
-	 *            插入数据库对象
+	 * @param parameterObject 插入数据库对象
 	 * @return
 	 */
 	protected static Object populateKeys(TableInfo tableInfo, MappedStatement ms, Object parameterObject) {
-		if (null != tableInfo && StringUtils.isNotEmpty(tableInfo.getKeyProperty()) && null != tableInfo.getIdType()
-				&& tableInfo.getIdType().getKey() >= 2) {
-			MetaObject metaObject = ms.getConfiguration().newMetaObject(parameterObject);
+		if (null == tableInfo || StringUtils.isEmpty(tableInfo.getKeyProperty()) || null == tableInfo.getIdType()) {
+            /*
+             * 不处理
+             */
+			return parameterObject;
+		}
+		MetaObject metaObject = ms.getConfiguration().newMetaObject(parameterObject);
+		if (tableInfo.getIdType().getKey() >= 2) {
 			Object idValue = metaObject.getValue(tableInfo.getKeyProperty());
-			/* 自定义 ID */
+            /* 自定义 ID */
 			if (StringUtils.checkValNull(idValue)) {
 				if (tableInfo.getIdType() == IdType.ID_WORKER) {
 					metaObject.setValue(tableInfo.getKeyProperty(), IdWorker.getId());
@@ -177,17 +180,13 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
 					metaObject.setValue(tableInfo.getKeyProperty(), IdWorker.get32UUID());
 				}
 			}
-			/* 自定义元对象填充控制器 */
-			IMetaObjectHandler metaObjectHandler = GlobalConfiguration.getMetaObjectHandler(ms.getConfiguration());
-			if (null != metaObjectHandler) {
-				metaObjectHandler.insertFill(metaObject);
-			}
-			return metaObject.getOriginalObject();
 		}
-		/*
-		 * 不处理
-		 */
-		return parameterObject;
+        /* 自定义元对象填充控制器 */
+		IMetaObjectHandler metaObjectHandler = GlobalConfiguration.getMetaObjectHandler(ms.getConfiguration());
+		if (null != metaObjectHandler) {
+			metaObjectHandler.insertFill(metaObject);
+		}
+		return metaObject.getOriginalObject();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
