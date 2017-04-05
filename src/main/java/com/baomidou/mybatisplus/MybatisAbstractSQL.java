@@ -15,12 +15,12 @@
  */
 package com.baomidou.mybatisplus;
 
-import com.baomidou.mybatisplus.toolkit.StringUtils;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.baomidou.mybatisplus.toolkit.StringUtils;
 
 /**
  * <p>
@@ -33,10 +33,10 @@ import java.util.List;
 @SuppressWarnings("serial")
 public abstract class MybatisAbstractSQL<T> implements Serializable {
 
-    private static final String AND = " AND ";
-    private static final String OR = " OR ";
-    private static final String AND_NEW = ") \nAND (";
-    private static final String OR_NEW = ") \nOR (";
+    private static final String AND = " AND " ;
+    private static final String OR = " OR " ;
+    private static final String AND_NEW = ") \nAND (" ;
+    private static final String OR_NEW = ") \nOR (" ;
 
     /**
      * SQL条件
@@ -106,7 +106,8 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
     /**
      * SQL连接器
      */
-	private static class SafeAppendable implements Serializable {
+    private static class SafeAppendable implements Serializable {
+
         private final Appendable appendable;
         private boolean empty = true;
 
@@ -136,7 +137,7 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
     /**
      * SQL条件类
      */
-	private static class SQLCondition implements Serializable {
+    private static class SQLCondition implements Serializable {
 
         List<String> where = new ArrayList<String>();
         List<String> having = new ArrayList<String>();
@@ -173,7 +174,7 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
                 builder.append(keyword);
                 builder.append(" ");
                 builder.append(open);
-                String last = "__";
+                String last = "__" ;
                 for (int i = 0, n = parts.size(); i < n; i++) {
                     String part = parts.get(i);
                     if (i > 0) {
@@ -215,10 +216,10 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
          * @return
          */
         private String buildSQL(SafeAppendable builder) {
-            sqlClause(builder, "WHERE", where, "(", ")", AND);
-            sqlClause(builder, "GROUP BY", groupBy, "", "", ", ");
-            sqlClause(builder, "HAVING", having, "(", ")", AND);
-            sqlClause(builder, "ORDER BY", orderBy, "", "", ", ");
+            sqlClause(builder, "WHERE" , where, "(" , ")" , AND);
+            sqlClause(builder, "GROUP BY" , groupBy, "" , "" , ", ");
+            sqlClause(builder, "HAVING" , having, "(" , ")" , AND);
+            sqlClause(builder, "ORDER BY" , orderBy, "" , "" , ", ");
             return builder.toString();
         }
 

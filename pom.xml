@@ -1,9 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.app</groupId>
     <artifactId>app-mybatis-plus</artifactId>
-    <version>2.0.4.RELEASE</version>
+    <version>2.0.5.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>app-mybatis-plus</name>
@@ -53,6 +53,7 @@
         <mybatis-ehcache.version>1.1.0</mybatis-ehcache.version>
         <junit.version>4.12</junit.version>
         <velocity.version>1.7</velocity.version>
+        <h2.version>1.4.194</h2.version>
         <!--maven plugin-->
         <maven.compiler.version>2.3.2</maven.compiler.version>
         <maven.source.version>2.2.1</maven.source.version>
@@ -134,13 +135,6 @@
             <version>${jsqlparser.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--jsqlparser -->
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>${jsqlparser.version}</version>
-            <scope>provided</scope>
-        </dependency>
         <!--druid -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -208,6 +202,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- test end -->
