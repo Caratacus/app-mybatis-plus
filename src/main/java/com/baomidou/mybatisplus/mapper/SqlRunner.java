@@ -37,14 +37,14 @@ import com.baomidou.mybatisplus.toolkit.StringUtils;
  */
 public class SqlRunner {
 
-    public static final String INSERT = "com.baomidou.mybatisplus.mapper.SqlRunner.Insert" ;
-    public static final String DELETE = "com.baomidou.mybatisplus.mapper.SqlRunner.Delete" ;
-    public static final String UPDATE = "com.baomidou.mybatisplus.mapper.SqlRunner.Update" ;
-    public static final String SELECT_LIST = "com.baomidou.mybatisplus.mapper.SqlRunner.SelectList" ;
-    public static final String SELECT_OBJS = "com.baomidou.mybatisplus.mapper.SqlRunner.SelectObjs" ;
-    public static final String COUNT = "com.baomidou.mybatisplus.mapper.SqlRunner.Count" ;
-    public static final String SQLScript = "${sql}" ;
-    public static final String SQL = "sql" ;
+    public static final String INSERT = "com.baomidou.mybatisplus.mapper.SqlRunner.Insert";
+    public static final String DELETE = "com.baomidou.mybatisplus.mapper.SqlRunner.Delete";
+    public static final String UPDATE = "com.baomidou.mybatisplus.mapper.SqlRunner.Update";
+    public static final String SELECT_LIST = "com.baomidou.mybatisplus.mapper.SqlRunner.SelectList";
+    public static final String SELECT_OBJS = "com.baomidou.mybatisplus.mapper.SqlRunner.SelectObjs";
+    public static final String COUNT = "com.baomidou.mybatisplus.mapper.SqlRunner.Count";
+    public static final String SQLScript = "${sql}";
+    public static final String SQL = "sql";
     // 单例Query
     public static final SqlRunner DEFAULT = new SqlRunner();
     // 默认FACTORY
@@ -102,7 +102,7 @@ public class SqlRunner {
      * @return
      */
     private Map<String, String> sqlMap(String sql, Object... args) {
-        Map<String, String> sqlMap = new HashMap<String, String>();
+        Map<String, String> sqlMap = new HashMap<>();
         sqlMap.put(SQL, StringUtils.sqlArgsFill(sql, args));
         return sqlMap;
     }
@@ -132,7 +132,7 @@ public class SqlRunner {
         return SqlHelper.getObject(selectList(sql, args));
     }
 
-    @SuppressWarnings({"unchecked" , "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Page<Map<String, Object>> selectPage(Page page, String sql, Object... args) {
         if (null == page) {
             return null;

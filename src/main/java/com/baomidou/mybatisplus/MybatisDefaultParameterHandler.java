@@ -92,7 +92,8 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
      * </p>
      *
      * @param ms
-     * @param parameterObject 插入数据库对象
+     * @param parameterObject
+     *            插入数据库对象
      * @return
      */
     protected static Object processBatch(MappedStatement ms, Object parameterObject) {
@@ -102,14 +103,14 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
              */
             Collection<Object> parameters = getParameters(parameterObject);
             if (null != parameters) {
-                List<Object> objList = new ArrayList<Object>();
+                List<Object> objList = new ArrayList<>();
                 for (Object parameter : parameters) {
                     TableInfo tableInfo = TableInfoHelper.getTableInfo(parameter.getClass());
                     if (null != tableInfo) {
                         objList.add(populateKeys(tableInfo, ms, parameter));
                     } else {
                         /*
-                         * 非表映射类不处理
+						 * 非表映射类不处理
 						 */
                         objList.add(parameter);
                     }
@@ -132,10 +133,11 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
      * wrapCollection 实现 StrictMap 封装逻辑
      * </p>
      *
-     * @param parameter 插入数据库对象
+     * @param parameter
+     *            插入数据库对象
      * @return
      */
-    @SuppressWarnings({"rawtypes" , "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected static Collection<Object> getParameters(Object parameter) {
         Collection<Object> parameters = null;
         if (parameter instanceof Collection) {
@@ -190,7 +192,7 @@ public class MybatisDefaultParameterHandler extends DefaultParameterHandler {
         return metaObject.getOriginalObject();
     }
 
-    @SuppressWarnings({"rawtypes" , "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void setParameters(PreparedStatement ps) {
         // 反射获取动态参数

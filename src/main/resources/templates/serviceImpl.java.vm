@@ -1,6 +1,4 @@
-package
-
-    ${package.ServiceImpl};
+package ${package.ServiceImpl};
 
 import ${package.Entity}.${entity};
 import ${package.Mapper}.${table.mapperName};
@@ -17,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since ${date}
  */
 @Service
-public class ${table.serviceImplName} extends${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
-
-        }
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+	
+}

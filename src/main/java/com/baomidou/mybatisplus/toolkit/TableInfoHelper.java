@@ -53,11 +53,11 @@ public class TableInfoHelper {
     /**
      * 缓存反射类表信息
      */
-    private static final Map<String, TableInfo> tableInfoCache = new ConcurrentHashMap<String, TableInfo>();
+    private static final Map<String, TableInfo> tableInfoCache = new ConcurrentHashMap<>();
     /**
      * 默认表主键
      */
-    private static final String DEFAULT_ID_NAME = "id" ;
+    private static final String DEFAULT_ID_NAME = "id";
 
     /**
      * <p>
@@ -117,7 +117,7 @@ public class TableInfoHelper {
         if (table != null && StringUtils.isNotEmpty(table.resultMap())) {
             tableInfo.setResultMap(table.resultMap());
         }
-        List<TableFieldInfo> fieldList = new ArrayList<TableFieldInfo>();
+        List<TableFieldInfo> fieldList = new ArrayList<>();
         List<Field> list = getAllFields(clazz);
         boolean existTableId = existTableId(list);
         for (Field field : list) {
@@ -152,7 +152,7 @@ public class TableInfoHelper {
          * 未发现主键注解，提示警告信息
 		 */
         if (StringUtils.isEmpty(tableInfo.getKeyColumn())) {
-            logger.warn(String.format("Warn: Could not find @TableId in Class: %s." , clazz.getName()));
+            logger.warn(String.format("Warn: Could not find @TableId in Class: %s.", clazz.getName()));
         }
         /*
          * 注入
@@ -203,7 +203,7 @@ public class TableInfoHelper {
                 } else {
                     tableInfo.setIdType(globalConfig.getIdType());
                 }
-                /* 字段 */
+				/* 字段 */
                 String column = field.getName();
                 if (StringUtils.isNotEmpty(tableId.value())) {
                     column = tableId.value();
@@ -309,7 +309,7 @@ public class TableInfoHelper {
                             .getName()));
                 }
             } else {
-                String errorMsg = "Class: %s, Field: %s, 'value' 'el' Length must be consistent." ;
+                String errorMsg = "Class: %s, Field: %s, 'value' 'el' Length must be consistent.";
                 throw new MybatisPlusException(String.format(errorMsg, clazz.getName(), field.getName()));
             }
 

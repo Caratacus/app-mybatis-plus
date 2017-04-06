@@ -47,7 +47,8 @@ public class JsqlParserUtils {
     /**
      * jsqlparser方式获取select的count语句
      *
-     * @param originalSql selectSQL
+     * @param originalSql
+     *            selectSQL
      * @return
      */
     public static CountOptimize jsqlparserCount(CountOptimize countOptimize, String originalSql) {
@@ -91,13 +92,13 @@ public class JsqlParserUtils {
         }
         Function function = new Function();
         function.setName("COUNT");
-        List<Expression> expressions = new ArrayList<Expression>();
+        List<Expression> expressions = new ArrayList<>();
         LongValue longValue = new LongValue(1);
         ExpressionList expressionList = new ExpressionList();
         expressions.add(longValue);
         expressionList.setExpressions(expressions);
         function.setParameters(expressionList);
-        countSelectItem = new ArrayList<SelectItem>();
+        countSelectItem = new ArrayList<>();
         SelectExpressionItem selectExpressionItem = new SelectExpressionItem(function);
         countSelectItem.add(selectExpressionItem);
         return countSelectItem;

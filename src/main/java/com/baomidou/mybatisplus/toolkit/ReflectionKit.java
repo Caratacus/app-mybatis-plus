@@ -59,7 +59,7 @@ public class ReflectionKit {
     public static String getMethodCapitalize(Field field, final String str) {
         Class<?> fieldType = field.getType();
         // fix #176
-        return StringUtils.concatCapitalize(boolean.class.equals(fieldType) ? "is" : "get" , str);
+        return StringUtils.concatCapitalize(boolean.class.equals(fieldType) ? "is" : "get", str);
     }
 
     /**
@@ -75,14 +75,14 @@ public class ReflectionKit {
         try {
             if (MapUtils.isEmpty(fieldMaps)) {
                 throw new MybatisPlusException(
-                        String.format("Error: NoSuchField in %s for %s.  Cause:" , cls.getSimpleName(), str));
+                        String.format("Error: NoSuchField in %s for %s.  Cause:", cls.getSimpleName(), str));
             }
             Method method = cls.getMethod(getMethodCapitalize(fieldMaps.get(str), str));
             return method.invoke(entity);
         } catch (NoSuchMethodException e) {
-            throw new MybatisPlusException(String.format("Error: NoSuchMethod in %s.  Cause:" , cls.getSimpleName()) + e);
+            throw new MybatisPlusException(String.format("Error: NoSuchMethod in %s.  Cause:", cls.getSimpleName()) + e);
         } catch (IllegalAccessException e) {
-            throw new MybatisPlusException(String.format("Error: Cannot execute a private method. in %s.  Cause:" ,
+            throw new MybatisPlusException(String.format("Error: Cannot execute a private method. in %s.  Cause:",
                     cls.getSimpleName())
                     + e);
         } catch (InvocationTargetException e) {
@@ -117,7 +117,7 @@ public class ReflectionKit {
         Class<?> cls = bean.getClass();
         TableInfo tableInfo = TableInfoHelper.getTableInfo(cls);
         if (null == tableInfo) {
-            throw new MybatisPlusException(String.format("Error: Could Not find %s in TableInfo Cache. " , cls.getSimpleName()));
+            throw new MybatisPlusException(String.format("Error: Could Not find %s in TableInfo Cache. ", cls.getSimpleName()));
         }
         boolean result = false;
         List<TableFieldInfo> fieldList = tableInfo.getFieldList();
@@ -153,19 +153,19 @@ public class ReflectionKit {
         Type genType = clazz.getGenericSuperclass();
 
         if (!(genType instanceof ParameterizedType)) {
-            logger.warn(String.format("Warn: %s's superclass not ParameterizedType" , clazz.getSimpleName()));
+            logger.warn(String.format("Warn: %s's superclass not ParameterizedType", clazz.getSimpleName()));
             return Object.class;
         }
 
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 
         if (index >= params.length || index < 0) {
-            logger.warn(String.format("Warn: Index: %s, Size of %s's Parameterized Type: %s ." , index, clazz.getSimpleName(),
+            logger.warn(String.format("Warn: Index: %s, Size of %s's Parameterized Type: %s .", index, clazz.getSimpleName(),
                     params.length));
             return Object.class;
         }
         if (!(params[index] instanceof Class)) {
-            logger.warn(String.format("Warn: %s not set the actual class on superclass generic parameter" , clazz.getSimpleName()));
+            logger.warn(String.format("Warn: %s not set the actual class on superclass generic parameter", clazz.getSimpleName()));
             return Object.class;
         }
 
@@ -182,7 +182,7 @@ public class ReflectionKit {
         List<Field> fieldList = getFieldList(clazz);
         Map<String, Field> fieldMap = Collections.emptyMap();
         if (CollectionUtils.isNotEmpty(fieldList)) {
-            fieldMap = new LinkedHashMap<String, Field>();
+            fieldMap = new LinkedHashMap<>();
             for (Field field : fieldList) {
                 fieldMap.put(field.getName(), field);
             }
@@ -200,14 +200,14 @@ public class ReflectionKit {
         if (null == clazz) {
             return null;
         }
-        List<Field> fieldList = new LinkedList<Field>();
+        List<Field> fieldList = new LinkedList<>();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             /* 过滤静态属性 */
             if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
-            /* 过滤 transient关键字修饰的属性 */
+			/* 过滤 transient关键字修饰的属性 */
             if (Modifier.isTransient(field.getModifiers())) {
                 continue;
             }

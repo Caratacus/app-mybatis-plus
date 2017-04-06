@@ -363,7 +363,7 @@ public class MybatisSqlSessionTemplate implements SqlSession, DisposableBean {
     /**
      * Allow gently dispose bean:
      * <p>
-     * <p>
+     *
      * <pre>
      * {@code
      *

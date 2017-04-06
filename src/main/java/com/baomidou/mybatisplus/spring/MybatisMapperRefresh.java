@@ -37,7 +37,6 @@ import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.springframework.core.NestedIOException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -62,7 +61,7 @@ public class MybatisMapperRefresh implements Runnable {
     /**
      * 记录jar包存在的mapper
      */
-    private static Map<String, List<Resource>> jarMapper = new HashMap<String, List<Resource>>();
+    private static Map<String, List<Resource>> jarMapper = new HashMap<>();
     private SqlSessionFactory sqlSessionFactory;
     private Resource[] mapperLocations;
     private Long beforeTime = 0L;
@@ -86,7 +85,7 @@ public class MybatisMapperRefresh implements Runnable {
 
     public MybatisMapperRefresh(Resource[] mapperLocations, SqlSessionFactory sqlSessionFactory, int delaySeconds,
                                 int sleepSeconds, boolean enabled) {
-        this.mapperLocations = mapperLocations;
+        this.mapperLocations = mapperLocations.clone();
         this.sqlSessionFactory = sqlSessionFactory;
         this.delaySeconds = delaySeconds;
         this.enabled = enabled;
@@ -96,7 +95,7 @@ public class MybatisMapperRefresh implements Runnable {
     }
 
     public MybatisMapperRefresh(Resource[] mapperLocations, SqlSessionFactory sqlSessionFactory, boolean enabled) {
-        this.mapperLocations = mapperLocations;
+        this.mapperLocations = mapperLocations.clone();
         this.sqlSessionFactory = sqlSessionFactory;
         this.enabled = enabled;
         this.configuration = sqlSessionFactory.getConfiguration();
@@ -106,7 +105,7 @@ public class MybatisMapperRefresh implements Runnable {
     public void run() {
         final GlobalConfiguration globalConfig = GlobalConfiguration.getGlobalConfig(configuration);
         /*
-         * 启动 XML 热加载
+		 * 启动 XML 热加载
 		 */
         if (enabled) {
             beforeTime = SystemClock.now();
@@ -115,7 +114,7 @@ public class MybatisMapperRefresh implements Runnable {
 
                 public void run() {
                     if (fileSet == null) {
-                        fileSet = new HashSet<String>();
+                        fileSet = new HashSet<>();
                         for (Resource mapperLocation : mapperLocations) {
                             try {
                                 if (ResourceUtils.isJarURL(mapperLocation.getURL())) {
@@ -125,7 +124,7 @@ public class MybatisMapperRefresh implements Runnable {
                                     if (jarMapper.get(key) != null) {
                                         jarMapper.get(key).add(mapperLocation);
                                     } else {
-                                        List<Resource> resourcesList = new ArrayList<Resource>();
+                                        List<Resource> resourcesList = new ArrayList<>();
                                         resourcesList.add(mapperLocation);
                                         jarMapper.put(key, resourcesList);
                                     }
@@ -183,7 +182,7 @@ public class MybatisMapperRefresh implements Runnable {
      * @throws Exception
      */
     @SuppressWarnings("rawtypes")
-    private void refresh(Resource resource) throws Exception {
+    private void refresh(Resource resource) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         this.configuration = sqlSessionFactory.getConfiguration();
         boolean isSupper = configuration.getClass().getSuperclass() == Configuration.class;
         try {
@@ -210,9 +209,9 @@ public class MybatisMapperRefresh implements Runnable {
                     resource.toString(), sqlSessionFactory.getConfiguration().getSqlFragments());
             xmlMapperBuilder.parse();
             logger.debug("refresh: '" + resource + "', success!");
-        } catch (Exception e) {
-            throw new NestedIOException("Failed to parse mapping resource: '" + resource + "'" , e);
-        } finally {
+        } catch (IOException e) {
+            logger.error("Refresh IOException :"+e.getMessage());
+        }finally {
             ErrorContext.instance().reset();
         }
     }
@@ -238,7 +237,7 @@ public class MybatisMapperRefresh implements Runnable {
      */
     private void cleanResultMap(List<XNode> list, String namespace) {
         for (XNode resultMapNode : list) {
-            String id = resultMapNode.getStringAttribute("id" , resultMapNode.getValueBasedIdentifier());
+            String id = resultMapNode.getStringAttribute("id", resultMapNode.getValueBasedIdentifier());
             configuration.getResultMapNames().remove(id);
             configuration.getResultMapNames().remove(namespace + "." + id);
             clearResultMap(resultMapNode, namespace);
@@ -251,9 +250,9 @@ public class MybatisMapperRefresh implements Runnable {
                     || "case".equals(resultChild.getName())) {
                 if (resultChild.getStringAttribute("select") == null) {
                     configuration.getResultMapNames().remove(
-                            resultChild.getStringAttribute("id" , resultChild.getValueBasedIdentifier()));
+                            resultChild.getStringAttribute("id", resultChild.getValueBasedIdentifier()));
                     configuration.getResultMapNames().remove(
-                            namespace + "." + resultChild.getStringAttribute("id" , resultChild.getValueBasedIdentifier()));
+                            namespace + "." + resultChild.getStringAttribute("id", resultChild.getValueBasedIdentifier()));
                     if (resultChild.getChildren() != null && !resultChild.getChildren().isEmpty()) {
                         clearResultMap(resultChild, namespace);
                     }

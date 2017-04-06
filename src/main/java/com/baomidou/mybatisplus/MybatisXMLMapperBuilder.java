@@ -218,14 +218,14 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
 
     private void cacheElement(XNode context) throws Exception {
         if (context != null) {
-            String type = context.getStringAttribute("type" , "PERPETUAL");
+            String type = context.getStringAttribute("type", "PERPETUAL");
             Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
-            String eviction = context.getStringAttribute("eviction" , "LRU");
+            String eviction = context.getStringAttribute("eviction", "LRU");
             Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
             Long flushInterval = context.getLongAttribute("flushInterval");
             Integer size = context.getIntAttribute("size");
-            boolean readWrite = !context.getBooleanAttribute("readOnly" , false);
-            boolean blocking = context.getBooleanAttribute("blocking" , false);
+            boolean readWrite = !context.getBooleanAttribute("readOnly", false);
+            boolean blocking = context.getBooleanAttribute("blocking", false);
             Properties props = context.getChildrenAsProperties();
             builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
         }
@@ -237,7 +237,7 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
             String type = parameterMapNode.getStringAttribute("type");
             Class<?> parameterClass = resolveClass(type);
             List<XNode> parameterNodes = parameterMapNode.evalNodes("parameter");
-            List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();
+            List<ParameterMapping> parameterMappings = new ArrayList<>();
             for (XNode parameterNode : parameterNodes) {
                 String property = parameterNode.getStringAttribute("property");
                 String javaType = parameterNode.getStringAttribute("javaType");
@@ -277,14 +277,14 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
     private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings)
             throws Exception {
         ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
-        String id = resultMapNode.getStringAttribute("id" , resultMapNode.getValueBasedIdentifier());
-        String type = resultMapNode.getStringAttribute("type" , resultMapNode.getStringAttribute("ofType" ,
-                resultMapNode.getStringAttribute("resultType" , resultMapNode.getStringAttribute("javaType"))));
+        String id = resultMapNode.getStringAttribute("id", resultMapNode.getValueBasedIdentifier());
+        String type = resultMapNode.getStringAttribute("type", resultMapNode.getStringAttribute("ofType",
+                resultMapNode.getStringAttribute("resultType", resultMapNode.getStringAttribute("javaType"))));
         String extend = resultMapNode.getStringAttribute("extends");
         Boolean autoMapping = resultMapNode.getBooleanAttribute("autoMapping");
         Class<?> typeClass = resolveClass(type);
         Discriminator discriminator = null;
-        List<ResultMapping> resultMappings = new ArrayList<ResultMapping>();
+        List<ResultMapping> resultMappings = new ArrayList<>();
         resultMappings.addAll(additionalResultMappings);
         List<XNode> resultChildren = resultMapNode.getChildren();
         for (XNode resultChild : resultChildren) {
@@ -293,7 +293,7 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
             } else if ("discriminator".equals(resultChild.getName())) {
                 discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
             } else {
-                List<ResultFlag> flags = new ArrayList<ResultFlag>();
+                List<ResultFlag> flags = new ArrayList<>();
                 if ("id".equals(resultChild.getName())) {
                     flags.add(ResultFlag.ID);
                 }
@@ -314,7 +314,7 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
             throws Exception {
         List<XNode> argChildren = resultChild.getChildren();
         for (XNode argChild : argChildren) {
-            List<ResultFlag> flags = new ArrayList<ResultFlag>();
+            List<ResultFlag> flags = new ArrayList<>();
             flags.add(ResultFlag.CONSTRUCTOR);
             if ("idArg".equals(argChild.getName())) {
                 flags.add(ResultFlag.ID);
@@ -333,10 +333,10 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
         @SuppressWarnings("unchecked")
         Class<? extends TypeHandler<?>> typeHandlerClass = (Class<? extends TypeHandler<?>>) resolveClass(typeHandler);
         JdbcType jdbcTypeEnum = resolveJdbcType(jdbcType);
-        Map<String, String> discriminatorMap = new HashMap<String, String>();
+        Map<String, String> discriminatorMap = new HashMap<>();
         for (XNode caseChild : context.getChildren()) {
             String value = caseChild.getStringAttribute("value");
-            String resultMap = caseChild.getStringAttribute("resultMap" ,
+            String resultMap = caseChild.getStringAttribute("resultMap",
                     processNestedResultMappings(caseChild, resultMappings));
             discriminatorMap.put(value, resultMap);
         }
@@ -390,7 +390,7 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
         String javaType = context.getStringAttribute("javaType");
         String jdbcType = context.getStringAttribute("jdbcType");
         String nestedSelect = context.getStringAttribute("select");
-        String nestedResultMap = context.getStringAttribute("resultMap" ,
+        String nestedResultMap = context.getStringAttribute("resultMap",
                 processNestedResultMappings(context, Collections.<ResultMapping>emptyList()));
         String notNullColumn = context.getStringAttribute("notNullColumn");
         String columnPrefix = context.getStringAttribute("columnPrefix");
@@ -398,7 +398,7 @@ public class MybatisXMLMapperBuilder extends BaseBuilder {
         String resultSet = context.getStringAttribute("resultSet");
         String foreignColumn = context.getStringAttribute("foreignColumn");
         boolean lazy = "lazy".equals(
-                context.getStringAttribute("fetchType" , configuration.isLazyLoadingEnabled() ? "lazy" : "eager"));
+                context.getStringAttribute("fetchType", configuration.isLazyLoadingEnabled() ? "lazy" : "eager"));
         Class<?> javaTypeClass = resolveClass(javaType);
         @SuppressWarnings("unchecked")
         Class<? extends TypeHandler<?>> typeHandlerClass = (Class<? extends TypeHandler<?>>) resolveClass(typeHandler);

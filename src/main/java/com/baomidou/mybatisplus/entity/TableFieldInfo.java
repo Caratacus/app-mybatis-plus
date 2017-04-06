@@ -72,7 +72,7 @@ public class TableFieldInfo {
             /* 开启字段下划线申明 */
             this.related = true;
         } else if (!column.equals(property)) {
-            /* 没有开启下划线申明 但是column与property不等的情况下设置related为true */
+			/* 没有开启下划线申明 但是column与property不等的情况下设置related为true */
             this.related = true;
         }
         this.setColumn(globalConfig, column);

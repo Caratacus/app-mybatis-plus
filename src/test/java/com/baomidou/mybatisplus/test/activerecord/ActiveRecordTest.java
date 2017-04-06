@@ -60,11 +60,11 @@ public class ActiveRecordTest {
         // 更新 SQL
         Test t11 = new Test();
         t11.setType("123");
-        rlt = t11.update("id={0}" , t1.getId());
+        rlt = t11.update("id={0}", t1.getId());
         print("update sql=" + rlt);
 
         // 查询 SQL
-        Test t10 = t1.selectOne("id={0}" , t1.getId());
+        Test t10 = t1.selectOne("id={0}", t1.getId());
         print("selectOne=" + t10.getType());
 
         // 插入OR更新
@@ -88,7 +88,7 @@ public class ActiveRecordTest {
         print(" count=" + t2.selectCount(null));
 
         // 翻页查询
-        Page<Test> page = new Page<Test>(0, 10);
+        Page<Test> page = new Page<>(0, 10);
         page = t2.selectPage(page, null);
         print(page.toString());
 
@@ -114,7 +114,7 @@ public class ActiveRecordTest {
         print("t2 删除后是否存在？" + (null != t20));
 
         // 删除 SQL
-        rlt = t2.delete("type={0}" , "t1021");
+        rlt = t2.delete("type={0}", "t1021");
         System.err.println("delete sql=" + rlt);
     }
 

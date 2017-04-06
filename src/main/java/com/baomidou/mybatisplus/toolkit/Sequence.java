@@ -64,16 +64,18 @@ public class Sequence {
     }
 
     /**
-     * @param workerId     工作机器ID
-     * @param datacenterId 序列号
+     * @param workerId
+     *            工作机器ID
+     * @param datacenterId
+     *            序列号
      */
     public Sequence(long workerId, long datacenterId) {
         if (workerId > maxWorkerId || workerId < 0) {
-            throw new MybatisPlusException(String.format("worker Id can't be greater than %d or less than 0" , maxWorkerId));
+            throw new MybatisPlusException(String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
         }
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
             throw new MybatisPlusException(
-                    String.format("datacenter Id can't be greater than %d or less than 0" , maxDatacenterId));
+                    String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
         }
         this.workerId = workerId;
         this.datacenterId = datacenterId;
@@ -85,12 +87,12 @@ public class Sequence {
      * </p>
      */
     protected static long getMaxWorkerId(long datacenterId, long maxWorkerId) {
-        StringBuffer mpid = new StringBuffer();
+        StringBuilder mpid = new StringBuilder();
         mpid.append(datacenterId);
         String name = ManagementFactory.getRuntimeMXBean().getName();
         if (StringUtils.isNotEmpty(name)) {
             /*
-             * GET jvmPid
+			 * GET jvmPid
 			 */
             mpid.append(name.split("@")[0]);
         }
@@ -131,7 +133,7 @@ public class Sequence {
     public synchronized long nextId() {
         long timestamp = timeGen();
         if (timestamp < lastTimestamp) {
-            throw new MybatisPlusException(String.format("Clock moved backwards. Refusing to generate id for %d milliseconds" ,
+            throw new MybatisPlusException(String.format("Clock moved backwards. Refusing to generate id for %d milliseconds",
                     lastTimestamp - timestamp));
         }
         if (lastTimestamp == timestamp) {

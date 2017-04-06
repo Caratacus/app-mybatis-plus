@@ -37,8 +37,8 @@ import com.baomidou.mybatisplus.toolkit.StringUtils;
  * ActiveRecord 模式 CRUD
  * </p>
  *
- * @param <T>
  * @author hubin
+ * @param <T>
  * @Date 2016-11-06
  */
 @SuppressWarnings({"rawtypes"})
@@ -68,7 +68,7 @@ public abstract class Model<T extends Model> implements Serializable {
             return insert();
         } else {
             /*
-             * 更新成功直接返回，失败执行插入逻辑
+			 * 更新成功直接返回，失败执行插入逻辑
 			 */
             return updateById() || insert();
         }
@@ -79,7 +79,8 @@ public abstract class Model<T extends Model> implements Serializable {
      * 根据 ID 删除
      * </p>
      *
-     * @param id 主键ID
+     * @param id
+     *            主键ID
      * @return
      */
     @Transactional
@@ -107,8 +108,10 @@ public abstract class Model<T extends Model> implements Serializable {
      * 删除记录
      * </p>
      *
-     * @param whereClause 查询条件
-     * @param args        查询条件值
+     * @param whereClause
+     *            查询条件
+     * @param args
+     *            查询条件值
      * @return
      */
     @Transactional
@@ -126,9 +129,9 @@ public abstract class Model<T extends Model> implements Serializable {
      */
     @Transactional
     public boolean delete(Wrapper wrapper) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         // delete
-        map.put("ew" , wrapper);
+        map.put("ew", wrapper);
         return SqlHelper.retBool(sqlSession().delete(sqlStatement(SqlMethod.DELETE), map));
     }
 
@@ -153,8 +156,10 @@ public abstract class Model<T extends Model> implements Serializable {
      * 执行 SQL 更新
      * </p>
      *
-     * @param whereClause 查询条件
-     * @param args        查询条件值
+     * @param whereClause
+     *            查询条件
+     * @param args
+     *            查询条件值
      * @return
      */
     @Transactional
@@ -173,9 +178,9 @@ public abstract class Model<T extends Model> implements Serializable {
      */
     @Transactional
     public boolean update(Wrapper wrapper) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("et" , this);
-        map.put("ew" , wrapper);
+        Map<String, Object> map = new HashMap<>();
+        map.put("et", this);
+        map.put("ew", wrapper);
         // update
         return SqlHelper.retBool(sqlSession().update(sqlStatement(SqlMethod.UPDATE), map));
     }
@@ -196,7 +201,8 @@ public abstract class Model<T extends Model> implements Serializable {
      * 根据 ID 查询
      * </p>
      *
-     * @param id 主键ID
+     * @param id
+     *            主键ID
      * @return
      */
     public T selectById(Serializable id) {
@@ -227,8 +233,8 @@ public abstract class Model<T extends Model> implements Serializable {
      */
 
     public List<T> selectList(Wrapper wrapper) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("ew" , wrapper);
+        Map<String, Object> map = new HashMap<>();
+        map.put("ew", wrapper);
         return sqlSession().selectList(sqlStatement(SqlMethod.SELECT_LIST), map);
     }
 
@@ -275,14 +281,15 @@ public abstract class Model<T extends Model> implements Serializable {
      * 翻页查询
      * </p>
      *
-     * @param page    翻页查询条件
+     * @param page
+     *            翻页查询条件
      * @param wrapper
      * @return
      */
     public Page<T> selectPage(Page<T> page, Wrapper<T> wrapper) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         SqlHelper.fillWrapper(page, wrapper);
-        map.put("ew" , wrapper);
+        map.put("ew", wrapper);
         List<T> tl = sqlSession().selectList(sqlStatement(SqlMethod.SELECT_PAGE), map, page);
         page.setRecords(tl);
         return page;
@@ -308,8 +315,10 @@ public abstract class Model<T extends Model> implements Serializable {
      * 查询总数
      * </p>
      *
-     * @param whereClause 查询条件
-     * @param args        查询条件值
+     * @param whereClause
+     *            查询条件
+     * @param args
+     *            查询条件值
      * @return
      */
     public int selectCount(String whereClause, Object... args) {
@@ -325,8 +334,8 @@ public abstract class Model<T extends Model> implements Serializable {
      * @return
      */
     public int selectCount(Wrapper wrapper) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("ew" , wrapper);
+        Map<String, Object> map = new HashMap<>();
+        map.put("ew", wrapper);
         return SqlHelper.retCount(sqlSession().<Integer>selectOne(sqlStatement(SqlMethod.SELECT_COUNT), map));
     }
 

@@ -45,10 +45,6 @@ public class TableField {
         return convert;
     }
 
-    public void setConvert(boolean convert) {
-        this.convert = convert;
-    }
-
     protected void setConvert(StrategyConfig strategyConfig) {
         if (strategyConfig.isCapitalModeNaming(name)) {
             this.convert = false;
@@ -63,6 +59,10 @@ public class TableField {
                 this.convert = true;
             }
         }
+    }
+
+    public void setConvert(boolean convert) {
+        this.convert = convert;
     }
 
     public boolean isKeyFlag() {

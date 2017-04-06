@@ -27,43 +27,43 @@ public enum DBType {
     /**
      * MYSQL
      */
-    MYSQL("mysql" , "`%s`" , "MySql数据库"),
+    MYSQL("mysql", "`%s`", "MySql数据库"),
     /**
      * ORACLE
      */
-    ORACLE("oracle" , "" , "Oracle数据库"),
+    ORACLE("oracle", "", "Oracle数据库"),
     /**
      * DB2
      */
-    DB2("db2" , "" , "DB2数据库"),
+    DB2("db2", "", "DB2数据库"),
     /**
      * H2
      */
-    H2("h2" , "" , "H2数据库"),
+    H2("h2", "", "H2数据库"),
     /**
      * HSQL
      */
-    HSQL("hsql" , "" , "HSQL数据库"),
+    HSQL("hsql", "", "HSQL数据库"),
     /**
      * SQLITE
      */
-    SQLITE("sqlite" , "`%s`" , "SQLite数据库"),
+    SQLITE("sqlite", "`%s`", "SQLite数据库"),
     /**
      * POSTGRE
      */
-    POSTGRE("postgresql" , "" , "Postgre数据库"),
+    POSTGRE("postgresql", "", "Postgre数据库"),
     /**
      * SQLSERVER2005
      */
-    SQLSERVER2005("sqlserver2005" , "[%s]" , "SQLServer2005数据库"),
+    SQLSERVER2005("sqlserver2005", "[%s]", "SQLServer2005数据库"),
     /**
      * SQLSERVER
      */
-    SQLSERVER("sqlserver" , "[%s]" , "SQLServer数据库"),
+    SQLSERVER("sqlserver", "[%s]", "SQLServer数据库"),
     /**
      * UNKONWN DB
      */
-    OTHER("other" , "" , "其他数据库");
+    OTHER("other", "", "其他数据库");
 
     private final String db;
 
@@ -82,7 +82,8 @@ public enum DBType {
      * 获取数据库类型（默认 MySql）
      * </p>
      *
-     * @param dbType 数据库类型字符串
+     * @param dbType
+     *            数据库类型字符串
      * @return
      */
     public static DBType getDBType(String dbType) {

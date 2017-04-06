@@ -60,7 +60,7 @@ public class URPTest {
         int rlt = roleMapper.insert(role);
         System.err.println("--------- insert role --------- " + rlt);
 
-        PhoneNumber phone = new PhoneNumber("81" , "0576" , "82453832");
+        PhoneNumber phone = new PhoneNumber("81", "0576", "82453832");
 
         User userA = new User();
         userA.setId(IdWorker.getId());
@@ -88,7 +88,7 @@ public class URPTest {
         whereUser = userMapper.selectOne(userA);
         System.err.println("--------- select user --------- " + whereUser.toString());
 
-        userMapper.delete(new EntityWrapper<User>(userA));
+        userMapper.delete(new EntityWrapper<>(userA));
         System.err.println("--------- delete user --------- " + rlt);
 
     }

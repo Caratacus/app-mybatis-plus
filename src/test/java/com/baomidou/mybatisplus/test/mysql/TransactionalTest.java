@@ -42,7 +42,7 @@ public class TransactionalTest {
      */
     public static void main(String[] args) {
         /*
-         * 加载配置文件
+		 * 加载配置文件
 		 */
         InputStream in = TransactionalTest.class.getClassLoader().getResourceAsStream("mysql-config.xml");
         MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
@@ -52,7 +52,7 @@ public class TransactionalTest {
          * 插入
          */
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        int rlt = userMapper.insert(new User(IdWorker.getId(), "1" , 1, 1));
+        int rlt = userMapper.insert(new User(IdWorker.getId(), "1", 1, 1));
         System.err.println("--------- insertInjector --------- " + rlt);
 
         //session.commit();

@@ -143,7 +143,7 @@ public class StringEscape {
 
             parameterAsString = buf.toString();
         }
-        return "\'" + parameterAsString + "\'" ;
+        return "\'" + parameterAsString + "\'";
     }
 
 }

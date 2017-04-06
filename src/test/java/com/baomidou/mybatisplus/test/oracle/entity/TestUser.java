@@ -19,7 +19,7 @@ public class TestUser implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "TEST_ID" , type = IdType.UUID)
+    @TableId(value = "TEST_ID", type = IdType.UUID)
     private String testId;
 
     /**

@@ -44,9 +44,9 @@ import com.baomidou.mybatisplus.toolkit.SystemClock;
  * @author hubin nieqiurong TaoYu
  * @Date 2016-07-07
  */
-@Intercepts({@Signature(type = StatementHandler.class, method = "query" , args = {Statement.class, ResultHandler.class}),
-        @Signature(type = StatementHandler.class, method = "update" , args = {Statement.class}),
-        @Signature(type = StatementHandler.class, method = "batch" , args = {Statement.class})})
+@Intercepts({@Signature(type = StatementHandler.class, method = "query", args = {Statement.class, ResultHandler.class}),
+        @Signature(type = StatementHandler.class, method = "update", args = {Statement.class}),
+        @Signature(type = StatementHandler.class, method = "batch", args = {Statement.class})})
 public class PerformanceInterceptor implements Interceptor {
 
     /**

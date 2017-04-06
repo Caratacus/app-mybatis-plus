@@ -40,7 +40,7 @@ public class SqlBuilderTest {
         assertEquals("" +
                 "SELECT id, name\n" +
                 "FROM PERSON A\n" +
-                "WHERE (name like ? AND id = ?)" , sql);
+                "WHERE (name like ? AND id = ?)", sql);
 
         //Mixed
         sql = new SQL() {{
@@ -52,7 +52,7 @@ public class SqlBuilderTest {
         assertEquals("" +
                 "SELECT id, name\n" +
                 "FROM PERSON A\n" +
-                "WHERE (name like ? AND id = ?)" , sql);
+                "WHERE (name like ? AND id = ?)", sql);
 
         sql = new SQL() {{
             SELECT("P.ID, P.USERNAME, P.PASSWORD, P.FULL_NAME");
@@ -82,7 +82,7 @@ public class SqlBuilderTest {
                 "GROUP BY P.ID\n" +
                 "HAVING (P.LAST_NAME like ?) \n" +
                 "OR (P.FIRST_NAME like ?)\n" +
-                "ORDER BY P.ID, P.FULL_NAME" , sql);
+                "ORDER BY P.ID, P.FULL_NAME", sql);
 
     }
 

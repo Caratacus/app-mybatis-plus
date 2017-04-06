@@ -42,7 +42,7 @@ public class MyMetaObjectHandler implements IMetaObjectHandler {
         Object testType = metaObject.getValue("testType");
         System.err.println("testType==" + testType);
         if (null == testType) {
-            metaObject.setValue("testType" , 3);
+            metaObject.setValue("testType", 3);
         }
     }
 

@@ -38,7 +38,7 @@ public enum NamingStrategy {
         // 快速检查
         if (StringUtils.isEmpty(name)) {
             // 没必要转换
-            return "" ;
+            return "";
         }
         String tempName = name;
         StringBuilder result = new StringBuilder();
@@ -73,7 +73,7 @@ public enum NamingStrategy {
      */
     public static String removePrefix(String name) {
         if (StringUtils.isEmpty(name)) {
-            return "" ;
+            return "";
         }
         int idx = name.indexOf(ConstVal.UNDERLINE);
         if (idx == -1) {
@@ -91,7 +91,7 @@ public enum NamingStrategy {
      */
     public static String removePrefix(String name, String[] prefix) {
         if (StringUtils.isEmpty(name)) {
-            return "" ;
+            return "";
         }
         if (null != prefix) {
             for (String pf : prefix) {
@@ -126,10 +126,10 @@ public enum NamingStrategy {
         if (StringUtils.isNotEmpty(name)) {
             return name.substring(0, 1).toUpperCase() + name.substring(1);
             /*char[] array = name.toCharArray();
-            array[0] -= 32;
+			array[0] -= 32;
 			return String.valueOf(array);*/
         }
-        return "" ;
+        return "";
     }
 
 }

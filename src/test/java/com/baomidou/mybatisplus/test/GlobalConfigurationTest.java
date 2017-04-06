@@ -83,7 +83,7 @@ public class GlobalConfigurationTest {
         Assert.assertTrue(num > 0);
         NotPK notPK1 = pkMapper.selectOne(notPK);
         Assert.assertNotNull(notPK1);
-        pkMapper.selectPage(RowBounds.DEFAULT, Condition.create().eq("type" , 12121212));
+        pkMapper.selectPage(RowBounds.DEFAULT, Condition.create().eq("type", 12121212));
         NotPK notPK2 = null;
         try {
             notPK2 = pkMapper.selectById("1");

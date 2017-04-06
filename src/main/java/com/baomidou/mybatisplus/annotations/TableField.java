@@ -39,7 +39,7 @@ public @interface TableField {
      * 字段值（驼峰命名方式，该值可无）
      * </p>
      */
-    String value() default "" ;
+    String value() default "";
 
     /**
      * <p>
@@ -50,7 +50,7 @@ public @interface TableField {
      * 支持：@TableField(el = "role, typeHandler=com.baomidou.xx.typehandler.PhoneTypeHandler")
      * </p>
      */
-    String el() default "" ;
+    String el() default "";
 
     /**
      * <p>

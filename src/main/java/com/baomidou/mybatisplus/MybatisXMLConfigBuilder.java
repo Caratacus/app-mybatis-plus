@@ -246,8 +246,8 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
     }
 
     private void settingsElement(Properties props) throws Exception {
-        configuration.setAutoMappingBehavior(AutoMappingBehavior.valueOf(props.getProperty("autoMappingBehavior" , "PARTIAL")));
-        configuration.setAutoMappingUnknownColumnBehavior(AutoMappingUnknownColumnBehavior.valueOf(props.getProperty("autoMappingUnknownColumnBehavior" , "NONE")));
+        configuration.setAutoMappingBehavior(AutoMappingBehavior.valueOf(props.getProperty("autoMappingBehavior", "PARTIAL")));
+        configuration.setAutoMappingUnknownColumnBehavior(AutoMappingUnknownColumnBehavior.valueOf(props.getProperty("autoMappingUnknownColumnBehavior", "NONE")));
         configuration.setCacheEnabled(booleanValueOf(props.getProperty("cacheEnabled"), true));
         configuration.setProxyFactory((ProxyFactory) createInstance(props.getProperty("proxyFactory")));
         configuration.setLazyLoadingEnabled(booleanValueOf(props.getProperty("lazyLoadingEnabled"), false));
@@ -255,13 +255,13 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
         configuration.setMultipleResultSetsEnabled(booleanValueOf(props.getProperty("multipleResultSetsEnabled"), true));
         configuration.setUseColumnLabel(booleanValueOf(props.getProperty("useColumnLabel"), true));
         configuration.setUseGeneratedKeys(booleanValueOf(props.getProperty("useGeneratedKeys"), false));
-        configuration.setDefaultExecutorType(ExecutorType.valueOf(props.getProperty("defaultExecutorType" , "SIMPLE")));
+        configuration.setDefaultExecutorType(ExecutorType.valueOf(props.getProperty("defaultExecutorType", "SIMPLE")));
         configuration.setDefaultStatementTimeout(integerValueOf(props.getProperty("defaultStatementTimeout"), null));
         configuration.setDefaultFetchSize(integerValueOf(props.getProperty("defaultFetchSize"), null));
         configuration.setMapUnderscoreToCamelCase(booleanValueOf(props.getProperty("mapUnderscoreToCamelCase"), false));
         configuration.setSafeRowBoundsEnabled(booleanValueOf(props.getProperty("safeRowBoundsEnabled"), false));
-        configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope" , "SESSION")));
-        configuration.setJdbcTypeForNull(JdbcType.valueOf(props.getProperty("jdbcTypeForNull" , "OTHER")));
+        configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope", "SESSION")));
+        configuration.setJdbcTypeForNull(JdbcType.valueOf(props.getProperty("jdbcTypeForNull", "OTHER")));
         configuration.setLazyLoadTriggerMethods(stringSetValueOf(props.getProperty("lazyLoadTriggerMethods"), "equals,clone,hashCode,toString"));
         configuration.setSafeResultHandlerEnabled(booleanValueOf(props.getProperty("safeResultHandlerEnabled"), true));
         configuration.setDefaultScriptingLanguage(resolveClass(props.getProperty("defaultScriptingLanguage")));
@@ -301,7 +301,7 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
             String type = context.getStringAttribute("type");
             // awful patch to keep backward compatibility
             if ("VENDOR".equals(type)) {
-                type = "DB_VENDOR" ;
+                type = "DB_VENDOR";
             }
             Properties properties = context.getChildrenAsProperties();
             databaseIdProvider = (DatabaseIdProvider) resolveClass(type).newInstance();
@@ -369,9 +369,9 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
          */
         if (parent != null) {
             //指定在classpath中的mapper文件
-            Set<String> resources = new HashSet<String>();
+            Set<String> resources = new HashSet<>();
             //指向一个mapper接口
-            Set<Class<?>> mapperClasses = new HashSet<Class<?>>();
+            Set<Class<?>> mapperClasses = new HashSet<>();
             setResource(parent, resources, mapperClasses);
             // 依次遍历 首先 resource 然后 mapper
             for (String resource : resources) {
@@ -401,7 +401,7 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
         for (XNode child : parent.getChildren()) {
             if ("package".equals(child.getName())) {
                 String mapperPackage = child.getStringAttribute("name");
-                ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<Class<?>>();
+                ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
                 resolverUtil.find(new ResolverUtil.IsA(Object.class), mapperPackage);
                 Set<Class<? extends Class<?>>> mapperSet = resolverUtil.getClasses();
                 mapper.addAll(mapperSet);

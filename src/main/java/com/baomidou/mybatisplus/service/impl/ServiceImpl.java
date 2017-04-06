@@ -305,7 +305,7 @@ public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
         return baseMapper.selectObjs(wrapper);
     }
 
-    @SuppressWarnings({"rawtypes" , "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Page<Map<String, Object>> selectMapsPage(Page page, Wrapper<T> wrapper) {
         SqlHelper.fillWrapper(page, wrapper);
         page.setRecords(baseMapper.selectMapsPage(page, wrapper));

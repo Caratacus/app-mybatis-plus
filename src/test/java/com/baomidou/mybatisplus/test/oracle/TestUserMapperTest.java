@@ -40,7 +40,9 @@ public class TestUserMapperTest {
 
 
     /**
+     *
      * RUN 测试（ 更多查看 MySql 测试类 ）
+     *
      */
     public static void main(String[] args) {
 
@@ -59,7 +61,7 @@ public class TestUserMapperTest {
         mf.setGlobalConfig(gc);
 
 		/*
-         * 1、数据库字段驼峰命名不需要任何设置
+		 * 1、数据库字段驼峰命名不需要任何设置
 		 * 2、当前演示是驼峰下划线混合命名
 		 * 3、如下开启，表示数据库字段使用下划线命名，该设置是全局的。
 		 *	 开启该设置实体可无 @TableId(value = "test_id") 字段映射
@@ -75,19 +77,19 @@ public class TestUserMapperTest {
         /**
          * 插入
          */
-        int rlt = testUserMapper.insert(new TestUser("10" , "abc" , 18, 1));
+        int rlt = testUserMapper.insert(new TestUser("10", "abc", 18, 1));
         System.err.println("\n--------------insert-------" + rlt);
         sleep();
 
         /**
          * 批量插入
          */
-        List<TestUser> ul = new ArrayList<TestUser>();
-        ul.add(new TestUser("11" , "1a" , 11, 1));
-        ul.add(new TestUser("12" , "2a" , 12, 2));
-        ul.add(new TestUser("a" , 1, 1));
-        ul.add(new TestUser("b" , 2, 2));
-        ul.add(new TestUser("c" , 3, 1));
+        List<TestUser> ul = new ArrayList<>();
+        ul.add(new TestUser("11", "1a", 11, 1));
+        ul.add(new TestUser("12", "2a", 12, 2));
+        ul.add(new TestUser("a", 1, 1));
+        ul.add(new TestUser("b", 2, 2));
+        ul.add(new TestUser("c", 3, 1));
         for (TestUser u : ul) {
             rlt = testUserMapper.insert(u);
         }
@@ -97,10 +99,10 @@ public class TestUserMapperTest {
         /**
          * 批量更新
          */
-        List<TestUser> ul1 = new ArrayList<TestUser>();
-        ul1.add(new TestUser("10" , "update-0a" , 11, 1));
-        ul1.add(new TestUser("11" , "update-1a" , 11, 1));
-        ul1.add(new TestUser("12" , "update-2a" , 12, 2));
+        List<TestUser> ul1 = new ArrayList<>();
+        ul1.add(new TestUser("10", "update-0a", 11, 1));
+        ul1.add(new TestUser("11", "update-1a", 11, 1));
+        ul1.add(new TestUser("12", "update-2a", 12, 2));
         for (TestUser u : ul1) {
             rlt = testUserMapper.updateById(u);
         }
@@ -108,8 +110,8 @@ public class TestUserMapperTest {
         sleep();
 
         System.err.println("\n------------------list 分页查询 ----查询 testType = 1 的所有数据--id--DESC--排序--------");
-        Page<TestUser> page = new Page<TestUser>(1, 2);
-        EntityWrapper<TestUser> ew = new EntityWrapper<TestUser>(new TestUser(1), "TEST_ID DESC");
+        Page<TestUser> page = new Page<>(1, 2);
+        EntityWrapper<TestUser> ew = new EntityWrapper<>(new TestUser(1), "TEST_ID DESC");
         List<TestUser> paginList = testUserMapper.selectPage(page, ew);
         page.setRecords(paginList);
         for (int i = 0; i < page.getRecords().size(); i++) {

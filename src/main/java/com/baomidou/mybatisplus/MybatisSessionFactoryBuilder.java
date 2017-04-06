@@ -45,7 +45,7 @@ public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
             MybatisXMLConfigBuilder parser = new MybatisXMLConfigBuilder(reader, environment, properties);
             return globalConfig.signGlobalConfig(build(parser.parse()));
         } catch (Exception e) {
-            throw ExceptionFactory.wrapException("Error building SqlSession." , e);
+            throw ExceptionFactory.wrapException("Error building SqlSession.", e);
         } finally {
             ErrorContext.instance().reset();
             IOUtils.closeQuietly(reader);
@@ -58,7 +58,7 @@ public class MybatisSessionFactoryBuilder extends SqlSessionFactoryBuilder {
             MybatisXMLConfigBuilder parser = new MybatisXMLConfigBuilder(inputStream, environment, properties);
             return globalConfig.signGlobalConfig(build(parser.parse()));
         } catch (Exception e) {
-            throw ExceptionFactory.wrapException("Error building SqlSession." , e);
+            throw ExceptionFactory.wrapException("Error building SqlSession.", e);
         } finally {
             ErrorContext.instance().reset();
             IOUtils.closeQuietly(inputStream);

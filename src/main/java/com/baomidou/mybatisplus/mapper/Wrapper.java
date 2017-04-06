@@ -45,13 +45,13 @@ public abstract class Wrapper<T> implements Serializable {
     /**
      * 占位符
      */
-    private static final String PLACE_HOLDER = "{%s}" ;
+    private static final String PLACE_HOLDER = "{%s}";
 
-    private static final String MYBATIS_PLUS_TOKEN = "#{%s.paramNameValuePairs.%s}" ;
+    private static final String MYBATIS_PLUS_TOKEN = "#{%s.paramNameValuePairs.%s}";
 
-    private static final String MP_GENERAL_PARAMNAME = "MPGENVAL" ;
+    private static final String MP_GENERAL_PARAMNAME = "MPGENVAL";
 
-    private static final String DEFAULT_PARAM_ALIAS = "ew" ;
+    private static final String DEFAULT_PARAM_ALIAS = "ew";
     protected String paramAlias = null;
     /**
      * SQL 查询字段内容，例如：id,name,age
@@ -68,8 +68,8 @@ public abstract class Wrapper<T> implements Serializable {
     /**
      * 拼接WHERE后应该是AND还是OR
      */
-    protected String AND_OR = "AND" ;
-    private Map<String, Object> paramNameValuePairs = new HashMap<String, Object>(4);
+    protected String AND_OR = "AND";
+    private Map<String, Object> paramNameValuePairs = new HashMap<>(4);
     private AtomicInteger paramNameSeq = new AtomicInteger(0);
 
     /**
@@ -103,7 +103,7 @@ public abstract class Wrapper<T> implements Serializable {
     public String toString() {
         String sqlSegment = getSqlSegment();
         if (StringUtils.isNotEmpty(sqlSegment)) {
-            sqlSegment = sqlSegment.replaceAll("#\\{" + getParamAlias() + ".paramNameValuePairs.MPGENVAL[0-9]+}" , "\\?");
+            sqlSegment = sqlSegment.replaceAll("#\\{" + getParamAlias() + ".paramNameValuePairs.MPGENVAL[0-9]+}", "\\?");
         }
         return sqlSegment;
     }
@@ -137,7 +137,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return
      */
     public Wrapper<T> eq(String column, Object params) {
-        sql.WHERE(formatSql(String.format("%s = {0}" , column), params));
+        sql.WHERE(formatSql(String.format("%s = {0}", column), params));
         return this;
     }
 
@@ -151,7 +151,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return
      */
     public Wrapper<T> ne(String column, Object params) {
-        sql.WHERE(formatSql(String.format("%s <> {0}" , column), params));
+        sql.WHERE(formatSql(String.format("%s <> {0}", column), params));
         return this;
     }
 
@@ -163,7 +163,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @param params
      * @return
      */
-    @SuppressWarnings({"rawtypes" , "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Wrapper<T> allEq(Map<String, Object> params) {
         if (MapUtils.isNotEmpty(params)) {
             Iterator iterator = params.entrySet().iterator();
@@ -171,7 +171,7 @@ public abstract class Wrapper<T> implements Serializable {
                 Map.Entry<String, Object> entry = (Map.Entry<String, Object>) iterator.next();
                 Object value = entry.getValue();
                 if (StringUtils.checkValNotNull(value)) {
-                    sql.WHERE(formatSql(String.format("%s = {0}" , entry.getKey()), entry.getValue()));
+                    sql.WHERE(formatSql(String.format("%s = {0}", entry.getKey()), entry.getValue()));
                 }
 
             }
@@ -190,7 +190,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return
      */
     public Wrapper<T> gt(String column, Object params) {
-        sql.WHERE(formatSql(String.format("%s > {0}" , column), params));
+        sql.WHERE(formatSql(String.format("%s > {0}", column), params));
         return this;
     }
 
@@ -204,7 +204,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return
      */
     public Wrapper<T> ge(String column, Object params) {
-        sql.WHERE(formatSql(String.format("%s >= {0}" , column), params));
+        sql.WHERE(formatSql(String.format("%s >= {0}", column), params));
         return this;
     }
 
@@ -218,7 +218,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return
      */
     public Wrapper<T> lt(String column, Object params) {
-        sql.WHERE(formatSql(String.format("%s < {0}" , column), params));
+        sql.WHERE(formatSql(String.format("%s < {0}", column), params));
         return this;
     }
 
@@ -232,7 +232,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return
      */
     public Wrapper<T> le(String column, Object params) {
-        sql.WHERE(formatSql(String.format("%s <= {0}" , column), params));
+        sql.WHERE(formatSql(String.format("%s <= {0}", column), params));
         return this;
     }
 
@@ -304,7 +304,7 @@ public abstract class Wrapper<T> implements Serializable {
      */
     public Wrapper<T> or(String sqlOr, Object... params) {
         if (StringUtils.isEmpty(sql.toString())) {
-            AND_OR = "OR" ;
+            AND_OR = "OR";
         }
         sql.OR().WHERE(formatSql(sqlOr, params));
         return this;
@@ -325,7 +325,7 @@ public abstract class Wrapper<T> implements Serializable {
      */
     public Wrapper<T> orNew(String sqlOr, Object... params) {
         if (StringUtils.isEmpty(sql.toString())) {
-            AND_OR = "OR" ;
+            AND_OR = "OR";
         }
         sql.OR_NEW().WHERE(formatSql(sqlOr, params));
         return this;
@@ -519,7 +519,7 @@ public abstract class Wrapper<T> implements Serializable {
      */
     public Wrapper<T> in(String column, String value) {
         if (StringUtils.isNotEmpty(value)) {
-            in(column, StringUtils.splitWorker(value, "," , -1, false));
+            in(column, StringUtils.splitWorker(value, ",", -1, false));
         }
         return this;
     }
@@ -533,7 +533,7 @@ public abstract class Wrapper<T> implements Serializable {
      */
     public Wrapper<T> notIn(String column, String value) {
         if (StringUtils.isNotEmpty(value)) {
-            notIn(column, StringUtils.splitWorker(value, "," , -1, false));
+            notIn(column, StringUtils.splitWorker(value, ",", -1, false));
         }
         return this;
     }
@@ -628,7 +628,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return this
      */
     public Wrapper<T> between(String column, Object val1, Object val2) {
-        sql.WHERE(formatSql(String.format("%s BETWEEN {0} AND {1}" , column), val1, val2));
+        sql.WHERE(formatSql(String.format("%s BETWEEN {0} AND {1}", column), val1, val2));
         return this;
     }
 
@@ -641,7 +641,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return this
      */
     public Wrapper<T> notBetween(String column, Object val1, Object val2) {
-        sql.WHERE(formatSql(String.format("%s NOT BETWEEN {0} AND {1}" , column), val1, val2));
+        sql.WHERE(formatSql(String.format("%s NOT BETWEEN {0} AND {1}", column), val1, val2));
         return this;
     }
 
@@ -685,7 +685,7 @@ public abstract class Wrapper<T> implements Serializable {
      * @return this
      */
     protected String stripSqlInjection(String value) {
-        return value.replaceAll("('.+--)|(--)|(\\|)|(%7C)" , "");
+        return value.replaceAll("('.+--)|(--)|(\\|)|(%7C)", "");
     }
 
     /**

@@ -149,7 +149,7 @@ public class SqlHelper {
         if (CollectionUtils.isNotEmpty(list)) {
             int size = list.size();
             if (size > 1) {
-                logger.warn(String.format("Warn: execute Method There are  %s results." , size));
+                logger.warn(String.format("Warn: execute Method There are  %s results.", size));
             }
             return list.get(0);
         }
@@ -166,11 +166,31 @@ public class SqlHelper {
         if (null == page) {
             return;
         }
-        if (null != wrapper) {
+        if (isWrapperEmpty(wrapper)) {
             if (page.isOpenSort()) {
                 wrapper.orderBy(page.getOrderByField(), page.isAsc());
             }
             wrapper.allEq(page.getCondition());
         }
+    }
+
+    /**
+     * 判断Wrapper为空
+     *
+     * @param wrapper
+     * @return
+     */
+    public static boolean isWrapperEmpty(Wrapper<?> wrapper) {
+        return null == wrapper || Condition.EMPTY.equals(wrapper);
+    }
+
+    /**
+     * 判断Wrapper不为空
+     *
+     * @param wrapper
+     * @return
+     */
+    public static boolean isWrapperNotEmpty(Wrapper<?> wrapper) {
+        return !isWrapperEmpty(wrapper);
     }
 }

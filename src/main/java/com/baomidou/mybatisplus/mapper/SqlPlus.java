@@ -29,8 +29,8 @@ import com.baomidou.mybatisplus.toolkit.StringUtils;
 @SuppressWarnings("serial")
 public class SqlPlus extends MybatisAbstractSQL<SqlPlus> {
 
-    private final String IS_NOT_NULL = " IS NOT NULL" ;
-    private final String IS_NULL = " IS NULL" ;
+    private final String IS_NOT_NULL = " IS NOT NULL";
+    private final String IS_NULL = " IS NULL";
 
     @Override
     public SqlPlus getSelf() {

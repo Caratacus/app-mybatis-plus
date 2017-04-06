@@ -46,21 +46,22 @@ public class PackageHelper {
      * <property name="typeAliasesPackage" value="com.baomidou.*.entity"/>
      * </p>
      *
-     * @param typeAliasesPackage 类别名包路径
+     * @param typeAliasesPackage
+     *            类别名包路径
      * @return
      */
     public static String[] convertTypeAliasesPackage(String typeAliasesPackage) {
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resolver);
         String pkg = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-                + ClassUtils.convertClassNameToResourcePath(typeAliasesPackage) + "/*.class" ;
+                + ClassUtils.convertClassNameToResourcePath(typeAliasesPackage) + "/*.class";
 
 		/*
          * 将加载多个绝对匹配的所有Resource
 		 * 将首先通过ClassLoader.getResource("META-INF")加载非模式路径部分，然后进行遍历模式匹配，排除重复包路径
 		 */
         try {
-            Set<String> set = new HashSet<String>();
+            Set<String> set = new HashSet<>();
             Resource[] resources = resolver.getResources(pkg);
             if (resources != null && resources.length > 0) {
                 MetadataReader metadataReader;

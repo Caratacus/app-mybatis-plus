@@ -36,7 +36,7 @@ public class StringUtils {
     /**
      * 空字符
      */
-    public static final String EMPTY = "" ;
+    public static final String EMPTY = "";
 
     /**
      * 下划线字符
@@ -46,7 +46,7 @@ public class StringUtils {
     /**
      * 占位符
      */
-    public static final String PLACE_HOLDER = "{%s}" ;
+    public static final String PLACE_HOLDER = "{%s}";
 
     private StringUtils() {
     }
@@ -163,7 +163,7 @@ public class StringUtils {
      * @return
      */
     public static boolean isUpperCase(String str) {
-        return match("^[A-Z]+$" , str);
+        return match("^[A-Z]+$", str);
     }
 
     /**
@@ -511,7 +511,7 @@ public class StringUtils {
         if (len == 0) {
             return Collections.emptyList();
         }
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         int sizePlus1 = 1;
         int i = 0, start = 0;
         boolean match = false;

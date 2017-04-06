@@ -32,7 +32,8 @@ public interface IMetaObjectHandler {
      * 插入元对象字段填充
      * </p>
      *
-     * @param metaObject 元对象
+     * @param metaObject
+     *            元对象
      * @return
      */
     void insertFill(MetaObject metaObject);

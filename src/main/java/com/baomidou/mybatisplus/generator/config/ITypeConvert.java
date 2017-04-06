@@ -32,7 +32,8 @@ public interface ITypeConvert {
      * 执行类型转换
      * </p>
      *
-     * @param fieldType 字段类型
+     * @param fieldType
+     *            字段类型
      * @return
      */
     DbColumnType processTypeConvert(String fieldType);

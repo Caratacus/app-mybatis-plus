@@ -25,7 +25,7 @@ import com.baomidou.mybatisplus.toolkit.StringUtils;
  * @author hubin Caratacus
  * @date 2016-11-7
  */
-@SuppressWarnings({"rawtypes" , "serial"})
+@SuppressWarnings({"rawtypes", "serial"})
 public class Condition extends Wrapper {
 
     /**
@@ -53,6 +53,9 @@ public class Condition extends Wrapper {
      */
     @Override
     public String getSqlSegment() {
+        if (SqlHelper.isWrapperEmpty(this)) {
+            return null;
+        }
         /*
          * 无条件
 		 */
@@ -64,9 +67,8 @@ public class Condition extends Wrapper {
          * 根据当前实体判断是否需要将WHERE替换成 AND 增加实体不为空但所有属性为空的情况
 		 */
         if (isWhere != null) {
-            sqlWhere = isWhere ? sqlWhere : sqlWhere.replaceFirst("WHERE" , AND_OR);
+            sqlWhere = isWhere ? sqlWhere : sqlWhere.replaceFirst("WHERE", AND_OR);
         }
         return sqlWhere;
     }
-
 }

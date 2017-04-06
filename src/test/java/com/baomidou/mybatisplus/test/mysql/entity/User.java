@@ -54,13 +54,13 @@ public class User implements Serializable {
     private BigDecimal price;
 
     /* 测试下划线字段命名类型, 字段填充 */
-    @TableField(value = "test_type" , validate = FieldStrategy.IGNORED)
+    @TableField(value = "test_type", validate = FieldStrategy.IGNORED)
     private Integer testType;
 
     @TableField(el = "role.id")
     private Role role;
 
-    private String desc = "默认描述" ;
+    private String desc = "默认描述";
 
     @Version
     private Integer version;
@@ -202,6 +202,6 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User [id=" + id + ", name=" + name + ", age=" + age + ", price=" + price + ", testType=" + testType
-                + ", role=" + role + ", desc=" + desc + ", phone=" + phone + "]" ;
+                + ", role=" + role + ", desc=" + desc + ", phone=" + phone + "]";
     }
 }

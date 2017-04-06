@@ -30,15 +30,18 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
  */
 public class SqlUtils {
 
-    public static final String SQL_BASE_COUNT = "SELECT COUNT(1) FROM ( %s ) TOTAL" ;
+    public static final String SQL_BASE_COUNT = "SELECT COUNT(1) FROM ( %s ) TOTAL";
     private final static SqlFormatter sqlFormatter = new SqlFormatter();
 
     /**
      * 获取CountOptimize
      *
-     * @param originalSql     需要计算Count SQL
-     * @param optimizeType    count优化方式
-     * @param isOptimizeCount 是否需要优化Count
+     * @param originalSql
+     *            需要计算Count SQL
+     * @param optimizeType
+     *            count优化方式
+     * @param isOptimizeCount
+     *            是否需要优化Count
      * @return CountOptimize
      */
     public static CountOptimize getCountOptimize(String originalSql, String optimizeType, String dialectType,
@@ -47,7 +50,7 @@ public class SqlUtils {
         // 获取优化类型
         Optimize opType = Optimize.getOptimizeType(optimizeType);
         // 调整SQL便于解析
-        String tempSql = originalSql.replaceAll("(?i)ORDER[\\s]+BY" , "ORDER BY").replaceAll("(?i)GROUP[\\s]+BY" , "GROUP BY");
+        String tempSql = originalSql.replaceAll("(?i)ORDER[\\s]+BY", "ORDER BY").replaceAll("(?i)GROUP[\\s]+BY", "GROUP BY");
         String indexOfSql = tempSql.toUpperCase();
         // 有排序情况
         int orderByIndex = indexOfSql.lastIndexOf("ORDER BY");
@@ -106,9 +109,12 @@ public class SqlUtils {
     /**
      * 查询SQL拼接Order By
      *
-     * @param originalSql 需要拼接的SQL
-     * @param page        page对象
-     * @param orderBy     是否需要拼接Order By
+     * @param originalSql
+     *            需要拼接的SQL
+     * @param page
+     *            page对象
+     * @param orderBy
+     *            是否需要拼接Order By
      * @return
      */
     public static String concatOrderBy(String originalSql, Pagination page, boolean orderBy) {
@@ -132,7 +138,7 @@ public class SqlUtils {
         if (format) {
             return sqlFormatter.format(boundSql);
         } else {
-            return boundSql.replaceAll("[\\s]+" , " ");
+            return boundSql.replaceAll("[\\s]+", " ");
         }
     }
 
@@ -141,7 +147,8 @@ public class SqlUtils {
      * 用%连接like
      * </p>
      *
-     * @param str 原字符串
+     * @param str
+     *            原字符串
      * @return
      */
     public static String concatLike(String str, SqlLike type) {

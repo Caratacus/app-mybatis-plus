@@ -42,7 +42,7 @@ public class SqlRunnerTest {
     @Test
     public void test1() {
         /*
-         * 加载配置文件
+		 * 加载配置文件
 		 */
         InputStream in = SqlRunnerTest.class.getClassLoader().getResourceAsStream("mysql-config.xml");
         MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
@@ -60,7 +60,7 @@ public class SqlRunnerTest {
         System.out.println(maps);
         String type = (String) maps.get(0).get("type");
         System.out.println(type);
-        Assert.assertEquals("tttttttt" , type);
+        Assert.assertEquals("tttttttt", type);
         boolean b2 = SqlRunner.db().delete("DELETE from test WHERE (`id`=107880983085826048)");
         System.out.println(b2);
         Assert.assertTrue(b2);
@@ -70,7 +70,7 @@ public class SqlRunnerTest {
             maps1 = null;
         }
         Assert.assertNull(maps1);
-        Page<Map<String, Object>> mapPage = SqlRunner.db().selectPage(new Page<Object>(1, 5), "select * from test ");
+        Page<Map<String, Object>> mapPage = SqlRunner.db().selectPage(new Page<>(1, 5), "select * from test ");
         System.out.println(mapPage);
         int i = SqlRunner.db().selectCount("select count(0) from test ");
         System.out.println("count:" + i);

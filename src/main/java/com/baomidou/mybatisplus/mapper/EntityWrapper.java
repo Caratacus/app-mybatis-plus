@@ -60,7 +60,7 @@ public class EntityWrapper<T> extends Wrapper<T> {
      */
     @Override
     public String getSqlSegment() {
-        /*
+		/*
 		 * 无条件
 		 */
         String sqlWhere = sql.toString();
@@ -72,9 +72,9 @@ public class EntityWrapper<T> extends Wrapper<T> {
 		 * 根据当前实体判断是否需要将WHERE替换成 AND 增加实体不为空但所有属性为空的情况
 		 */
         if (isWhere != null) {
-            sqlWhere = isWhere ? sqlWhere : sqlWhere.replaceFirst("WHERE" , AND_OR);
+            sqlWhere = isWhere ? sqlWhere : sqlWhere.replaceFirst("WHERE", AND_OR);
         } else {
-            sqlWhere = ReflectionKit.checkFieldValueNotNull(entity) ? sqlWhere.replaceFirst("WHERE" , AND_OR) : sqlWhere;
+            sqlWhere = ReflectionKit.checkFieldValueNotNull(entity) ? sqlWhere.replaceFirst("WHERE", AND_OR) : sqlWhere;
         }
         return sqlWhere;
     }

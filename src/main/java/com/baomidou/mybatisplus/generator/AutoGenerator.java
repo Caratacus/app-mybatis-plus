@@ -101,7 +101,7 @@ public class AutoGenerator extends AbstractGenerator {
     private Map<String, VelocityContext> analyzeData(ConfigBuilder config) {
         List<TableInfo> tableList = config.getTableInfoList();
         Map<String, String> packageInfo = config.getPackageInfo();
-        Map<String, VelocityContext> ctxData = new HashMap<String, VelocityContext>();
+        Map<String, VelocityContext> ctxData = new HashMap<>();
         String superEntityClass = getSuperClassName(config.getSuperEntityClass());
         String superMapperClass = getSuperClassName(config.getSuperMapperClass());
         String superServiceClass = getSuperClassName(config.getSuperServiceClass());
@@ -116,7 +116,7 @@ public class AutoGenerator extends AbstractGenerator {
                  * 注入自定义配置
                  */
                 injectionConfig.initMap();
-                ctx.put("cfg" , injectionConfig.getMap());
+                ctx.put("cfg", injectionConfig.getMap());
             }
             /* ---------- 添加导入包 ---------- */
             if (config.getGlobalConfig().isActiveRecord()) {
@@ -133,26 +133,26 @@ public class AutoGenerator extends AbstractGenerator {
             } else {
                 tableInfo.setImportPackages("java.io.Serializable");
             }
-            ctx.put("package" , packageInfo);
-            ctx.put("author" , config.getGlobalConfig().getAuthor());
-            ctx.put("activeRecord" , config.getGlobalConfig().isActiveRecord());
-            ctx.put("date" , date);
-            ctx.put("table" , tableInfo);
-            ctx.put("enableCache" , config.getGlobalConfig().isEnableCache());
-            ctx.put("baseResultMap" , config.getGlobalConfig().isBaseResultMap());
-            ctx.put("baseColumnList" , config.getGlobalConfig().isBaseColumnList());
-            ctx.put("entity" , tableInfo.getEntityName());
-            ctx.put("entityColumnConstant" , config.getStrategyConfig().isEntityColumnConstant());
-            ctx.put("entityBuilderModel" , config.getStrategyConfig().isEntityBuilderModel());
-            ctx.put("superEntityClass" , superEntityClass);
-            ctx.put("superMapperClassPackage" , config.getSuperMapperClass());
-            ctx.put("superMapperClass" , superMapperClass);
-            ctx.put("superServiceClassPackage" , config.getSuperServiceClass());
-            ctx.put("superServiceClass" , superServiceClass);
-            ctx.put("superServiceImplClassPackage" , config.getSuperServiceImplClass());
-            ctx.put("superServiceImplClass" , superServiceImplClass);
-            ctx.put("superControllerClassPackage" , config.getSuperControllerClass());
-            ctx.put("superControllerClass" , superControllerClass);
+            ctx.put("package", packageInfo);
+            ctx.put("author", config.getGlobalConfig().getAuthor());
+            ctx.put("activeRecord", config.getGlobalConfig().isActiveRecord());
+            ctx.put("date", date);
+            ctx.put("table", tableInfo);
+            ctx.put("enableCache", config.getGlobalConfig().isEnableCache());
+            ctx.put("baseResultMap", config.getGlobalConfig().isBaseResultMap());
+            ctx.put("baseColumnList", config.getGlobalConfig().isBaseColumnList());
+            ctx.put("entity", tableInfo.getEntityName());
+            ctx.put("entityColumnConstant", config.getStrategyConfig().isEntityColumnConstant());
+            ctx.put("entityBuilderModel", config.getStrategyConfig().isEntityBuilderModel());
+            ctx.put("superEntityClass", superEntityClass);
+            ctx.put("superMapperClassPackage", config.getSuperMapperClass());
+            ctx.put("superMapperClass", superMapperClass);
+            ctx.put("superServiceClassPackage", config.getSuperServiceClass());
+            ctx.put("superServiceClass", superServiceClass);
+            ctx.put("superServiceImplClassPackage", config.getSuperServiceImplClass());
+            ctx.put("superServiceImplClass", superServiceImplClass);
+            ctx.put("superControllerClassPackage", config.getSuperControllerClass());
+            ctx.put("superControllerClass", superControllerClass);
             ctxData.put(tableInfo.getEntityName(), ctx);
         }
         return ctxData;
@@ -237,7 +237,7 @@ public class AutoGenerator extends AbstractGenerator {
             }
 
         } catch (IOException e) {
-            logger.error("无法创建文件，请检查配置信息！" , e);
+            logger.error("无法创建文件，请检查配置信息！", e);
         }
     }
 
@@ -280,7 +280,7 @@ public class AutoGenerator extends AbstractGenerator {
             p.setProperty(Velocity.ENCODING_DEFAULT, ConstVal.UTF8);
             p.setProperty(Velocity.INPUT_ENCODING, ConstVal.UTF8);
             p.setProperty(Velocity.OUTPUT_ENCODING, ConstVal.UTF8);
-            p.setProperty("file.resource.loader.unicode" , "true");
+            p.setProperty("file.resource.loader.unicode", "true");
             engine = new VelocityEngine(p);
         }
         return engine;
