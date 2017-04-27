@@ -13,40 +13,40 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baomidou.mybatisplus.annotations;
+package com.baomidou.mybatisplus.entity;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.ibatis.reflection.MetaObject;
 
-import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.mapper.MetaObjectHandler;
 
 /**
  * <p>
- * 表主键标识
+ * 默认填充器关闭操作
  * </p>
  *
  * @author hubin
- * @since 2016-01-23
+ * @since 2017-04-19
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface TableId {
+public class DefaultMetaObjectHandler extends MetaObjectHandler {
 
-    /*
-     * <p>
-     * 字段值（驼峰命名方式，该值可无）
-     * </p>
-     */
-    String value() default "";
+    @Override
+    public void insertFill(MetaObject metaObject) {
 
-    /*
-     * <p>
-     * 主键ID
-     * </p>
-     * {@link IdType}
-     */
-    IdType type() default IdType.NONE;
+    }
+
+    @Override
+    public void updateFill(MetaObject metaObject) {
+
+    }
+
+    @Override
+    public boolean openInsertFill() {
+        return false;
+    }
+
+    @Override
+    public boolean openUpdateFill() {
+        return false;
+    }
 
 }

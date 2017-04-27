@@ -87,28 +87,17 @@ public class AutoSqlInjector implements ISqlInjector {
         this.configuration = builderAssistant.getConfiguration();
         this.builderAssistant = builderAssistant;
         this.languageDriver = configuration.getDefaultScriptingLanguageInstance();
-        GlobalConfiguration globalCache = GlobalConfiguration.getGlobalConfig(configuration);
         /*
          * 驼峰设置 PLUS 配置 > 原始配置
 		 */
+        GlobalConfiguration globalCache = this.getGlobalConfig();
         if (!globalCache.isDbColumnUnderline()) {
             globalCache.setDbColumnUnderline(configuration.isMapUnderscoreToCamelCase());
         }
         Class<?> modelClass = extractModelClass(mapperClass);
         if (modelClass != null) {
-            /**
-             * 表信息不为空的情况
-             */
             TableInfo table = TableInfoHelper.initTableInfo(builderAssistant, modelClass);
-            if (null != table) {
-                injectSql(builderAssistant, mapperClass, modelClass, table);
-            } else {
-                /**
-                 * 警告 Mybatis-Plus 默认方法不能使用
-                 */
-                logger.warn(String.format("%s ,Not found Table Detail, Cannot use Mybatis-Plus CRUD Method." ,
-                        modelClass.toString()));
-            }
+            injectSql(builderAssistant, mapperClass, modelClass, table);
         }
     }
 
@@ -127,27 +116,27 @@ public class AutoSqlInjector implements ISqlInjector {
          * #148 表信息包含主键，注入主键相关方法
          */
         if (StringUtils.isNotEmpty(table.getKeyProperty())) {
-			/* 删除 */
+            /* 删除 */
             this.injectDeleteByIdSql(false, mapperClass, modelClass, table);
             this.injectDeleteByIdSql(true, mapperClass, modelClass, table);
-			/* 修改 */
+            /* 修改 */
             this.injectUpdateByIdSql(true, mapperClass, modelClass, table);
             this.injectUpdateByIdSql(false, mapperClass, modelClass, table);
-			/* 查询 */
+            /* 查询 */
             this.injectSelectByIdSql(false, mapperClass, modelClass, table);
             this.injectSelectByIdSql(true, mapperClass, modelClass, table);
         } else {
             // 表不包含主键时 给予警告
-            logger.warn(String.format("%s ,Not found @TableId annotation, Cannot use Mybatis-Plus 'xxById' Method." ,
+            logger.warn(String.format("%s ,Not found @TableId annotation, Cannot use Mybatis-Plus 'xxById' Method.",
                     modelClass.toString()));
         }
         /**
          * 正常注入无需主键方法
          */
-		/* 插入 */
+        /* 插入 */
         this.injectInsertOneSql(true, mapperClass, modelClass, table);
         this.injectInsertOneSql(false, mapperClass, modelClass, table);
-		/* 删除 */
+        /* 删除 */
         this.injectDeleteSql(mapperClass, modelClass, table);
         this.injectDeleteByMapSql(mapperClass, table);
 		/* 修改 */
@@ -192,7 +181,7 @@ public class AutoSqlInjector implements ISqlInjector {
                     break;
                 }
             }
-            return (Class<?>) target.getActualTypeArguments()[0];
+            return target == null ? null : (Class<?>) target.getActualTypeArguments()[0];
         }
     }
 
@@ -231,9 +220,18 @@ public class AutoSqlInjector implements ISqlInjector {
                 keyProperty = table.getKeyProperty();
                 keyColumn = table.getKeyColumn();
             } else {
-				/* 用户输入自定义ID */
-                fieldBuilder.append(table.getKeyColumn()).append(",");
-                placeholderBuilder.append("#{").append(table.getKeyProperty()).append("},");
+                if (null != table.getKeySequence()) {
+                    keyGenerator = TableInfoHelper.genKeyGenerator(table, builderAssistant, sqlMethod.getMethod(), languageDriver);
+                    keyProperty = table.getKeyProperty();
+                    keyColumn = table.getKeyColumn();
+                    fieldBuilder.append(table.getKeyColumn()).append(",");
+                    placeholderBuilder.append("#{").append(table.getKeyProperty()).append("},");
+                } else {
+            		/* 用户输入自定义ID */
+                    fieldBuilder.append(table.getKeyColumn()).append(",");
+                    // 正常自定义主键策略
+                    placeholderBuilder.append("#{").append(table.getKeyProperty()).append("},");
+                }
             }
         }
 
@@ -287,7 +285,7 @@ public class AutoSqlInjector implements ISqlInjector {
      */
     protected void injectDeleteByMapSql(Class<?> mapperClass, TableInfo table) {
         SqlMethod sqlMethod = SqlMethod.DELETE_BY_MAP;
-        String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlWhereByMap());
+        String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlWhereByMap(table));
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, Map.class);
         this.addDeleteMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource);
     }
@@ -304,18 +302,17 @@ public class AutoSqlInjector implements ISqlInjector {
     protected void injectDeleteByIdSql(boolean batch, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
         SqlMethod sqlMethod = SqlMethod.DELETE_BY_ID;
         SqlSource sqlSource;
+        String idStr = table.getKeyColumn();
         if (batch) {
             sqlMethod = SqlMethod.DELETE_BATCH_BY_IDS;
             StringBuilder ids = new StringBuilder();
             ids.append("\n<foreach item=\"item\" index=\"index\" collection=\"list\" separator=\",\">");
             ids.append("#{item}");
             ids.append("\n</foreach>");
-            String sql = String.format(sqlMethod.getSql(), table.getTableName(), table.getKeyColumn(), ids.toString());
-            sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
-        } else {
-            String sql = String.format(sqlMethod.getSql(), table.getTableName(), table.getKeyColumn(), table.getKeyColumn());
-            sqlSource = new RawSqlSource(configuration, sql, Object.class);
+            idStr = ids.toString();
         }
+        String sql = String.format(sqlMethod.getSql(), table.getTableName(), table.getKeyColumn(), idStr);
+        sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
         this.addDeleteMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource);
     }
 
@@ -391,7 +388,7 @@ public class AutoSqlInjector implements ISqlInjector {
      */
     protected void injectSelectByMapSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
         SqlMethod sqlMethod = SqlMethod.SELECT_BY_MAP;
-        String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, false), table.getTableName(), sqlWhereByMap());
+        String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, false), table.getTableName(), sqlWhereByMap(table));
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, Map.class);
         this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, modelClass, table);
     }
@@ -407,8 +404,7 @@ public class AutoSqlInjector implements ISqlInjector {
      */
     protected void injectSelectOneSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
         SqlMethod sqlMethod = SqlMethod.SELECT_ONE;
-        String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, false), table.getTableName(),
-                sqlWhere(table, false));
+        String sql = String.format(sqlMethod.getSql(), sqlSelectColumns(table, false), table.getTableName(), sqlWhere(table));
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
         this.addSelectMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource, modelClass, table);
     }
@@ -471,7 +467,7 @@ public class AutoSqlInjector implements ISqlInjector {
      *
      * @param mapperClass
      * @param modelClass
-     * @param table
+     * @param table       表信息
      */
     protected void injectSelectCountSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
         SqlMethod sqlMethod = SqlMethod.SELECT_COUNT;
@@ -485,7 +481,7 @@ public class AutoSqlInjector implements ISqlInjector {
      * EntityWrapper方式获取select where
      * </p>
      *
-     * @param table
+     * @param table 表信息
      * @return String
      */
     protected String sqlWhereEntityWrapper(TableInfo table) {
@@ -498,7 +494,7 @@ public class AutoSqlInjector implements ISqlInjector {
         }
         List<TableFieldInfo> fieldList = table.getFieldList();
         for (TableFieldInfo fieldInfo : fieldList) {
-            where.append(convertIfTag(fieldInfo, "ew.entity." , false));
+            where.append(convertIfTag(fieldInfo, "ew.entity.", false));
             where.append(" AND ").append(fieldInfo.getColumn()).append("=#{ew.entity.").append(fieldInfo.getEl()).append("}");
             where.append(convertIfTag(fieldInfo, true));
         }
@@ -508,14 +504,14 @@ public class AutoSqlInjector implements ISqlInjector {
         return where.toString();
     }
 
-
     /**
      * <p>
      * SQL 更新 set 语句
      * </p>
      *
-     * @param table
-     * @param prefix 前缀
+     * @param selective 是否选择判断
+     * @param table     表信息
+     * @param prefix    前缀
      * @return
      */
     protected String sqlSet(boolean selective, TableInfo table, String prefix) {
@@ -678,16 +674,9 @@ public class AutoSqlInjector implements ISqlInjector {
      * <p>
      * SQL 查询条件
      * </p>
-     *
-     * @param table
-     * @param space 是否为空判断
-     * @return
      */
-    protected String sqlWhere(TableInfo table, boolean space) {
+    protected String sqlWhere(TableInfo table) {
         StringBuilder where = new StringBuilder();
-        if (space) {
-            where.append("\n<if test=\"ew!=null\">");
-        }
         where.append("\n<where>");
         if (StringUtils.isNotEmpty(table.getKeyProperty())) {
             where.append("\n<if test=\"ew.").append(table.getKeyProperty()).append("!=null\">\n");
@@ -696,14 +685,11 @@ public class AutoSqlInjector implements ISqlInjector {
         }
         List<TableFieldInfo> fieldList = table.getFieldList();
         for (TableFieldInfo fieldInfo : fieldList) {
-            where.append(convertIfTag(fieldInfo, "ew." , false));
+            where.append(convertIfTag(fieldInfo, "ew.", false));
             where.append(" AND ").append(fieldInfo.getColumn()).append("=#{ew.").append(fieldInfo.getEl()).append("}");
             where.append(convertIfTag(fieldInfo, true));
         }
         where.append("\n</where>");
-        if (space) {
-            where.append("\n</if>");
-        }
         return where.toString();
     }
 
@@ -712,22 +698,13 @@ public class AutoSqlInjector implements ISqlInjector {
      * SQL map 查询条件
      * </p>
      */
-    protected String sqlWhereByMap() {
+    protected String sqlWhereByMap(TableInfo table) {
         StringBuilder where = new StringBuilder();
         where.append("\n<if test=\"cm!=null and !cm.isEmpty\">");
         where.append("\n<where>");
         where.append("\n<foreach collection=\"cm.keys\" item=\"k\" separator=\"AND\">");
         where.append("\n<if test=\"cm[k] != null\">");
-        String quote = GlobalConfiguration.getIdentifierQuote(configuration);
-        if (StringUtils.isNotEmpty(quote)) {
-            where.append("\n");
-            where.append(quote);
-            where.append("${k}");
-            where.append(quote);
-            where.append(" = #{cm[${k}]}");
-        } else {
-            where.append("\n${k} = #{cm[${k}]}");
-        }
+        where.append(SqlReservedWords.convert(getGlobalConfig(), "\n${k}")).append(" = #{cm[${k}]}");
         where.append("\n</if>");
         where.append("\n</foreach>");
         where.append("\n</where>");
@@ -751,15 +728,15 @@ public class AutoSqlInjector implements ISqlInjector {
         FieldStrategy fieldStrategy = fieldInfo.getFieldStrategy();
         if (fieldStrategy == FieldStrategy.IGNORED) {
             if (ignored) {
-                return "" ;
+                return "";
             }
             // 查询策略，使用全局策略
-            fieldStrategy = GlobalConfiguration.getGlobalConfig(configuration).getFieldStrategy();
+            fieldStrategy = this.getGlobalConfig().getFieldStrategy();
         }
 
         // 关闭标签
         if (close) {
-            return "</if>" ;
+            return "</if>";
         }
 
 		/* 前缀处理 */
@@ -772,26 +749,26 @@ public class AutoSqlInjector implements ISqlInjector {
         if (fieldStrategy == FieldStrategy.NOT_EMPTY) {
             String propertyType = fieldInfo.getPropertyType();
             if (StringUtils.isCharSequence(propertyType)) {
-                return String.format("\n\t<if test=\"%s!=null and %s!=''\">" , property, property);
+                return String.format("\n\t<if test=\"%s!=null and %s!=''\">", property, property);
             } else {
-                return String.format("\n\t<if test=\"%s!=null \">" , property);
+                return String.format("\n\t<if test=\"%s!=null \">", property);
             }
         } else {
             // FieldStrategy.NOT_NULL
-            return String.format("\n\t<if test=\"%s!=null\">" , property);
+            return String.format("\n\t<if test=\"%s!=null\">", property);
         }
     }
 
-    protected String convertIfTagIgnored(TableFieldInfo fieldInfo, boolean colse) {
-        return convertIfTag(true, fieldInfo, null, colse);
+    protected String convertIfTagIgnored(TableFieldInfo fieldInfo, boolean close) {
+        return convertIfTag(true, fieldInfo, null, close);
     }
 
-    protected String convertIfTag(TableFieldInfo fieldInfo, String prefix, boolean colse) {
-        return convertIfTag(false, fieldInfo, prefix, colse);
+    protected String convertIfTag(TableFieldInfo fieldInfo, String prefix, boolean close) {
+        return convertIfTag(false, fieldInfo, prefix, close);
     }
 
-    protected String convertIfTag(TableFieldInfo fieldInfo, boolean colse) {
-        return convertIfTag(fieldInfo, null, colse);
+    protected String convertIfTag(TableFieldInfo fieldInfo, boolean close) {
+        return convertIfTag(fieldInfo, null, close);
     }
 
     /*
@@ -891,7 +868,7 @@ public class AutoSqlInjector implements ISqlInjector {
         MappedStatement ms = new MappedStatement.Builder(configuration, mappedStatement, sqlSource, SqlCommandType.SELECT)
                 .resultMaps(new ArrayList<ResultMap>() {
                     {
-                        add(new ResultMap.Builder(configuration, "defaultResultMap" , resultType, new ArrayList<ResultMapping>(0))
+                        add(new ResultMap.Builder(configuration, "defaultResultMap", resultType, new ArrayList<ResultMapping>(0))
                                 .build());
                     }
                 }).build();
@@ -911,7 +888,7 @@ public class AutoSqlInjector implements ISqlInjector {
         MappedStatement ms = new MappedStatement.Builder(configuration, mappedStatement, sqlSource, sqlCommandType).resultMaps(
                 new ArrayList<ResultMap>() {
                     {
-                        add(new ResultMap.Builder(configuration, "defaultResultMap" , int.class, new ArrayList<ResultMapping>(0))
+                        add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0))
                                 .build());
                     }
                 }).build();
@@ -989,6 +966,15 @@ public class AutoSqlInjector implements ISqlInjector {
         }
         SqlSource sqlSource = languageDriver.createSqlSource(configuration, SqlRunner.SQLScript, Map.class);
         createUpdateMappedStatement(SqlRunner.DELETE, sqlSource, SqlCommandType.DELETE);
+    }
+
+    /**
+     * <p>
+     * 全局配置
+     * </p>
+     */
+    protected GlobalConfiguration getGlobalConfig() {
+        return GlobalConfiguration.getGlobalConfig(configuration);
     }
 
 }

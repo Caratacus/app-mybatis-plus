@@ -49,6 +49,14 @@ import com.baomidou.mybatisplus.toolkit.StringUtils;
 public class ConfigBuilder {
 
     /**
+     * 模板路径配置信息
+     */
+    private final TemplateConfig template;
+    /**
+     * 数据库配置
+     */
+    private final DataSourceConfig dataSourceConfig;
+    /**
      * SQL连接
      */
     private Connection connection;
@@ -68,7 +76,6 @@ public class ConfigBuilder {
      * 数据库表信息
      */
     private List<TableInfo> tableInfoList;
-
     /**
      * 包配置详情
      */
@@ -77,17 +84,6 @@ public class ConfigBuilder {
      * 路径配置信息
      */
     private Map<String, String> pathInfo;
-
-    /**
-     * 模板路径配置信息
-     */
-    private TemplateConfig template;
-
-    /**
-     * 数据库配置
-     */
-    private DataSourceConfig dataSourceConfig;
-
     /**
      * 策略配置
      */
@@ -338,59 +334,88 @@ public class ConfigBuilder {
         if (isInclude && isExclude) {
             throw new RuntimeException("<strategy> 标签中 <include> 与 <exclude> 只能配置一项！");
         }
+        //所有的表信息
         List<TableInfo> tableList = new ArrayList<>();
+
+        //需要反向生成或排除的表信息
+        List<TableInfo> includeTableList = new ArrayList<>();
+        List<TableInfo> excludeTableList = new ArrayList<>();
+
+        //不存在的表名
         Set<String> notExistTables = new HashSet<>();
+
         NamingStrategy strategy = config.getNaming();
-        try (PreparedStatement prepareStatement = connection.prepareStatement(querySQL.getTableCommentsSql());ResultSet results = prepareStatement.executeQuery()){
+        PreparedStatement pstate = null;
+        try {
+            pstate = connection.prepareStatement(querySQL.getTableCommentsSql());
+            ResultSet results = pstate.executeQuery();
             TableInfo tableInfo;
             while (results.next()) {
                 String tableName = results.getString(querySQL.getTableName());
                 if (StringUtils.isNotEmpty(tableName)) {
                     String tableComment = results.getString(querySQL.getTableComment());
                     tableInfo = new TableInfo();
+                    tableInfo.setName(tableName);
+                    tableInfo.setComment(tableComment);
                     if (isInclude) {
                         for (String includeTab : config.getInclude()) {
                             if (includeTab.equalsIgnoreCase(tableName)) {
-                                tableInfo.setName(tableName);
-                                tableInfo.setComment(tableComment);
+                                includeTableList.add(tableInfo);
                             } else {
                                 notExistTables.add(includeTab);
                             }
                         }
                     } else if (isExclude) {
                         for (String excludeTab : config.getExclude()) {
-                            if (!excludeTab.equalsIgnoreCase(tableName)) {
-                                tableInfo.setName(tableName);
-                                tableInfo.setComment(tableComment);
+                            if (excludeTab.equalsIgnoreCase(tableName)) {
+                                excludeTableList.add(tableInfo);
                             } else {
                                 notExistTables.add(excludeTab);
                             }
                         }
-                    } else {
-                        tableInfo.setName(tableName);
-                        tableInfo.setComment(tableComment);
                     }
-                    if (StringUtils.isNotEmpty(tableInfo.getName())) {
-                        List<TableField> fieldList = getListFields(tableInfo.getName(), strategy);
-                        tableInfo.setFields(fieldList);
-                        tableList.add(tableInfo);
-                    }
+                    List<TableField> fieldList = getListFields(tableName, strategy);
+                    tableInfo.setFields(fieldList);
+                    tableList.add(tableInfo);
                 } else {
                     System.err.println("当前数据库为空！！！");
                 }
             }
-            // 将已经存在的表移除
+            // 将已经存在的表移除，获取配置中数据库不存在的表
             for (TableInfo tabInfo : tableList) {
                 notExistTables.remove(tabInfo.getName());
             }
+
             if (notExistTables.size() > 0) {
                 System.err.println("表 " + notExistTables + " 在数据库中不存在！！！");
             }
+
+            // 需要反向生成的表信息
+            if (isExclude) {
+                tableList.removeAll(excludeTableList);
+                includeTableList = tableList;
+            }
+            if (!isInclude && !isExclude) {
+                includeTableList = tableList;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            // 释放资源
+            try {
+                if (pstate != null) {
+                    pstate.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return processTable(tableList, strategy, config.getTablePrefix());
+        return processTable(includeTableList, strategy, config.getTablePrefix());
     }
+
 
     /**
      * 判断主键是否为identity，目前仅对mysql进行检查
@@ -416,11 +441,11 @@ public class ConfigBuilder {
      * @param strategy  命名策略
      * @return 表信息
      */
-    private List<TableField> getListFields(String tableName, NamingStrategy strategy){
+    private List<TableField> getListFields(String tableName, NamingStrategy strategy) {
         boolean haveId = false;
         List<TableField> fieldList = new ArrayList<>();
         try (PreparedStatement pstate = connection.prepareStatement(String.format(querySQL.getTableFieldsSql(), tableName));
-              ResultSet results = pstate.executeQuery()){
+             ResultSet results = pstate.executeQuery()) {
             while (results.next()) {
                 TableField field = new TableField();
                 String key = results.getString(querySQL.getFieldKey());
@@ -448,8 +473,8 @@ public class ConfigBuilder {
                 field.setComment(results.getString(querySQL.getFieldComment()));
                 fieldList.add(field);
             }
-        }catch (SQLException e){
-            System.err.println("SQL Exception："+e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("SQL Exception：" + e.getMessage());
         }
         return fieldList;
     }

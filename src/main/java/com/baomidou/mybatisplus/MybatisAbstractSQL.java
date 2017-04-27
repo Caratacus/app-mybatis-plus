@@ -41,7 +41,7 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
     /**
      * SQL条件
      */
-    private SQLCondition sql = new SQLCondition();
+    private final SQLCondition sql = new SQLCondition();
 
     /**
      * 子类泛型实现
@@ -92,6 +92,11 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
         return getSelf();
     }
 
+    public T LIMIT(int begin, int end) {
+        sql().limit = new int[]{begin, end};
+        return getSelf();
+    }
+
     private SQLCondition sql() {
         return sql;
     }
@@ -139,12 +144,13 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
      */
     private static class SQLCondition implements Serializable {
 
-        List<String> where = new ArrayList<>();
-        List<String> having = new ArrayList<>();
-        List<String> groupBy = new ArrayList<>();
-        List<String> orderBy = new ArrayList<>();
+        final List<String> where = new ArrayList<>();
+        final List<String> having = new ArrayList<>();
+        final List<String> groupBy = new ArrayList<>();
+        final List<String> orderBy = new ArrayList<>();
+        final List<String> andOr = new ArrayList<>();
+        int[] limit = null;
         List<String> lastList = new ArrayList<>();
-        List<String> andOr = new ArrayList<>();
 
         public SQLCondition() {
             andOr.add(AND);
@@ -163,17 +169,17 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
          * @param close       结束符号
          * @param conjunction 连接条件
          */
-        private void sqlClause(SafeAppendable builder, String keyword, List<String> parts, String open, String close,
-                               String conjunction) {
+        private void sqlClause(SafeAppendable builder, String keyword, List<String> parts,
+                               String open, String close, String conjunction) {
             parts = clearNull(parts);
             if (!parts.isEmpty()) {
                 if (!builder.isEmpty()) {
                     builder.append("\n");
                 }
-
-                builder.append(keyword);
-                builder.append(" ");
-                builder.append(open);
+                builder.append(keyword).append(" ");
+                if (null != open) {
+                    builder.append(open);
+                }
                 String last = "__";
                 for (int i = 0, n = parts.size(); i < n; i++) {
                     String part = parts.get(i);
@@ -188,7 +194,9 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
                     }
                     builder.append(part);
                 }
-                builder.append(close);
+                if (null != close) {
+                    builder.append(close);
+                }
             }
         }
 
@@ -217,15 +225,18 @@ public abstract class MybatisAbstractSQL<T> implements Serializable {
          */
         private String buildSQL(SafeAppendable builder) {
             sqlClause(builder, "WHERE", where, "(", ")", AND);
-            sqlClause(builder, "GROUP BY", groupBy, "", "", ", ");
+            sqlClause(builder, "GROUP BY", groupBy, null, null, ", ");
             sqlClause(builder, "HAVING", having, "(", ")", AND);
-            sqlClause(builder, "ORDER BY", orderBy, "", "", ", ");
+            sqlClause(builder, "ORDER BY", orderBy, null, null, AND);
+            if (null != limit) {
+                builder.append(String.format(" LIMIT %s, %s ", limit[0], limit[1]));
+            }
             return builder.toString();
         }
 
         public String sql(Appendable appendable) {
-            SafeAppendable builder = new SafeAppendable(appendable);
-            return buildSQL(builder);
+            return buildSQL(new SafeAppendable(appendable));
         }
     }
+
 }

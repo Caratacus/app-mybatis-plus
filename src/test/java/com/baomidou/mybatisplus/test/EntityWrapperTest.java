@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.baomidou.mybatisplus.entity.Column;
 import com.baomidou.mybatisplus.enums.SqlLike;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -55,14 +56,14 @@ public class EntityWrapperTest {
     @Test
     public void test() {
         /*
-		 * 无条件测试
+         * 无条件测试
 		 */
         Assert.assertNull(ew.toString());
     }
 
     @Test
     public void test11() {
-		/*
+        /*
 		 * 实体带where ifneed
 		 */
         ew.setEntity(new User(1));
@@ -159,9 +160,9 @@ public class EntityWrapperTest {
                 .andNew("new=xx").like("hhh", "ddd").andNew("pwd=11").isNotNull("n1,n2").isNull("n3").groupBy("x1")
                 .groupBy("x2,x3").having("x1=11").having("x3=433").orderBy("dd").orderBy("d1,d2");
         System.out.println(ew.toString());
-        Assert.assertEquals("AND (name=? AND id=1) \n" + "OR (status=? OR status=1 AND nlike = ?) \n"
-                + "AND (new=xx AND hhh = ?) \n" + "AND (pwd=11 AND n1 IS NOT NULL AND n2 IS NOT NULL AND n3 IS NULL)\n"
-                + "GROUP BY x1, x2,x3\n" + "HAVING (x1=11 AND x3=433)\n" + "ORDER BY dd, d1,d2", ew.toString());
+        Assert.assertEquals("AND (name=? AND id=1) \n" + "OR (status=? OR status=1 AND nlike NOT LIKE ?) \n"
+                + "AND (new=xx AND hhh LIKE ?) \n" + "AND (pwd=11 AND n1 IS NOT NULL AND n2 IS NOT NULL AND n3 IS NULL)\n"
+                + "GROUP BY x1, x2,x3\n" + "HAVING (x1=11 AND x3=433)\n" + "ORDER BY dd AND d1,d2", ew.toString());
     }
 
     @Test
@@ -319,7 +320,7 @@ public class EntityWrapperTest {
         String sqlPart = Condition.create().like("default", "default", SqlLike.DEFAULT).like("left", "left", SqlLike.LEFT)
                 .like("right", "right", SqlLike.RIGHT).toString();
         System.out.println("sql ==> " + sqlPart);
-        Assert.assertEquals("WHERE (default = ? AND left = ? AND right = ?)", sqlPart);
+        Assert.assertEquals("WHERE (default LIKE ? AND left LIKE ? AND right LIKE ?)", sqlPart);
     }
 
     /**
@@ -340,4 +341,31 @@ public class EntityWrapperTest {
         Assert.assertEquals("WHERE (sql = ? AND default LIKE ? AND left LIKE ? AND aaabbbcc IN (?,?,?) AND bbb IN (?,?,?) AND right LIKE ? AND bool = ? AND ee BETWEEN ? AND ?)", sqlPart);
         System.out.println(ew.getSqlSegment());
     }
+
+    /**
+     * 测试 limit
+     */
+    @Test
+    public void testLimit() {
+        ew.where("name={0}", "'123'").orderBy("id", false);
+        ew.limit(0, 3);
+        String sqlSegment = ew.toString();
+        System.err.println("testLimit = " + sqlSegment);
+        Assert.assertEquals("WHERE (name=?)\nORDER BY id DESC LIMIT 0, 3 ", sqlSegment);
+    }
+
+    /**
+     * 测试 sqlselect
+     */
+    @Test
+    public void testSqlSelect() {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        // entityWrapper.setSqlSelect(Column.create().column("col").as("name"),null,Column.create(),Column.create().as("11"),Column.create().column("col"));
+        entityWrapper.setSqlSelect(Column.create().column("col").as("name"), null, Column.create(), Column.create().as("11"), Column.create().column("col"));
+        System.out.println(entityWrapper.getSqlSelect());
+        Assert.assertEquals("col AS name,col", entityWrapper.getSqlSelect());
+
+    }
+
+
 }

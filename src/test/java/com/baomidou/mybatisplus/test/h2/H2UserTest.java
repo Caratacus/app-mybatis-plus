@@ -57,14 +57,14 @@ public class H2UserTest {
     }
 
     private static void insertUsers(Statement stmt) throws SQLException, IOException {
-        String filename = "user.insert.sql" ;
+        String filename = "user.insert.sql";
         String filePath = H2UserTest.class.getClassLoader().getResource("").getPath() + "/h2/" + filename;
         try (
                 BufferedReader reader = new BufferedReader(new FileReader(filePath))
         ) {
             String line;
             while ((line = reader.readLine()) != null) {
-                stmt.execute(line.replace(";" , ""));
+                stmt.execute(line.replace(";", ""));
             }
         }
     }
@@ -94,7 +94,7 @@ public class H2UserTest {
         user.setDesc("Caratacus");
         userService.insertOrUpdate(user);
         H2User userFromDB = userService.selectById(user.getId());
-        Assert.assertEquals("Caratacus" , userFromDB.getDesc());
+        Assert.assertEquals("Caratacus", userFromDB.getDesc());
     }
 
     @Test

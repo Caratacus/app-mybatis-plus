@@ -23,18 +23,28 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.ibatis.builder.MapperBuilderAssistant;
+import org.apache.ibatis.executor.keygen.KeyGenerator;
+import org.apache.ibatis.executor.keygen.NoKeyGenerator;
+import org.apache.ibatis.executor.keygen.SelectKeyGenerator;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ResultSetType;
+import org.apache.ibatis.mapping.SqlCommandType;
+import org.apache.ibatis.mapping.SqlSource;
+import org.apache.ibatis.mapping.StatementType;
+import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import com.baomidou.mybatisplus.annotations.KeySequence;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.entity.GlobalConfiguration;
 import com.baomidou.mybatisplus.entity.TableFieldInfo;
 import com.baomidou.mybatisplus.entity.TableInfo;
-import com.baomidou.mybatisplus.enums.FieldStrategy;
+import com.baomidou.mybatisplus.enums.DBType;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.mapper.SqlRunner;
@@ -85,14 +95,14 @@ public class TableInfoHelper {
             return ti;
         }
         TableInfo tableInfo = new TableInfo();
-        GlobalConfiguration globalCache;
+        GlobalConfiguration globalConfig;
         if (null != builderAssistant) {
             tableInfo.setCurrentNamespace(builderAssistant.getCurrentNamespace());
             tableInfo.setConfigMark(builderAssistant.getConfiguration());
-            globalCache = GlobalConfiguration.getGlobalConfig(builderAssistant.getConfiguration());
+            globalConfig = GlobalConfiguration.getGlobalConfig(builderAssistant.getConfiguration());
         } else {
             // 兼容测试场景
-            globalCache = GlobalConfiguration.DEFAULT;
+            globalConfig = GlobalConfiguration.DEFAULT;
         }
         /* 表名 */
         TableName table = clazz.getAnnotation(TableName.class);
@@ -101,11 +111,11 @@ public class TableInfoHelper {
             tableName = table.value();
         } else {
             // 开启字段下划线申明
-            if (globalCache.isDbColumnUnderline()) {
+            if (globalConfig.isDbColumnUnderline()) {
                 tableName = StringUtils.camelToUnderline(tableName);
             }
             // 大写命名判断
-            if (globalCache.isCapitalMode()) {
+            if (globalConfig.isCapitalMode()) {
                 tableName = tableName.toUpperCase();
             } else {
                 // 首字母小写
@@ -113,6 +123,13 @@ public class TableInfoHelper {
             }
         }
         tableInfo.setTableName(tableName);
+        
+        /* Oracle 主键支持 */
+        KeySequence keySequence = clazz.getAnnotation(KeySequence.class);
+        if (keySequence != null) {
+            tableInfo.setKeySequence(keySequence);
+        }
+        
         /* 表结果集映射 */
         if (table != null && StringUtils.isNotEmpty(table.resultMap())) {
             tableInfo.setResultMap(table.resultMap());
@@ -122,32 +139,32 @@ public class TableInfoHelper {
         boolean existTableId = existTableId(list);
         for (Field field : list) {
 
-            /**
+            /*
              * 主键ID 初始化
              */
             if (existTableId) {
-                if (initTableId(globalCache, tableInfo, field, clazz)) {
+                if (initTableId(globalConfig, tableInfo, field, clazz)) {
                     continue;
                 }
-            } else if (initFieldId(globalCache, tableInfo, field, clazz)) {
+            } else if (initFieldId(globalConfig, tableInfo, field, clazz)) {
                 continue;
             }
 
-            /**
+            /*
              * 字段初始化
              */
-            if (initTableField(globalCache, fieldList, field, clazz)) {
+            if (initTableField(globalConfig, tableInfo, fieldList, field, clazz)) {
                 continue;
             }
 
-            /**
+            /*
              * 字段, 使用 camelToUnderline 转换驼峰写法为下划线分割法, 如果已指定 TableField , 便不会执行这里
              */
-            fieldList.add(new TableFieldInfo(globalCache, field.getName(), field.getType().getName()));
+            fieldList.add(new TableFieldInfo(globalConfig, tableInfo, field));
         }
 
 		/* 字段列表 */
-        tableInfo.setFieldList(fieldList);
+        tableInfo.setFieldList(globalConfig, fieldList);
         /*
          * 未发现主键注解，提示警告信息
 		 */
@@ -198,12 +215,14 @@ public class TableInfoHelper {
                 /*
                  * 主键策略（ 注解 > 全局 > 默认 ）
 				 */
+                // 设置 Sequence 其他策略无效
                 if (IdType.NONE != tableId.type()) {
                     tableInfo.setIdType(tableId.type());
                 } else {
                     tableInfo.setIdType(globalConfig.getIdType());
                 }
-				/* 字段 */
+                
+                /* 字段 */
                 String column = field.getName();
                 if (StringUtils.isNotEmpty(tableId.value())) {
                     column = tableId.value();
@@ -273,29 +292,23 @@ public class TableInfoHelper {
      * 字段属性初始化
      * </p>
      *
-     * @param fieldList
-     * @param clazz
+     * @param globalConfig 全局配置
+     * @param tableInfo    表信息
+     * @param fieldList    字段列表
+     * @param clazz        当前表对象类
      * @return true 继续下一个属性判断，返回 continue;
      */
-    private static boolean initTableField(GlobalConfiguration globalCache, List<TableFieldInfo> fieldList, Field field,
-                                          Class<?> clazz) {
-		/* 获取注解属性，自定义字段 */
+    private static boolean initTableField(GlobalConfiguration globalConfig, TableInfo tableInfo, List<TableFieldInfo> fieldList,
+                                          Field field, Class<?> clazz) {
+        /* 获取注解属性，自定义字段 */
         TableField tableField = field.getAnnotation(TableField.class);
         if (tableField != null) {
             String columnName = field.getName();
             if (StringUtils.isNotEmpty(tableField.value())) {
                 columnName = tableField.value();
             }
-
-            Class<?> fieldType = field.getType();
-            FieldStrategy validate = tableField.validate();
-			/* 字符串类型默认 FieldStrategy.NOT_EMPTY */
-            if (String.class.isAssignableFrom(fieldType) && FieldStrategy.NOT_NULL.equals(validate)) {
-                validate = FieldStrategy.NOT_EMPTY;
-            }
-
-			/*
-			 * el 语法支持，可以传入多个参数以逗号分开
+            /*
+             * el 语法支持，可以传入多个参数以逗号分开
 			 */
             String el = field.getName();
             if (StringUtils.isNotEmpty(tableField.el())) {
@@ -305,17 +318,14 @@ public class TableInfoHelper {
             String[] els = el.split(";");
             if (columns.length == els.length) {
                 for (int i = 0; i < columns.length; i++) {
-                    fieldList.add(new TableFieldInfo(globalCache, columns[i], field.getName(), els[i], validate, field.getType()
-                            .getName()));
+                    fieldList.add(new TableFieldInfo(globalConfig, tableInfo, columns[i], els[i], field, tableField));
                 }
             } else {
                 String errorMsg = "Class: %s, Field: %s, 'value' 'el' Length must be consistent.";
                 throw new MybatisPlusException(String.format(errorMsg, clazz.getName(), field.getName()));
             }
-
             return true;
         }
-
         return false;
     }
 
@@ -331,7 +341,7 @@ public class TableInfoHelper {
             Iterator<Field> iterator = fieldList.iterator();
             while (iterator.hasNext()) {
                 Field field = iterator.next();
-				/* 过滤注解非表字段属性 */
+                /* 过滤注解非表字段属性 */
                 TableField tableField = field.getAnnotation(TableField.class);
                 if (tableField != null && !tableField.exist()) {
                     iterator.remove();
@@ -359,6 +369,39 @@ public class TableInfoHelper {
         } else {
             globalConfig.setSqlSessionFactory(sqlSessionFactory);
         }
+    }
+
+    public static KeyGenerator genKeyGenerator(TableInfo tableInfo, MapperBuilderAssistant builderAssistant, String baseStatementId, LanguageDriver languageDriver) {
+        DBType dbType = GlobalConfiguration.getDbType(builderAssistant.getConfiguration());
+        if (dbType != DBType.ORACLE)
+            throw new IllegalArgumentException("目前仅支持Oracle序列");
+        String id = baseStatementId + SelectKeyGenerator.SELECT_KEY_SUFFIX;
+        Class<?> resultTypeClass = tableInfo.getKeySequence().idClazz();
+        Class<?> parameterTypeClass = null;
+        StatementType statementType = StatementType.PREPARED;
+        String keyProperty = tableInfo.getKeyProperty();
+        String keyColumn = tableInfo.getKeyColumn();
+        boolean executeBefore = true;
+        boolean useCache = false;
+        KeyGenerator keyGenerator = new NoKeyGenerator();
+        Integer fetchSize = null;
+        Integer timeout = null;
+        boolean flushCache = false;
+        String parameterMap = null;
+        String resultMap = null;
+        ResultSetType resultSetTypeEnum = null;
+        //上面已经判断是ORACLE这里直接获取即可无需再判断
+        String sql = "select " + tableInfo.getKeySequence().value() + ".nextval from dual";
+        SqlSource sqlSource = languageDriver.createSqlSource(builderAssistant.getConfiguration(), sql.trim(), null);
+        SqlCommandType sqlCommandType = SqlCommandType.SELECT;
+        builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap,
+                parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache, false, keyGenerator,
+                keyProperty, keyColumn, null, languageDriver, null);
+        id = builderAssistant.applyCurrentNamespace(id, false);
+        MappedStatement keyStatement = builderAssistant.getConfiguration().getMappedStatement(id, false);
+        SelectKeyGenerator answer = new SelectKeyGenerator(keyStatement, executeBefore);
+        builderAssistant.getConfiguration().addKeyGenerator(id, answer);
+        return answer;
     }
 
 }

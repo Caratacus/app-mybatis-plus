@@ -31,19 +31,19 @@ public enum DBType {
     /**
      * ORACLE
      */
-    ORACLE("oracle", "", "Oracle数据库"),
+    ORACLE("oracle", null, "Oracle数据库"),
     /**
      * DB2
      */
-    DB2("db2", "", "DB2数据库"),
+    DB2("db2", "`%s`", "DB2数据库"),
     /**
      * H2
      */
-    H2("h2", "", "H2数据库"),
+    H2("h2", null, "H2数据库"),
     /**
      * HSQL
      */
-    HSQL("hsql", "", "HSQL数据库"),
+    HSQL("hsql", null, "HSQL数据库"),
     /**
      * SQLITE
      */
@@ -51,7 +51,7 @@ public enum DBType {
     /**
      * POSTGRE
      */
-    POSTGRE("postgresql", "", "Postgre数据库"),
+    POSTGRE("postgresql", "\"%s\"", "Postgre数据库"),
     /**
      * SQLSERVER2005
      */
@@ -63,7 +63,7 @@ public enum DBType {
     /**
      * UNKONWN DB
      */
-    OTHER("other", "", "其他数据库");
+    OTHER("other", null, "其他数据库");
 
     private final String db;
 

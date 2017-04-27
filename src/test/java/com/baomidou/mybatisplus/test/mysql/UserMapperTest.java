@@ -73,7 +73,7 @@ public class UserMapperTest {
         MybatisSessionFactoryBuilder mf = new MybatisSessionFactoryBuilder();
 
 		/*
-         * 1、数据库字段驼峰命名不需要任何设置 2、当前演示是驼峰下划线混合命名 3、如下开启，表示数据库字段使用下划线命名，该设置是全局的。
+		 * 1、数据库字段驼峰命名不需要任何设置 2、当前演示是驼峰下划线混合命名 3、如下开启，表示数据库字段使用下划线命名，该设置是全局的。
 		 * 开启该设置实体可无 @TableId(value = "test_id") 字段映射
 		 */
         // mf.setDbColumnUnderline(true);
@@ -123,7 +123,7 @@ public class UserMapperTest {
         /**
          * 注解插件测试
          */
-        rlt = userMapper.insertInjector(new User(1L, "1" , 1, 1));
+        rlt = userMapper.insertInjector(new User(1L, "1", 1, 1));
         System.err.println("--------- insertInjector --------- " + rlt);
 
         /**
@@ -138,7 +138,7 @@ public class UserMapperTest {
          * 插入
          */
         long id = IdWorker.getId();
-        rlt = userMapper.insert(new User(id, "abc" , 18, 1));
+        rlt = userMapper.insert(new User(id, "abc", 18, 1));
         System.err.println("\n--------------insert-------" + rlt);
         sleep();
 
@@ -149,23 +149,23 @@ public class UserMapperTest {
         List<User> ul = new ArrayList<>();
 
 		/* 手动输入 ID */
-        ul.add(new User(11L, "1" , 1, 0));
-        ul.add(new User(12L, "2" , 2, 1));
-        ul.add(new User(13L, "3" , 3, 1));
-        ul.add(new User(14L, "delname" , 4, 0));
-        ul.add(new User(15L, "5" , 5, 1));
-        ul.add(new User(16L, "6" , 6, 0));
+        ul.add(new User(11L, "1", 1, 0));
+        ul.add(new User(12L, "2", 2, 1));
+        ul.add(new User(13L, "3", 3, 1));
+        ul.add(new User(14L, "delname", 4, 0));
+        ul.add(new User(15L, "5", 5, 1));
+        ul.add(new User(16L, "6", 6, 0));
 
 		/* 测试 name test_type 填充 */
         ul.add(new User(17L, 7));
         ul.add(new User(18L, 8));
         ul.add(new User(19L, 9));
         ul.add(new User(7));
-        ul.add(new User(20L, "deleteByMap" , 7, 0));
+        ul.add(new User(20L, "deleteByMap", 7, 0));
 
 		/* 使用 ID_WORKER 自动生成 ID */
-        ul.add(new User("8" , 8, 1));
-        ul.add(new User("9" , 9, 1));
+        ul.add(new User("8", 8, 1));
+        ul.add(new User("9", 9, 1));
         for (User u : ul) {
             rlt = userMapper.insert(u);
         }
@@ -184,8 +184,8 @@ public class UserMapperTest {
         sleep();
 
         Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("name" , "deleteByMap");
-        columnMap.put("age" , null);
+        columnMap.put("name", "deleteByMap");
+        columnMap.put("age", null);
         rlt = userMapper.deleteByMap(columnMap);
         System.err.println("---------deleteByMap------- result=" + rlt + "\n\n");
         sleep();
@@ -203,23 +203,23 @@ public class UserMapperTest {
 
 		/*
 		 * <p> 修改 </p>
-		 * 
+		 *
 		 * updateById 是从 BaseMapper 中继承而来的，UserMapper.xml中并没有申明改sql
 		 */
         rlt = userMapper.updateById(new User(12L, "MybatisPlus"));
         System.err.println("------------------updateById---------------------- result=" + rlt + "\n\n");
         sleep();
 
-        rlt = userMapper.updateById(new User(12L, "update all column" , 12, 12));
+        rlt = userMapper.updateById(new User(12L, "update all column", 12, 12));
         System.err.println("------------------updateById---------------------- result=" + rlt + "\n\n");
         sleep();
 
-        rlt = userMapper.update(new User("55" , 55, 5), new EntityWrapper<>(new User(15L, "5")));
+        rlt = userMapper.update(new User("55", 55, 5), new EntityWrapper<>(new User(15L, "5")));
         System.err.println("------------------update---------------------- result=" + rlt + "\n\n");
         sleep();
 
         EntityWrapper<User> ew1 = new EntityWrapper<>();
-        ew1.addFilter("test_id={0} AND name={1}" , 15L, "55");
+        ew1.addFilter("test_id={0} AND name={1}", 15L, "55");
         rlt = userMapper.update(new User("00"), ew1);
         System.err.println("------------------update---------------------- result=" + rlt + "\n\n");
         sleep();
@@ -228,9 +228,9 @@ public class UserMapperTest {
         // userMapper.update(new User("11"), null);
 
         List<User> userList = new ArrayList<>();
-        userList.add(new User(11L, "updateBatchById-1" , 1, 1));
-        userList.add(new User(12L, "updateBatchById-2" , 2, 1));
-        userList.add(new User(13L, "updateBatchById-3" , 3, 1));
+        userList.add(new User(11L, "updateBatchById-1", 1, 1));
+        userList.add(new User(12L, "updateBatchById-2", 2, 1));
+        userList.add(new User(13L, "updateBatchById-3", 3, 1));
         for (User u : userList) {
             rlt = userMapper.updateById(u);
         }
@@ -255,7 +255,8 @@ public class UserMapperTest {
 
         System.err.println("\n------------------selectByMap-----满足 map 条件的数据----");
         Map<String, Object> cm = new HashMap<>();
-        cm.put("test_type" , 1);
+        cm.put("test_type", 1);
+        cm.put("1", 1);
         List<User> ul1 = userMapper.selectByMap(cm);
         for (User anUl1 : ul1) {
             print(anUl1);
@@ -287,7 +288,7 @@ public class UserMapperTest {
 		/*
 		 * 查询条件，SQL 片段(根据常用的写SQL的方式按顺序添加相关条件即可)
 		 */
-        ew.where("name like {0}" , "'%dateBatch%'").and("age={0}" , 3).orderBy("age,name" , true);
+        ew.where("name like {0}", "'%dateBatch%'").and("age={0}", 3).orderBy("age,name", true);
         List<User> paginList = userMapper.selectPage(page, ew);
         page.setRecords(paginList);
         for (int i = 0; i < page.getRecords().size(); i++) {

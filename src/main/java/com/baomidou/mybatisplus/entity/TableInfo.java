@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.ibatis.session.Configuration;
 
+import com.baomidou.mybatisplus.annotations.KeySequence;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 
@@ -35,7 +36,7 @@ public class TableInfo {
     /**
      * 表主键ID 类型
      */
-    private IdType idType;
+    private IdType idType = IdType.NONE;
 
     /**
      * 表名称
@@ -64,7 +65,12 @@ public class TableInfo {
      * 表主键ID 字段名
      */
     private String keyColumn;
-
+    /**
+     * <p>
+     * 表主键ID Sequence
+     * </p>
+     */
+    private KeySequence keySequence;
     /**
      * 表字段信息列表
      */
@@ -78,6 +84,10 @@ public class TableInfo {
      * MybatisConfiguration 标记 (Configuration内存地址值)
      */
     private String configMark;
+    /**
+     * 是否开启逻辑删除
+     */
+    private boolean logicDelete = false;
 
     /**
      * <p>
@@ -144,12 +154,31 @@ public class TableInfo {
         this.keyColumn = keyColumn;
     }
 
+    public KeySequence getKeySequence() {
+        return keySequence;
+    }
+
+    public void setKeySequence(KeySequence keySequence) {
+        this.keySequence = keySequence;
+    }
+
     public List<TableFieldInfo> getFieldList() {
         return fieldList;
     }
 
-    public void setFieldList(List<TableFieldInfo> fieldList) {
+    public void setFieldList(GlobalConfiguration globalConfig, List<TableFieldInfo> fieldList) {
         this.fieldList = fieldList;
+        /*
+         * 启动逻辑删除注入、判断该表是否启动
+         */
+        if (null != globalConfig.getLogicDeleteValue()) {
+            for (TableFieldInfo tfi: fieldList) {
+                if (tfi.isLogicDelete()) {
+                    this.setLogicDelete(true);
+                    break;
+                }
+            }
+        }
     }
 
     public String getCurrentNamespace() {
@@ -171,4 +200,14 @@ public class TableInfo {
         this.configMark = configuration.toString();
     }
 
+    public boolean isLogicDelete() {
+        return logicDelete;
+    }
+
+    public void setLogicDelete(boolean logicDelete) {
+        if (logicDelete) {
+            // 非 true 不设置，默认 false
+            this.logicDelete = logicDelete;
+        }
+    }
 }
