@@ -91,6 +91,10 @@ public enum QuerySQL {
         this.fieldKey = fieldKey;
     }
 
+    public static void main(String[] args) {
+        System.out.println(POSTGRE_SQL.getTableFieldsSql());
+    }
+
     public String getDbType() {
         return dbType;
     }
@@ -129,9 +133,5 @@ public enum QuerySQL {
 
     public String getFieldKey() {
         return fieldKey;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(POSTGRE_SQL.getTableFieldsSql());
     }
 }

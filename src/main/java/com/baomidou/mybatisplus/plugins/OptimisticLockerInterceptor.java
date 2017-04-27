@@ -292,6 +292,7 @@ public final class OptimisticLockerInterceptor implements Interceptor {
      * 缓存对象
      */
     private class LockerCache {
+
         private boolean lock;
         private String column;
         private Field field;

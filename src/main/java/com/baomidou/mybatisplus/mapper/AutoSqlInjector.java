@@ -139,7 +139,7 @@ public class AutoSqlInjector implements ISqlInjector {
         /* 删除 */
         this.injectDeleteSql(mapperClass, modelClass, table);
         this.injectDeleteByMapSql(mapperClass, table);
-		/* 修改 */
+        /* 修改 */
         this.injectUpdateSql(mapperClass, modelClass, table);
 		/* 查询 */
         this.injectSelectByMapSql(mapperClass, modelClass, table);

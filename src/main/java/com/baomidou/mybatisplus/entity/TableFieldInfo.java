@@ -15,13 +15,13 @@
  */
 package com.baomidou.mybatisplus.entity;
 
+import java.lang.reflect.Field;
+
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableLogic;
 import com.baomidou.mybatisplus.enums.FieldStrategy;
 import com.baomidou.mybatisplus.toolkit.SqlReservedWords;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
-
-import java.lang.reflect.Field;
 
 /**
  * <p>
@@ -74,8 +74,8 @@ public class TableFieldInfo {
      * 逻辑未删除值
      */
     private String logicNotDeleteValue;
-    
-    
+
+
     /**
      * <p>
      * 存在 TableField 注解构造函数
@@ -217,12 +217,12 @@ public class TableFieldInfo {
         this.logicDeleteValue = logicDeleteValue;
     }
 
-	public String getLogicNotDeleteValue() {
-		return logicNotDeleteValue;
-	}
+    public String getLogicNotDeleteValue() {
+        return logicNotDeleteValue;
+    }
 
-	public void setLogicNotDeleteValue(String logicNotDeleteValue) {
-		this.logicNotDeleteValue = logicNotDeleteValue;
-	}
-    
+    public void setLogicNotDeleteValue(String logicNotDeleteValue) {
+        this.logicNotDeleteValue = logicNotDeleteValue;
+    }
+
 }

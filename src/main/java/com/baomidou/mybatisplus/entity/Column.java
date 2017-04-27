@@ -33,6 +33,12 @@ public class Column implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String AS = " AS ";
+    //转义
+    private boolean escape = true;
+    //字段
+    private String column;
+    //AS
+    private String as;
 
     /**
      * 获取实例
@@ -40,13 +46,6 @@ public class Column implements Serializable {
     public static Column create() {
         return new Column();
     }
-
-    //转义
-    private boolean escape = true;
-    //字段
-    private String column;
-    //AS
-    private String as;
 
     public String getColumn() {
         return column;

@@ -69,8 +69,8 @@ public class LogicDeleteTest {
         rlt = userMapper.delete(null);
         System.err.println("全表逻辑删除成功记录数：" + rlt);
         List<User> userList = userMapper.selectList(null);
-        for (User u: userList) {
-            System.out.println("全表逻辑删除 ( id= " + u.getId() + " ) 展示结果"+u.getTestType());
+        for (User u : userList) {
+            System.out.println("全表逻辑删除 ( id= " + u.getId() + " ) 展示结果" + u.getTestType());
         }
 
         rlt = userMapper.updateById(uu);
@@ -80,8 +80,8 @@ public class LogicDeleteTest {
         rlt = userMapper.deleteByMap(map);
         System.err.println("全表逻辑删除 ByMap 成功记录数：" + rlt);
         userList = userMapper.selectList(null);
-        for (User u: userList) {
-            System.out.println("全表逻辑删除 ( id= " + u.getId() + " ) 展示结果"+u.getTestType());
+        for (User u : userList) {
+            System.out.println("全表逻辑删除 ( id= " + u.getId() + " ) 展示结果" + u.getTestType());
         }
     }
 }
